@@ -1,0 +1,74 @@
+---
+import Icon from './Icon.astro';
+
+const adventures = [
+  {
+    icon: 'hiking',
+    title: 'Hiking & Trekking',
+    description: 'From the Cedar Reserve in Bcharre to the Qadisha Valley, our guided hikes span all difficulty levels across Lebanon\'s most stunning terrain.',
+    tag: 'All levels',
+  },
+  {
+    icon: 'climbing',
+    title: 'Rock Climbing',
+    description: 'Scale the limestone cliffs of Raachine and Tannourine with certified instructors trained in the latest safety techniques.',
+    tag: 'Intermediate+',
+  },
+  {
+    icon: 'camping',
+    title: 'Camping Expeditions',
+    description: 'Multi-day wild camping experiences under Lebanon\'s star-filled skies, deep in nature away from city noise.',
+    tag: 'Overnight',
+  },
+  {
+    icon: 'heritage',
+    title: 'Heritage & Sightseeing',
+    description: 'Discover Phoenician ruins, Ottoman architecture, and Roman temples woven into Lebanon\'s extraordinary cultural landscape.',
+    tag: 'Cultural',
+  },
+  {
+    icon: 'canyoning',
+    title: 'Canyoning & Rivers',
+    description: 'Navigate the seasonal rivers and canyons of Nahr Ibrahim and Nahr el-Kelb with expert guides and proper gear.',
+    tag: 'Seasonal',
+  },
+  {
+    icon: 'biking',
+    title: 'Mountain Biking',
+    description: 'Ride curated mountain trails that wind through pine forests, terraced villages, and dramatic ridge lines.',
+    tag: 'Active',
+  },
+];
+---
+
+<section id="adventures" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14">
+      <h2 class="section-heading">Adventures We Offer</h2>
+      <p class="section-subheading mx-auto">
+        Whether you're a first-timer or a seasoned explorer, we have an adventure crafted for you across Lebanon's diverse landscapes.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {adventures.map(adv => (
+        <div class="group p-6 rounded-2xl border border-brand-sky bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+          <div class="mb-4 text-brand-primary">
+            <Icon name={adv.icon} class="w-14 h-14" />
+          </div>
+          <span class="inline-block text-xs font-bold bg-brand-sky text-brand-olive px-3 py-1 rounded-full mb-3 uppercase tracking-wider">
+            {adv.tag}
+          </span>
+          <h3 class="text-xl font-heading font-bold text-brand-primary mb-2 group-hover:text-brand-olive transition-colors">
+            {adv.title}
+          </h3>
+          <p class="text-sm text-gray-600 leading-relaxed">{adv.description}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="text-center mt-12">
+      <a href="/contact" class="btn-primary">Plan Your Adventure</a>
+    </div>
+  </div>
+</section>

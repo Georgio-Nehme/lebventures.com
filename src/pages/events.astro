@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Events from '../components/Events.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+---
+
+<BaseLayout
+  title="Upcoming Events"
+  description="Browse LebVentures' upcoming guided hikes, camping trips, canyoning days, heritage walks, and wilderness workshops across Lebanon. Book your spot today."
+  keywords="events Lebanon, guided hikes Lebanon, adventure workshops Lebanon, upcoming trips Lebanon, LebVentures events"
+>
+  <Navbar />
+  <main>
+
+    <!-- Page header -->
+    <div class="pt-16 bg-brand-primary text-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <span class="inline-block text-xs font-bold text-brand-gold uppercase tracking-widest mb-3">What's Coming Up</span>
+        <h1 class="text-4xl md:text-5xl font-heading font-bold mb-4">Upcoming Events</h1>
+        <p class="text-white/80 text-lg max-w-2xl leading-relaxed">
+          All trips and workshops are small-group experiences — guided by our certified, scout-trained founders. Reserve your spot early as places fill fast.
+        </p>
+      </div>
+    </div>
+
+    <Events showAll={false} />
+
+  </main>
+  <Footer />
+</BaseLayout>

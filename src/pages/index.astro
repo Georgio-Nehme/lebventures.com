@@ -1,0 +1,139 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import Community from '../components/Community.astro';
+import Events from '../components/Events.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import '../styles/global.css';
+
+const featuredAdventures = [
+  { icon: 'hiking', title: 'Hiking & Trekking', href: '/adventures', desc: 'From the Cedar Reserve to the Qadisha Valley — trails for every level.' },
+  { icon: 'heritage', title: 'Heritage & Sightseeing', href: '/adventures', desc: 'Phoenician ruins, Ottoman architecture, and Roman temples woven into Lebanon.' },
+  { icon: 'camping', title: 'Camping Expeditions', href: '/adventures', desc: 'Multi-day wild camping under Lebanon\'s star-filled skies.' },
+];
+---
+
+<BaseLayout
+  title="LebVentures — For the Love of Nature"
+  description="LebVentures is a community-driven sustainable tourism experience guiding adventurers through Lebanon's trails, cedars, ancient ruins, and breathtaking landscapes. Founded by scout alumni who live for the outdoors."
+  keywords="sustainable tourism Lebanon, hiking Lebanon, adventure tours Lebanon, nature Lebanon, lebventures"
+>
+  <Navbar />
+  <main>
+
+    <!-- Hero with banner image -->
+    <Hero
+      useBanner={true}
+      heading="For the Love<br />of Nature."
+      subheading="LebVentures connects adventurers with Lebanon's hidden trails, sacred cedars, ancient ruins, and breathtaking landscapes — guided by people who truly love this land."
+      primaryCta={{ label: 'Explore Adventures', href: '/adventures' }}
+      secondaryCta={{ label: 'Our Story', href: '/about' }}
+      stats={[
+        { value: '50+', label: 'Routes & Trails' },
+        { value: '6', label: 'Adventure Types' },
+        { value: '1000+', label: 'Adventurers' },
+      ]}
+    />
+
+    <!-- Featured adventures snippet -->
+    <section class="py-20 bg-white" aria-labelledby="featured-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 id="featured-heading" class="section-heading">What We Offer</h2>
+          <p class="section-subheading mx-auto">Six categories of adventure, one shared love for Lebanon's outdoors.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {featuredAdventures.map(adv => (
+            <a
+              href={adv.href}
+              class="group p-6 rounded-2xl border border-brand-sky bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+            >
+              <div class="mb-4 text-brand-primary">
+                <Icon name={adv.icon} class="w-14 h-14" />
+              </div>
+              <h3 class="text-xl font-heading font-bold text-brand-primary mb-2 group-hover:text-brand-olive transition-colors">
+                {adv.title}
+              </h3>
+              <p class="text-sm text-gray-600 leading-relaxed">{adv.desc}</p>
+              <span class="inline-block mt-4 text-brand-primary text-sm font-semibold group-hover:underline">
+                Learn more →
+              </span>
+            </a>
+          ))}
+        </div>
+        <div class="text-center mt-10">
+          <a href="/adventures" class="btn-outline">View All Adventures</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- About snippet -->
+    <section class="py-20 bg-brand-sky/30" aria-labelledby="about-snippet-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+          <div>
+            <span class="inline-block text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">Our Story</span>
+            <h2 id="about-snippet-heading" class="section-heading">Born from Scouts,<br />Built for Lebanon</h2>
+            <p class="text-gray-600 leading-relaxed mb-6">
+              LebVentures was founded by a couple who met as teenagers in the Lebanese scouts. They fell in love with the mountains — and with each other. After their marriage, they built LebVentures to share what Lebanon's nature had given them: community, discipline, and wonder.
+            </p>
+            <p class="text-gray-600 leading-relaxed mb-8">
+              Both founders remain actively trained in wilderness skills, first aid, and sustainable tourism best practices. Every adventure is backed by real expertise and genuine passion.
+            </p>
+            <a href="/about" class="btn-primary">Meet the Founders</a>
+          </div>
+          <div class="bg-brand-primary rounded-3xl p-8 text-white shadow-2xl">
+            <div class="flex justify-center mb-5 opacity-80">
+              <Icon name="scout" class="w-16 h-16 text-brand-gold" />
+            </div>
+            <blockquote class="text-lg font-heading italic leading-relaxed text-center mb-6">
+              "The mountains of Lebanon are not just scenery — they are living history, sacred ground, and a responsibility."
+            </blockquote>
+            <div class="flex items-center justify-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-brand-gold flex items-center justify-center text-brand-dark font-bold text-sm">LV</div>
+              <div>
+                <div class="font-bold text-sm">LebVentures Founders</div>
+                <div class="text-brand-sky text-xs">Scout Alumni & Nature Advocates</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sustainable Tourism snippet -->
+    <section class="py-20 bg-white" aria-labelledby="eco-snippet-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="inline-block text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">Sustainability</span>
+        <h2 id="eco-snippet-heading" class="section-heading">Sustainable Tourism at Our Core</h2>
+        <p class="section-subheading mx-auto mb-10">
+          Every decision we make is guided by respect for Lebanon's natural heritage — from route selection to supplier partnerships.
+        </p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
+          {[
+            { icon: 'leaf', label: 'Leave No Trace' },
+            { icon: 'house', label: 'Support Local' },
+            { icon: 'cedar', label: 'Protect Habitats' },
+            { icon: 'book', label: 'Education First' },
+          ].map(p => (
+            <div class="flex flex-col items-center gap-3 p-4 rounded-xl bg-brand-sky/40">
+              <div class="text-brand-primary">
+                <Icon name={p.icon} class="w-10 h-10" />
+              </div>
+              <span class="text-sm font-semibold text-brand-primary">{p.label}</span>
+            </div>
+          ))}
+        </div>
+        <a href="/sustainable-tourism" class="btn-outline">Our Commitment</a>
+      </div>
+    </section>
+
+    <Events limit={3} showAll={true} />
+
+    <Community />
+
+  </main>
+  <Footer />
+</BaseLayout>

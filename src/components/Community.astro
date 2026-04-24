@@ -1,0 +1,45 @@
+---
+import Icon from './Icon.astro';
+---
+
+<section id="community" class="py-20 bg-brand-primary">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+    <span class="inline-block text-xs font-bold text-brand-gold uppercase tracking-widest mb-3">You Belong Here</span>
+    <h2 class="text-3xl md:text-4xl font-heading font-bold mb-4">Join the LebVentures Community</h2>
+    <p class="text-white/80 max-w-2xl mx-auto mb-12 leading-relaxed">
+      LebVentures is more than a tour company — it's a growing tribe of nature lovers, weekend warriors, families, and solo explorers united by their passion for Lebanon's outdoors.
+    </p>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-left mb-14">
+      {[
+        {
+          icon: 'people',
+          title: 'Group Adventures',
+          desc: 'Join organized group trips where strangers become lifelong trail friends. No experience required — just a willingness to explore.',
+        },
+        {
+          icon: 'camera',
+          title: 'Share Your Story',
+          desc: 'Our community shares trip photos, trail reports, and local tips. Every adventure contributes to our collective map of Lebanon.',
+        },
+        {
+          icon: 'compass',
+          title: 'Skills Workshops',
+          desc: 'Learn navigation, plant identification, wilderness first aid, and more through hands-on workshops led by our certified founders.',
+        },
+      ].map(item => (
+        <div class="bg-white/10 rounded-2xl p-6 hover:bg-white/15 transition-colors">
+          <div class="mb-4 text-brand-lime">
+            <Icon name={item.icon} class="w-12 h-12" />
+          </div>
+          <h3 class="font-heading font-bold text-lg text-brand-lime mb-2">{item.title}</h3>
+          <p class="text-white/75 text-sm leading-relaxed">{item.desc}</p>
+        </div>
+      ))}
+    </div>
+
+    <a href="/contact" class="btn-primary bg-brand-gold text-brand-dark hover:bg-yellow-400 text-base px-10 py-4 inline-block">
+      Get Involved
+    </a>
+  </div>
+</section>

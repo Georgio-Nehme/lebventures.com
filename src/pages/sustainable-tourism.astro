@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import Ecotourism from '../components/Ecotourism.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import '../styles/global.css';
+
+const commitments = [
+  {
+    title: 'Leave No Trace',
+    icon: 'leaf',
+    detail: 'We follow and teach the seven LNT principles on every trip. Waste management, fire safety, and respect for wildlife are non-negotiable parts of every LebVentures experience.',
+  },
+  {
+    title: 'Support Local Communities',
+    icon: 'house',
+    detail: 'Our guides are local to the regions we explore. We source food from village producers, rest at family guesthouses, and ensure that tourism income stays within Lebanese communities.',
+  },
+  {
+    title: 'Protect Natural Habitats',
+    icon: 'cedar',
+    detail: 'We partner with conservation bodies including the Chouf Cedar Reserve and Shouf Biosphere Reserve. We actively contribute to reforestation efforts and report trail damage.',
+  },
+  {
+    title: 'Education First',
+    icon: 'book',
+    detail: 'Every guide is trained in local flora, fauna, and geology. We believe that understanding nature deepens respect for it — so we teach as we explore.',
+  },
+  {
+    title: 'Low-Impact Operations',
+    icon: 'recycle',
+    detail: 'Small group sizes, minimal vehicle use, reusable gear, and plastic-free policies are standards — not extras. We continuously audit our environmental footprint.',
+  },
+  {
+    title: 'Active Conservation',
+    icon: 'eagle',
+    detail: 'A portion of every booking goes toward Lebanon\'s wildlife and trail conservation programs. Adventuring with LebVentures means you give back to the land you explore.',
+  },
+];
+---
+
+<BaseLayout
+  title="Sustainable Tourism & Our Commitment"
+  description="LebVentures is committed to responsible sustainable tourism in Lebanon. Discover our Leave No Trace principles, local community support, habitat protection, and educational approach to outdoor adventure."
+  keywords="sustainable tourism Lebanon, Leave No Trace Lebanon, nature conservation Lebanon, responsible adventure Lebanon"
+>
+  <Navbar />
+  <main>
+    <Hero
+      tagline="Our Commitment"
+      heading="Sustainable Tourism<br />at Our Core"
+      subheading="We believe adventure and environmental stewardship are inseparable. Every LebVentures experience is designed to leave Lebanon's wild places better than we found them."
+    />
+
+    <Ecotourism />
+
+    <!-- Extended commitments -->
+    <section class="py-20 bg-white" aria-labelledby="commitments-heading">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-14">
+          <h2 id="commitments-heading" class="section-heading">How We Operate</h2>
+          <p class="section-subheading mx-auto">Six concrete practices that guide every decision we make.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {commitments.map(c => (
+            <div class="p-6 rounded-2xl border border-brand-sky hover:shadow-lg transition-shadow">
+              <div class="mb-3 text-brand-primary">
+                <Icon name={c.icon} class="w-12 h-12" />
+              </div>
+              <h3 class="font-heading font-bold text-brand-primary text-lg mb-2">{c.title}</h3>
+              <p class="text-sm text-gray-600 leading-relaxed">{c.detail}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-16 bg-brand-primary text-white text-center">
+      <div class="max-w-2xl mx-auto px-4">
+        <h2 class="text-3xl font-heading font-bold mb-4">Adventure Responsibly</h2>
+        <p class="text-white/80 mb-8">Join a community that loves Lebanon enough to protect it.</p>
+        <a href="/contact" class="btn-primary bg-brand-gold text-brand-dark hover:bg-yellow-400 px-10 py-4 text-base">Plan a Trip</a>
+      </div>
+    </section>
+
+  </main>
+  <Footer />
+</BaseLayout>

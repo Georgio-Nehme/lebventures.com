@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+
+const timeline = [
+  { year: 'Childhood', event: 'Both founders join the Lebanese Scout movement, spending formative years learning wilderness skills, teamwork, and love for Lebanon\'s mountains.' },
+  { year: 'They Meet', event: 'The two young scouts cross paths at a national jamboree. A shared passion for the outdoors becomes the foundation of a lifelong partnership.' },
+  { year: 'Marriage', event: 'Both pursue formal certifications in Wilderness First Aid, navigation, rope safety, and sustainable tourism guiding — staying current with ongoing courses each year.' },
+  { year: 'Marriage', event: 'United in life as in adventure, the couple begins planning what becomes LebVentures — a way to stay connected to nature and share it with others.' },
+  { year: 'LebVentures', event: 'The platform launches with the first guided hike. A small community of adventurers quickly grows into a movement for Lebanese nature lovers.' },
+  { year: 'Today', event: 'LebVentures continues to grow — more routes, more members, more partnerships — while the founders remain hands-on, certified, and out on the trail every week.' },
+];
+---
+
+<BaseLayout
+  title="About LebVentures"
+  description="Meet the scout alumni couple behind LebVentures — a community-driven sustainable tourism platform rooted in a lifelong love for Lebanon's nature, founded after marriage to share the wonder of the outdoors."
+  keywords="LebVentures founders, Lebanese scouts, about LebVentures, adventure guides Lebanon, sustainable tourism founders Lebanon"
+>
+  <Navbar />
+  <main>
+    <Hero
+      tagline="Our Story"
+      heading="Born from Scouts,<br />Built for Lebanon"
+      subheading="Two scouts who fell in love with the mountains — and with each other. LebVentures is the story of a shared passion turned into a community."
+    />
+
+    <About />
+
+    <!-- Founders timeline -->
+    <section class="py-20 bg-brand-sky/30" aria-labelledby="timeline-heading">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-14">
+          <h2 id="timeline-heading" class="section-heading">Our Journey</h2>
+          <p class="section-subheading mx-auto">From scout meetings to mountain guides — the story behind LebVentures.</p>
+        </div>
+        <ol class="relative border-l-2 border-brand-primary space-y-10 ml-4">
+          {timeline.map((item, i) => (
+            <li class="ml-6">
+              <span class="absolute -left-3.5 flex h-7 w-7 items-center justify-center rounded-full bg-brand-primary text-white text-xs font-bold ring-4 ring-white">
+                {i + 1}
+              </span>
+              <div class="flex flex-col gap-1">
+                <span class="inline-block bg-brand-gold text-brand-dark text-xs font-bold px-2 py-0.5 rounded w-fit">{item.year}</span>
+                <p class="text-gray-700 text-sm leading-relaxed mt-1">{item.event}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-16 bg-white text-center">
+      <div class="max-w-xl mx-auto px-4">
+        <h2 class="section-heading">Ready to Join Us?</h2>
+        <p class="section-subheading mx-auto mb-8">Every adventure with LebVentures is guided by the same values that shaped our founders — respect, community, and love for the wild.</p>
+        <a href="/contact" class="btn-primary px-10 py-4 text-base">Book an Experience</a>
+      </div>
+    </section>
+
+  </main>
+  <Footer />
+</BaseLayout>

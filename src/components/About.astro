@@ -1,0 +1,71 @@
+---
+import Icon from './Icon.astro';
+---
+
+<section id="about" class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+      <!-- Visual side -->
+      <div class="order-2 lg:order-1">
+        <div class="relative">
+          <!-- Scout badge-style card -->
+          <div class="bg-brand-dark rounded-3xl p-8 text-white shadow-2xl">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-14 h-14 rounded-full bg-brand-gold flex items-center justify-center text-brand-dark">
+                <Icon name="scout" class="w-8 h-8" />
+              </div>
+              <div>
+                <div class="font-heading font-bold text-lg text-brand-lime">Scout Alumni</div>
+                <div class="text-gray-400 text-sm">Est. in the cedar forests of Lebanon</div>
+              </div>
+            </div>
+            <p class="text-gray-300 text-sm leading-relaxed mb-6">
+              "We met as teenagers in scouts, fell in love with the mountains, and with each other. After our wedding, we knew we had to find a way to share what Lebanon's nature had given us — the community, the discipline, the wonder."
+            </p>
+            <div class="flex gap-3">
+              <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
+                <div class="text-brand-gold font-bold text-lg">10+</div>
+                <div class="text-xs text-gray-400">Years scouting</div>
+              </div>
+              <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
+                <div class="text-brand-gold font-bold text-lg">Certified</div>
+                <div class="text-xs text-gray-400">Wilderness First Aid</div>
+              </div>
+              <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
+                <div class="text-brand-gold font-bold text-lg">Active</div>
+                <div class="text-xs text-gray-400">Ongoing training</div>
+              </div>
+            </div>
+          </div>
+          <div class="absolute -bottom-3 -left-3 w-20 h-20 rounded-full bg-brand-lime/20 -z-10"></div>
+        </div>
+      </div>
+
+      <!-- Text side -->
+      <div class="order-1 lg:order-2">
+        <span class="inline-block text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">Our Story</span>
+        <h2 class="section-heading">Born from Scouts, Built for Lebanon</h2>
+        <div class="space-y-4 text-gray-600 leading-relaxed">
+          <p>
+            LebVentures was founded by a couple whose love story began in the Lebanese scouts — two young adventurers who spent their youth learning to navigate mountains, read the weather, and find community in the wilderness.
+          </p>
+          <p>
+            After their marriage, they channeled their shared passion into building something bigger: a platform that connects people to Lebanon's extraordinary outdoors while staying true to the values scouting gave them — preparedness, respect for nature, and community above all.
+          </p>
+          <p>
+            Both founders remain active and continuously trained in wilderness skills, first aid, and sustainable tourism best practices. Every adventure they lead is backed by current certifications and a genuine love for what they do.
+          </p>
+        </div>
+
+        <div class="mt-8 flex flex-wrap gap-3">
+          {['Wilderness First Aid', 'Leave No Trace', 'Rope & Rappel', 'Navigation', 'Flora & Fauna ID'].map(tag => (
+            <span class="text-xs font-semibold bg-brand-sky text-brand-primary px-3 py-1.5 rounded-full border border-brand-primary/20">
+              {tag}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

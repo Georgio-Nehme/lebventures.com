@@ -1,0 +1,81 @@
+---
+---
+
+<section id="contact" class="py-20 bg-white">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <span class="inline-block text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">Get in Touch</span>
+      <h2 class="section-heading">Ready to Venture Out?</h2>
+      <p class="section-subheading mx-auto">
+        Tell us about the adventure you're dreaming of and we'll craft the perfect experience for you.
+      </p>
+    </div>
+
+    <form
+      class="bg-brand-sky/30 rounded-3xl p-8 md:p-10 shadow-sm border border-brand-sky space-y-6"
+      action="#"
+      method="POST"
+    >
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label for="name" class="block text-sm font-semibold text-brand-dark mb-1.5">Your Name</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            placeholder="Maya Khoury"
+            class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white"
+          />
+        </div>
+        <div>
+          <label for="email" class="block text-sm font-semibold text-brand-dark mb-1.5">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            placeholder="maya@example.com"
+            class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label for="adventure" class="block text-sm font-semibold text-brand-dark mb-1.5">Adventure Type</label>
+        <select
+          id="adventure"
+          name="adventure"
+          class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white"
+        >
+          <option value="">Select an adventure...</option>
+          <option>Hiking & Trekking</option>
+          <option>Rock Climbing</option>
+          <option>Camping Expedition</option>
+          <option>Heritage & Sightseeing</option>
+          <option>Canyoning & Rivers</option>
+          <option>Mountain Biking</option>
+          <option>Custom / Not Sure Yet</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="message" class="block text-sm font-semibold text-brand-dark mb-1.5">Tell Us More</label>
+        <textarea
+          id="message"
+          name="message"
+          rows={4}
+          placeholder="Group size, preferred dates, experience level, any questions..."
+          class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white resize-none"
+        ></textarea>
+      </div>
+
+      <button
+        type="submit"
+        class="w-full btn-primary text-center py-4 text-base"
+      >
+        Send My Request
+      </button>
+    </form>
+  </div>
+</section>

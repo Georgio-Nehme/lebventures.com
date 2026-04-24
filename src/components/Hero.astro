@@ -1,0 +1,87 @@
+---
+interface Props {
+  tagline?: string;
+  heading: string;
+  subheading: string;
+  primaryCta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
+  stats?: { value: string; label: string }[];
+  useBanner?: boolean;
+}
+
+const {
+  tagline = 'Lebanon · Nature · Adventure',
+  heading,
+  subheading,
+  primaryCta,
+  secondaryCta,
+  stats,
+  useBanner = false,
+} = Astro.props;
+---
+
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-brand-dark pt-16">
+
+  <!-- Banner image (when provided) -->
+  {useBanner && (
+    <div class="absolute inset-0 z-0">
+      <img
+        src="/header_lebventures.png"
+        alt="LebVentures — For the Love of Nature" 
+        class="w-full h-full object-cover object-center opacity-90"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+  )}
+
+  <!-- Gradient overlay -->
+  <div class="absolute inset-0 bg-gradient-to-br from-brand-dark via-brand-olive/80 to-brand-primary/60 z-10"></div>
+
+  <!-- Decorative hills -->
+  <svg
+    class="absolute bottom-0 left-0 right-0 w-full text-brand-primary z-10"
+    viewBox="0 0 1440 200"
+    fill="currentColor"
+    preserveAspectRatio="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    <path d="M0,200 L0,100 Q200,0 400,80 Q600,160 800,60 Q1000,-20 1200,70 Q1400,160 1440,90 L1440,200 Z" opacity="0.4"/>
+    <path d="M0,200 L0,140 Q300,60 600,120 Q900,180 1200,100 Q1350,60 1440,130 L1440,200 Z" opacity="0.6"/>
+    <path d="M0,200 L0,170 Q400,110 720,160 Q1000,200 1440,155 L1440,200 Z"/>
+  </svg>
+
+  <!-- Content -->
+  <div class="relative z-20 text-center text-white px-4 max-w-4xl mx-auto">
+    <p class="text-brand-gold font-medium tracking-widest uppercase text-sm mb-4">{tagline}</p>
+    <h1 class="text-5xl md:text-7xl font-heading font-bold leading-tight mb-6 drop-shadow-lg" set:html={heading} />
+    <p class="text-lg md:text-xl text-white/85 max-w-2xl mx-auto mb-10 leading-relaxed">{subheading}</p>
+
+    {(primaryCta || secondaryCta) && (
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        {primaryCta && (
+          <a href={primaryCta.href} class="btn-primary bg-brand-gold text-brand-dark hover:bg-yellow-400 text-base px-8 py-4">
+            {primaryCta.label}
+          </a>
+        )}
+        {secondaryCta && (
+          <a href={secondaryCta.href} class="btn-outline border-white text-white hover:bg-white hover:text-brand-dark text-base px-8 py-4">
+            {secondaryCta.label}
+          </a>
+        )}
+      </div>
+    )}
+
+    {stats && stats.length > 0 && (
+      <div class="mt-16 grid grid-cols-3 gap-6 border-t border-white/20 pt-8">
+        {stats.map(stat => (
+          <div>
+            <div class="text-3xl font-heading font-bold text-brand-gold">{stat.value}</div>
+            <div class="text-sm text-white/70 mt-1">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</section>

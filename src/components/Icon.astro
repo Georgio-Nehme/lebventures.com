@@ -1,0 +1,605 @@
+---
+interface Props {
+  name: string;
+  class?: string;
+}
+
+const { name, class: className = 'w-12 h-12' } = Astro.props;
+
+function icon(paths: string) {
+  return `<svg class="${className}" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths}</svg>`;
+}
+
+const icons: Record<string, string> = {
+
+  /* ── ADVENTURES ────────────────────────────────────────────────── */
+
+  hiking: icon(`
+    <!-- Mountain fill -->
+    <path d="M2 46L14 24L22 34L36 8L46 46Z" fill="currentColor" fill-opacity="0.08" stroke="none"/>
+    <!-- Mountain outline -->
+    <path d="M2 46L14 24L22 34L36 8L46 46"/>
+    <!-- Snow cap -->
+    <path d="M33 14L36 8L39 14" stroke-width="1.2"/>
+    <!-- Ground -->
+    <line x1="2" y1="46" x2="46" y2="46"/>
+    <!-- Hiker: head -->
+    <circle cx="11" cy="16" r="2.5" fill="currentColor" stroke="none"/>
+    <!-- Body -->
+    <line x1="11" y1="18.5" x2="10" y2="25"/>
+    <!-- Backpack -->
+    <path d="M11 19L14.5 19L14.5 24L11 24" stroke-width="1.2" fill="currentColor" fill-opacity="0.2"/>
+    <!-- Trekking pole arm -->
+    <line x1="10" y1="21" x2="7.5" y2="22.5"/>
+    <!-- Pole -->
+    <line x1="7.5" y1="22.5" x2="5.5" y2="30"/>
+    <!-- Other arm -->
+    <line x1="11" y1="21" x2="14" y2="19.5"/>
+    <!-- Legs -->
+    <line x1="10" y1="25" x2="8" y2="33"/>
+    <line x1="10" y1="25" x2="12" y2="32"/>
+    <!-- Trail (dashed) -->
+    <path d="M17 40Q23 36 30 38" stroke-dasharray="2 2" stroke-width="1.2"/>
+  `),
+
+  climbing: icon(`
+    <!-- Cliff block fill -->
+    <path d="M36 2L46 2L46 46L34 46L32 34L34 20L32 8Z" fill="currentColor" fill-opacity="0.08" stroke="none"/>
+    <!-- Cliff outline -->
+    <path d="M36 2L46 2L46 46L34 46L32 34L34 20L32 8Z"/>
+    <!-- Rock cracks -->
+    <path d="M36 12L43 16" stroke-width="1" opacity="0.5"/>
+    <path d="M35 26L42 29" stroke-width="1" opacity="0.5"/>
+    <path d="M37 38L44 40" stroke-width="1" opacity="0.5"/>
+    <!-- Anchor at top -->
+    <circle cx="34" cy="5" r="2.5"/>
+    <line x1="34" y1="7.5" x2="34" y2="11"/>
+    <!-- Rope -->
+    <path d="M34 9C32 15 28 22 24 32" stroke-dasharray="3 2"/>
+    <!-- Climber: head -->
+    <circle cx="22" cy="22" r="3" fill="currentColor" fill-opacity="0.15"/>
+    <!-- Body angled (leaning back) -->
+    <line x1="23" y1="24.5" x2="20" y2="32"/>
+    <!-- Right arm reaching to hold -->
+    <line x1="23" y1="27" x2="29" y2="23"/>
+    <!-- Left arm -->
+    <line x1="22" y1="27" x2="18" y2="25"/>
+    <!-- Legs spread on cliff -->
+    <line x1="20" y1="32" x2="27" y2="38"/>
+    <line x1="20" y1="32" x2="16" y2="38"/>
+    <!-- Harness loop -->
+    <path d="M18 31Q20 34 24 32" stroke-width="1.2"/>
+  `),
+
+  camping: icon(`
+    <!-- Ground -->
+    <line x1="2" y1="42" x2="46" y2="42"/>
+    <!-- Tent fill -->
+    <path d="M8 42L24 14L40 42Z" fill="currentColor" fill-opacity="0.1" stroke="none"/>
+    <!-- Tent outline -->
+    <path d="M8 42L24 14L40 42"/>
+    <!-- Tent door -->
+    <path d="M19 42L21 34L27 34L29 42" fill="white" stroke="currentColor"/>
+    <!-- Left pine tree trunk -->
+    <line x1="5" y1="42" x2="5" y2="32"/>
+    <!-- Left pine layers -->
+    <path d="M2 38L5 29L8 38"/>
+    <path d="M3 33L5 25L7 33"/>
+    <!-- Right pine tree trunk -->
+    <line x1="43" y1="42" x2="43" y2="32"/>
+    <!-- Right pine layers -->
+    <path d="M40 38L43 29L46 38"/>
+    <path d="M41 33L43 25L45 33"/>
+    <!-- Moon crescent -->
+    <path d="M36 7A7 7 0 1 1 36 21A5.5 5.5 0 1 0 36 7Z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1"/>
+    <!-- Stars -->
+    <circle cx="28" cy="6" r="1" fill="currentColor" stroke="none"/>
+    <circle cx="32" cy="9" r="0.8" fill="currentColor" stroke="none"/>
+    <circle cx="24" cy="9" r="0.8" fill="currentColor" stroke="none"/>
+  `),
+
+  heritage: icon(`
+    <!-- Steps base -->
+    <path d="M4 46L44 46"/>
+    <path d="M6 43L42 43"/>
+    <path d="M8 40L40 40"/>
+    <!-- Left column body -->
+    <rect x="9" y="12" width="6" height="28" rx="0.5" fill="currentColor" fill-opacity="0.08"/>
+    <rect x="9" y="12" width="6" height="28" rx="0.5"/>
+    <!-- Left column fluting lines -->
+    <line x1="11" y1="12" x2="11" y2="40" stroke-width="0.8" opacity="0.4"/>
+    <line x1="13" y1="12" x2="13" y2="40" stroke-width="0.8" opacity="0.4"/>
+    <!-- Left capital -->
+    <path d="M7 12L17 12L15 9L9 9Z"/>
+    <!-- Right column body -->
+    <rect x="33" y="12" width="6" height="28" rx="0.5" fill="currentColor" fill-opacity="0.08"/>
+    <rect x="33" y="12" width="6" height="28" rx="0.5"/>
+    <!-- Right column fluting -->
+    <line x1="35" y1="12" x2="35" y2="40" stroke-width="0.8" opacity="0.4"/>
+    <line x1="37" y1="12" x2="37" y2="40" stroke-width="0.8" opacity="0.4"/>
+    <!-- Right capital -->
+    <path d="M31 12L41 12L39 9L33 9Z"/>
+    <!-- Arch between capitals -->
+    <path d="M15 9Q24 0 33 9"/>
+    <!-- Entablature / frieze beam -->
+    <path d="M7 9L41 9"/>
+    <!-- Sun above arch -->
+    <circle cx="24" cy="6" r="3" fill="currentColor" fill-opacity="0.2"/>
+    <line x1="24" y1="2" x2="24" y2="1"/>
+    <line x1="27.5" y1="3" x2="28" y2="2.3"/>
+    <line x1="20.5" y1="3" x2="20" y2="2.3"/>
+  `),
+
+  canyoning: icon(`
+    <!-- Left canyon wall fill -->
+    <path d="M0 0L14 0L10 48L0 48Z" fill="currentColor" fill-opacity="0.1" stroke="none"/>
+    <!-- Right canyon wall fill -->
+    <path d="M48 0L34 0L38 48L48 48Z" fill="currentColor" fill-opacity="0.1" stroke="none"/>
+    <!-- Left wall edge -->
+    <path d="M14 0L10 48"/>
+    <!-- Right wall edge -->
+    <path d="M34 0L38 48"/>
+    <!-- Left wall surface texture -->
+    <path d="M11 8L14 12" stroke-width="1" opacity="0.4"/>
+    <path d="M11 20L14 24" stroke-width="1" opacity="0.4"/>
+    <path d="M11 34L14 38" stroke-width="1" opacity="0.4"/>
+    <!-- Right wall surface texture -->
+    <path d="M37 10L34 14" stroke-width="1" opacity="0.4"/>
+    <path d="M37 23L34 27" stroke-width="1" opacity="0.4"/>
+    <path d="M37 36L34 40" stroke-width="1" opacity="0.4"/>
+    <!-- Water streams from top -->
+    <path d="M21 0Q20 10 22 18" stroke-width="1.2"/>
+    <path d="M27 0Q28 10 26 18" stroke-width="1.2"/>
+    <!-- Water pool / waves at bottom -->
+    <path d="M10 36Q16 32 24 36Q32 40 38 36"/>
+    <path d="M10 42Q16 38 24 42Q32 46 38 42"/>
+    <!-- Droplets -->
+    <circle cx="22" cy="24" r="1.2" fill="currentColor" stroke="none"/>
+    <circle cx="26" cy="28" r="1" fill="currentColor" stroke="none"/>
+  `),
+
+  biking: icon(`
+    <!-- Mountain terrain behind -->
+    <path d="M2 38Q10 26 18 32Q28 16 46 28" stroke-width="1.2" opacity="0.35"/>
+    <!-- Rear wheel -->
+    <circle cx="13" cy="38" r="8"/>
+    <circle cx="13" cy="38" r="2" fill="currentColor" fill-opacity="0.3"/>
+    <!-- Front wheel -->
+    <circle cx="35" cy="38" r="8"/>
+    <circle cx="35" cy="38" r="2" fill="currentColor" fill-opacity="0.3"/>
+    <!-- Spokes rear -->
+    <line x1="13" y1="30" x2="13" y2="46" stroke-width="0.8"/>
+    <line x1="5" y1="38" x2="21" y2="38" stroke-width="0.8"/>
+    <!-- Spokes front -->
+    <line x1="35" y1="30" x2="35" y2="46" stroke-width="0.8"/>
+    <line x1="27" y1="38" x2="43" y2="38" stroke-width="0.8"/>
+    <!-- Frame: rear triangle -->
+    <path d="M13 38L22 24L35 38"/>
+    <!-- Seat tube -->
+    <line x1="22" y1="24" x2="20" y2="18"/>
+    <!-- Top tube -->
+    <line x1="20" y1="18" x2="30" y2="18"/>
+    <!-- Head tube / fork -->
+    <line x1="30" y1="18" x2="35" y2="38"/>
+    <!-- Saddle -->
+    <path d="M17 18L22.5 18"/>
+    <line x1="20" y1="18" x2="20" y2="22"/>
+    <!-- Handlebar stem -->
+    <line x1="30" y1="18" x2="30" y2="14"/>
+    <!-- Handlebars -->
+    <path d="M27 14L33 14"/>
+    <!-- Rider: head -->
+    <circle cx="28" cy="10" r="2.8" fill="currentColor" fill-opacity="0.15"/>
+    <!-- Body -->
+    <line x1="29" y1="12.5" x2="30" y2="18"/>
+    <!-- Arm to handlebar -->
+    <line x1="29" y1="13.5" x2="30" y2="14"/>
+  `),
+
+  /* ── SUSTAINABLE TOURISM PILLARS ────────────────────────────────── */
+
+  leaf: icon(`
+    <!-- Main leaf shape -->
+    <path d="M24 4C30 4 40 10 40 22C40 34 32 44 24 44C16 44 8 34 8 22C8 10 18 4 24 4Z"
+      fill="currentColor" fill-opacity="0.1"/>
+    <path d="M24 4C30 4 40 10 40 22C40 34 32 44 24 44C16 44 8 34 8 22C8 10 18 4 24 4Z"/>
+    <!-- Central vein -->
+    <line x1="24" y1="4" x2="24" y2="44"/>
+    <!-- Side veins left -->
+    <path d="M24 16L16 22"/>
+    <path d="M24 24L15 30"/>
+    <path d="M24 32L17 38"/>
+    <!-- Side veins right -->
+    <path d="M24 16L32 22"/>
+    <path d="M24 24L33 30"/>
+    <path d="M24 32L31 38"/>
+  `),
+
+  house: icon(`
+    <!-- House body fill -->
+    <path d="M8 44L8 22L24 8L40 22L40 44Z" fill="currentColor" fill-opacity="0.08" stroke="none"/>
+    <!-- House body -->
+    <path d="M8 44L8 22L24 8L40 22L40 44Z"/>
+    <!-- Wider roof eave -->
+    <path d="M4 24L24 8L44 24"/>
+    <!-- Left window -->
+    <rect x="11" y="24" width="8" height="8" rx="1"/>
+    <line x1="15" y1="24" x2="15" y2="32"/>
+    <line x1="11" y1="28" x2="19" y2="28"/>
+    <!-- Right window -->
+    <rect x="29" y="24" width="8" height="8" rx="1"/>
+    <line x1="33" y1="24" x2="33" y2="32"/>
+    <line x1="29" y1="28" x2="37" y2="28"/>
+    <!-- Door -->
+    <path d="M20 44L20 34Q20 32 22 32L26 32Q28 32 28 34L28 44"/>
+    <!-- Door handle -->
+    <circle cx="27" cy="38" r="1" fill="currentColor" stroke="none"/>
+    <!-- Chimney -->
+    <rect x="30" y="6" width="5" height="10" rx="0.5"/>
+    <!-- Smoke wisps -->
+    <path d="M32 6Q31 3 33 1" stroke-width="1.2"/>
+    <path d="M34 6Q33 3 35 1" stroke-width="1.2"/>
+  `),
+
+  cedar: icon(`
+    <!-- Lebanon Cedar — characteristic layered horizontal branches -->
+    <!-- Trunk -->
+    <path d="M21 46L21 32M27 46L27 32" stroke-width="2"/>
+    <!-- Bottom branch layer (widest) -->
+    <path d="M4 38Q24 33 44 38" stroke-width="2"/>
+    <!-- Bottom branch sub-lines -->
+    <line x1="4" y1="38" x2="10" y2="34" stroke-width="1.2"/>
+    <line x1="44" y1="38" x2="38" y2="34" stroke-width="1.2"/>
+    <!-- Second layer -->
+    <path d="M8 30Q24 25 40 30" stroke-width="1.8"/>
+    <line x1="8" y1="30" x2="14" y2="26" stroke-width="1.2"/>
+    <line x1="40" y1="30" x2="34" y2="26" stroke-width="1.2"/>
+    <!-- Third layer -->
+    <path d="M12 22Q24 17 36 22" stroke-width="1.5"/>
+    <line x1="12" y1="22" x2="17" y2="18" stroke-width="1.2"/>
+    <line x1="36" y1="22" x2="31" y2="18" stroke-width="1.2"/>
+    <!-- Fourth layer -->
+    <path d="M16 14Q24 10 32 14" stroke-width="1.3"/>
+    <line x1="16" y1="14" x2="20" y2="10" stroke-width="1"/>
+    <line x1="32" y1="14" x2="28" y2="10" stroke-width="1"/>
+    <!-- Top apex -->
+    <path d="M20 8L24 2L28 8"/>
+    <!-- Horizontal branch nodes (connection to trunk) -->
+    <circle cx="24" cy="34" r="1.5" fill="currentColor" stroke="none"/>
+    <circle cx="24" cy="26" r="1.2" fill="currentColor" stroke="none"/>
+    <circle cx="24" cy="18" r="1" fill="currentColor" stroke="none"/>
+  `),
+
+  book: icon(`
+    <!-- Left page fill -->
+    <path d="M24 40L6 37L6 10L24 13Z" fill="currentColor" fill-opacity="0.08" stroke="none"/>
+    <!-- Right page fill -->
+    <path d="M24 40L42 37L42 10L24 13Z" fill="currentColor" fill-opacity="0.08" stroke="none"/>
+    <!-- Left page -->
+    <path d="M24 40L6 37L6 10L24 13Z"/>
+    <!-- Right page -->
+    <path d="M24 40L42 37L42 10L24 13Z"/>
+    <!-- Spine -->
+    <line x1="24" y1="13" x2="24" y2="40"/>
+    <!-- Left page lines -->
+    <line x1="9" y1="20" x2="21" y2="19" stroke-width="1"/>
+    <line x1="9" y1="25" x2="21" y2="24" stroke-width="1"/>
+    <line x1="9" y1="30" x2="21" y2="29" stroke-width="1"/>
+    <!-- Right page lines -->
+    <line x1="27" y1="19" x2="39" y2="20" stroke-width="1"/>
+    <line x1="27" y1="24" x2="39" y2="25" stroke-width="1"/>
+    <line x1="27" y1="29" x2="39" y2="30" stroke-width="1"/>
+    <!-- Seedling growing from spine -->
+    <!-- Stem -->
+    <line x1="24" y1="13" x2="24" y2="4"/>
+    <!-- Left leaf -->
+    <path d="M24 9Q19 6 17 3"/>
+    <path d="M24 9Q20 4 17 3"/>
+    <!-- Right leaf -->
+    <path d="M24 9Q29 6 31 3"/>
+    <path d="M24 9Q28 4 31 3"/>
+    <!-- Sprout top -->
+    <circle cx="24" cy="3.5" r="1.5" fill="currentColor" fill-opacity="0.3" stroke="none"/>
+  `),
+
+  recycle: icon(`
+    <!-- Three leaves arranged in a rotational pinwheel (eco circular symbol) -->
+    <!-- Arrow 1: top-right, pointing clockwise -->
+    <path d="M24 8C30 8 38 12 38 20L34 16"/>
+    <path d="M38 20L42 16"/>
+    <!-- Arrow 2: bottom-right to left -->
+    <path d="M38 20C38 30 30 38 22 36L26 32"/>
+    <path d="M22 36L20 42"/>
+    <!-- Arrow 3: left to top -->
+    <path d="M20 42C12 38 8 28 12 20L10 26"/>
+    <path d="M12 20L8 22"/>
+    <!-- Center leaf -->
+    <path d="M24 20C24 20 20 24 22 28C26 26 28 22 24 20Z" fill="currentColor" fill-opacity="0.3"/>
+  `),
+
+  eagle: icon(`
+    <!-- Left wing -->
+    <path d="M24 24C20 22 12 18 2 24C8 28 18 28 24 26"/>
+    <path d="M24 26C16 28 8 32 2 30" stroke-width="1.2"/>
+    <!-- Left wing primary feathers -->
+    <path d="M8 24L4 30" stroke-width="1"/>
+    <path d="M12 22L9 30" stroke-width="1"/>
+    <!-- Right wing -->
+    <path d="M24 24C28 22 36 18 46 24C40 28 30 28 24 26"/>
+    <path d="M24 26C32 28 40 32 46 30" stroke-width="1.2"/>
+    <!-- Right wing primary feathers -->
+    <path d="M40 24L44 30" stroke-width="1"/>
+    <path d="M36 22L39 30" stroke-width="1"/>
+    <!-- Body -->
+    <ellipse cx="24" cy="24" rx="3" ry="5" fill="currentColor" fill-opacity="0.2"/>
+    <!-- Head -->
+    <circle cx="24" cy="16" r="4" fill="currentColor" fill-opacity="0.15"/>
+    <!-- Beak -->
+    <path d="M26 15L30 17L26 18" stroke-width="1.2"/>
+    <!-- Eye -->
+    <circle cx="25" cy="15" r="1" fill="currentColor" stroke="none"/>
+    <!-- Tail feathers -->
+    <path d="M22 29L18 38L22 33L24 38L26 33L30 38L26 29"/>
+    <!-- Feet/talons -->
+    <path d="M22 34L19 38M24 35L24 40M26 34L29 38" stroke-width="1"/>
+  `),
+
+  /* ── COMMUNITY ─────────────────────────────────────────────────── */
+
+  people: icon(`
+    <!-- Center person (slightly larger) -->
+    <circle cx="24" cy="11" r="4" fill="currentColor" fill-opacity="0.15"/>
+    <line x1="24" y1="15" x2="24" y2="27"/>
+    <!-- Center arms -->
+    <line x1="24" y1="19" x2="18" y2="23"/>
+    <line x1="24" y1="19" x2="30" y2="23"/>
+    <!-- Center legs -->
+    <line x1="24" y1="27" x2="20" y2="36"/>
+    <line x1="24" y1="27" x2="28" y2="36"/>
+    <!-- Left person -->
+    <circle cx="11" cy="13" r="3.5" fill="currentColor" fill-opacity="0.1"/>
+    <line x1="11" y1="16.5" x2="11" y2="27"/>
+    <line x1="11" y1="27" x2="8" y2="35"/>
+    <line x1="11" y1="27" x2="14" y2="35"/>
+    <!-- Left arm linking to center -->
+    <line x1="11" y1="20" x2="18" y2="23"/>
+    <!-- Right person -->
+    <circle cx="37" cy="13" r="3.5" fill="currentColor" fill-opacity="0.1"/>
+    <line x1="37" y1="16.5" x2="37" y2="27"/>
+    <line x1="37" y1="27" x2="34" y2="35"/>
+    <line x1="37" y1="27" x2="40" y2="35"/>
+    <!-- Right arm linking to center -->
+    <line x1="37" y1="20" x2="30" y2="23"/>
+  `),
+
+  camera: icon(`
+    <!-- Camera body fill -->
+    <path d="M4 18L4 40L44 40L44 18Z" fill="currentColor" fill-opacity="0.08" stroke="none"/>
+    <!-- Camera body -->
+    <rect x="4" y="18" width="40" height="22" rx="3"/>
+    <!-- Pentaprism hump -->
+    <path d="M16 18L16 12L32 12L32 18"/>
+    <!-- Outer lens ring -->
+    <circle cx="24" cy="29" r="10"/>
+    <!-- Inner lens -->
+    <circle cx="24" cy="29" r="7" fill="currentColor" fill-opacity="0.08"/>
+    <!-- Mountain scene in lens (small) -->
+    <path d="M17 33L20 26L24 30L27 24L31 33" stroke-width="1.2" clip-path="url(#lens)"/>
+    <!-- Snow on inner mountain -->
+    <path d="M26 26L27 24L28 26" stroke-width="1"/>
+    <!-- Lens highlight -->
+    <path d="M18 25Q20 22 24 22" stroke-width="1" opacity="0.5"/>
+    <!-- Shutter button -->
+    <circle cx="38" cy="15" r="2.5" fill="currentColor" fill-opacity="0.3"/>
+    <!-- Viewfinder -->
+    <rect x="6" y="21" width="6" height="4" rx="1"/>
+  `),
+
+  compass: icon(`
+    <!-- Outer ring -->
+    <circle cx="24" cy="24" r="21"/>
+    <!-- Inner ring -->
+    <circle cx="24" cy="24" r="17" stroke-width="0.8" opacity="0.5"/>
+    <!-- Cardinal tick marks -->
+    <line x1="24" y1="3" x2="24" y2="8"/>
+    <line x1="24" y1="40" x2="24" y2="45"/>
+    <line x1="3" y1="24" x2="8" y2="24"/>
+    <line x1="40" y1="24" x2="45" y2="24"/>
+    <!-- Intercardinal ticks (smaller) -->
+    <line x1="38.7" y1="9.3" x2="35.5" y2="12.5" stroke-width="1"/>
+    <line x1="9.3" y1="9.3" x2="12.5" y2="12.5" stroke-width="1"/>
+    <line x1="38.7" y1="38.7" x2="35.5" y2="35.5" stroke-width="1"/>
+    <line x1="9.3" y1="38.7" x2="12.5" y2="35.5" stroke-width="1"/>
+    <!-- Needle north (pointed, filled) -->
+    <path d="M24 24L21 14L24 18L27 14Z" fill="currentColor"/>
+    <!-- Needle south (open) -->
+    <path d="M24 24L21 34L24 30L27 34Z" fill="currentColor" fill-opacity="0.3"/>
+    <!-- Center jewel -->
+    <circle cx="24" cy="24" r="2.5" fill="currentColor" fill-opacity="0.2"/>
+    <!-- N label line hint -->
+    <line x1="22" y1="9" x2="26" y2="9" stroke-width="1" opacity="0.5"/>
+  `),
+
+  /* ── CONTACT ────────────────────────────────────────────────────── */
+
+  pin: icon(`
+    <!-- Pin teardrop fill -->
+    <path d="M24 2C16 2 10 8 10 16C10 28 24 46 24 46C24 46 38 28 38 16C38 8 32 2 24 2Z"
+      fill="currentColor" fill-opacity="0.1" stroke="none"/>
+    <!-- Pin teardrop -->
+    <path d="M24 2C16 2 10 8 10 16C10 28 24 46 24 46C24 46 38 28 38 16C38 8 32 2 24 2Z"/>
+    <!-- Inner circle -->
+    <circle cx="24" cy="16" r="7"/>
+    <!-- Mini cedar tree inside -->
+    <line x1="23" y1="20" x2="23" y2="15" stroke-width="1.2"/>
+    <line x1="25" y1="20" x2="25" y2="15" stroke-width="1.2"/>
+    <path d="M20 19Q24 17 28 19" stroke-width="1.2"/>
+    <path d="M21 16.5Q24 14.5 27 16.5" stroke-width="1.2"/>
+    <path d="M22.5 14Q24 12 25.5 14" stroke-width="1.2"/>
+  `),
+
+  envelope: icon(`
+    <!-- Envelope body fill -->
+    <rect x="4" y="12" width="40" height="28" rx="2" fill="currentColor" fill-opacity="0.08" stroke="none"/>
+    <!-- Envelope body -->
+    <rect x="4" y="12" width="40" height="28" rx="2"/>
+    <!-- Flap V fold (the triangular crease from top corners to center) -->
+    <path d="M4 12L24 28L44 12"/>
+    <!-- Bottom fold lines (bottom corners meeting center bottom) -->
+    <path d="M4 40L20 26"/>
+    <path d="M44 40L28 26"/>
+    <!-- Leaf wax-seal in center -->
+    <circle cx="24" cy="32" r="5" fill="currentColor" fill-opacity="0.15"/>
+    <!-- Leaf inside seal -->
+    <path d="M24 29L22 32L24 31L26 32L24 29Z" stroke-width="1"/>
+    <!-- Stem -->
+    <line x1="24" y1="29" x2="24" y2="36" stroke-width="1"/>
+  `),
+
+  clock: icon(`
+    <!-- Outer ring -->
+    <circle cx="24" cy="24" r="20"/>
+    <!-- Inner face (fill) -->
+    <circle cx="24" cy="24" r="20" fill="currentColor" fill-opacity="0.05" stroke="none"/>
+    <!-- Hour tick marks (12 o'clock, 3, 6, 9) -->
+    <line x1="24" y1="6" x2="24" y2="10"/>
+    <line x1="42" y1="24" x2="38" y2="24"/>
+    <line x1="24" y1="42" x2="24" y2="38"/>
+    <line x1="6" y1="24" x2="10" y2="24"/>
+    <!-- Minute ticks -->
+    <line x1="34.4" y1="7.4" x2="33" y2="9.8" stroke-width="0.8"/>
+    <line x1="40.6" y1="13.6" x2="38.2" y2="15" stroke-width="0.8"/>
+    <line x1="40.6" y1="34.4" x2="38.2" y2="33" stroke-width="0.8"/>
+    <line x1="34.4" y1="40.6" x2="33" y2="38.2" stroke-width="0.8"/>
+    <line x1="13.6" y1="40.6" x2="15" y2="38.2" stroke-width="0.8"/>
+    <line x1="7.4" y1="34.4" x2="9.8" y2="33" stroke-width="0.8"/>
+    <line x1="7.4" y1="13.6" x2="9.8" y2="15" stroke-width="0.8"/>
+    <line x1="13.6" y1="7.4" x2="15" y2="9.8" stroke-width="0.8"/>
+    <!-- Hour hand (pointing to ~10) -->
+    <line x1="24" y1="24" x2="15" y2="13" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- Minute hand (pointing to ~2) -->
+    <line x1="24" y1="24" x2="32" y2="10" stroke-width="1.8" stroke-linecap="round"/>
+    <!-- Seconds hand (decorative, pointing to ~6) -->
+    <line x1="24" y1="24" x2="24" y2="36" stroke-width="1"/>
+    <!-- Center cap -->
+    <circle cx="24" cy="24" r="2.5" fill="currentColor"/>
+    <!-- Crown with leaf at top -->
+    <path d="M21 6Q24 3 27 6" stroke-width="1.2"/>
+  `),
+
+  /* ── DECORATIVE / MISC ─────────────────────────────────────────── */
+
+  mountain: icon(`
+    <!-- Sky gradient hint: sun -->
+    <circle cx="38" cy="10" r="6" fill="currentColor" fill-opacity="0.15"/>
+    <!-- Sun rays -->
+    <line x1="38" y1="2" x2="38" y2="1"/>
+    <line x1="44" y1="4" x2="45" y2="3.3"/>
+    <line x1="46" y1="10" x2="47" y2="10"/>
+    <line x1="44" y1="16" x2="45" y2="16.7"/>
+    <line x1="32" y1="4" x2="31" y2="3.3"/>
+    <!-- Mountains fill -->
+    <path d="M2 46L14 24L22 32L34 8L46 46Z" fill="currentColor" fill-opacity="0.1" stroke="none"/>
+    <!-- Mountains -->
+    <path d="M2 46L14 24L22 32L34 8L46 46"/>
+    <!-- Snow cap -->
+    <path d="M31 13L34 8L37 13"/>
+    <!-- Ground line -->
+    <line x1="2" y1="46" x2="46" y2="46"/>
+    <!-- Rolling foothills -->
+    <path d="M2 46Q12 40 18 44Q26 48 34 42Q40 38 46 44" stroke-width="1.2" opacity="0.4"/>
+  `),
+
+  scout: icon(`
+    <!-- Shield outline fill -->
+    <path d="M24 2L38 8L40 28Q40 42 24 46Q8 42 8 28L10 8Z" fill="currentColor" fill-opacity="0.08" stroke="none"/>
+    <!-- Shield outline -->
+    <path d="M24 2L38 8L40 28Q40 42 24 46Q8 42 8 28L10 8Z"/>
+    <!-- Fleur-de-lis: center petal -->
+    <path d="M24 32Q21 24 21 18Q21 12 24 10Q27 12 27 18Q27 24 24 32Z" fill="currentColor" fill-opacity="0.2"/>
+    <path d="M24 32Q21 24 21 18Q21 12 24 10Q27 12 27 18Q27 24 24 32Z"/>
+    <!-- Left petal -->
+    <path d="M24 28Q18 26 14 26Q10 24 11 20Q12 16 16 17Q20 18 22 22"/>
+    <!-- Right petal -->
+    <path d="M24 28Q30 26 34 26Q38 24 37 20Q36 16 32 17Q28 18 26 22"/>
+    <!-- Cross bar -->
+    <line x1="18" y1="26" x2="30" y2="26" stroke-width="1.5"/>
+    <!-- Base of fleur -->
+    <path d="M21 32Q24 34 27 32"/>
+    <!-- Stars on shield -->
+    <circle cx="14" cy="38" r="1.5" fill="currentColor" fill-opacity="0.5" stroke="none"/>
+    <circle cx="34" cy="38" r="1.5" fill="currentColor" fill-opacity="0.5" stroke="none"/>
+  `),
+
+  peak: icon(`
+    <!-- Sky fill -->
+    <rect x="0" y="0" width="48" height="48" fill="currentColor" fill-opacity="0.04" stroke="none"/>
+    <!-- Main peak fill -->
+    <path d="M24 4L44 44L4 44Z" fill="currentColor" fill-opacity="0.12" stroke="none"/>
+    <!-- Main peak -->
+    <path d="M24 4L44 44H4Z"/>
+    <!-- Snow cap fill -->
+    <path d="M24 4L14 20L24 17L34 20Z" fill="currentColor" fill-opacity="0.25" stroke="none"/>
+    <!-- Snow cap outline -->
+    <path d="M14 20L24 4L34 20L24 17Z"/>
+    <!-- Left smaller peak -->
+    <path d="M4 44L12 28L20 44"/>
+    <!-- Stars -->
+    <circle cx="8" cy="10" r="1.2" fill="currentColor" stroke="none"/>
+    <circle cx="40" cy="8" r="1" fill="currentColor" stroke="none"/>
+    <circle cx="36" cy="16" r="0.8" fill="currentColor" stroke="none"/>
+    <circle cx="14" cy="6" r="1" fill="currentColor" stroke="none"/>
+    <!-- Moon -->
+    <path d="M40 22A6 6 0 1 1 40 34A4.5 4.5 0 1 0 40 22Z" fill="currentColor" fill-opacity="0.2" stroke="currentColor" stroke-width="1"/>
+  `),
+
+  /* ── EVENTS ────────────────────────────────────────────────────── */
+
+  calendar: icon(`
+    <!-- Calendar body fill -->
+    <rect x="4" y="10" width="40" height="36" rx="3" fill="currentColor" fill-opacity="0.08" stroke="none"/>
+    <!-- Calendar body -->
+    <rect x="4" y="10" width="40" height="36" rx="3"/>
+    <!-- Header bar -->
+    <rect x="4" y="10" width="40" height="12" rx="3" fill="currentColor" fill-opacity="0.15" stroke="none"/>
+    <path d="M4 18L44 18"/>
+    <!-- Binding pegs -->
+    <line x1="14" y1="6" x2="14" y2="14" stroke-width="2.5"/>
+    <line x1="34" y1="6" x2="34" y2="14" stroke-width="2.5"/>
+    <!-- Day grid: 3 cols x 3 rows -->
+    <!-- Row 1 -->
+    <circle cx="14" cy="28" r="3" fill="currentColor" fill-opacity="0.25" stroke="none"/>
+    <rect x="11" y="25" width="6" height="6" rx="1.5" fill="currentColor" fill-opacity="0.25" stroke="none"/>
+    <rect x="21" y="25" width="6" height="6" rx="1.5" fill="currentColor" fill-opacity="0.12" stroke="none"/>
+    <rect x="31" y="25" width="6" height="6" rx="1.5" fill="currentColor" fill-opacity="0.12" stroke="none"/>
+    <!-- Row 2 -->
+    <rect x="11" y="34" width="6" height="6" rx="1.5" fill="currentColor" fill-opacity="0.12" stroke="none"/>
+    <rect x="21" y="34" width="6" height="6" rx="1.5" fill="currentColor" fill-opacity="0.12" stroke="none"/>
+    <rect x="31" y="34" width="6" height="6" rx="1.5" fill="currentColor" fill-opacity="0.12" stroke="none"/>
+    <!-- Highlight first cell (today/event) -->
+    <rect x="11" y="25" width="6" height="6" rx="1.5" stroke-width="1.5"/>
+  `),
+
+  workshop: icon(`
+    <!-- Notepad/clipboard base -->
+    <rect x="10" y="8" width="28" height="36" rx="2" fill="currentColor" fill-opacity="0.08"/>
+    <rect x="10" y="8" width="28" height="36" rx="2"/>
+    <!-- Clipboard top clip -->
+    <rect x="18" y="4" width="12" height="8" rx="2"/>
+    <!-- Lines of text -->
+    <line x1="15" y1="22" x2="33" y2="22"/>
+    <line x1="15" y1="28" x2="33" y2="28"/>
+    <line x1="15" y1="34" x2="25" y2="34"/>
+    <!-- Pencil writing on last line -->
+    <path d="M27 34L34 27L37 30L30 37Z" fill="currentColor" fill-opacity="0.2"/>
+    <path d="M27 34L34 27"/>
+    <path d="M34 27L37 30"/>
+    <path d="M27 34L30 37"/>
+    <line x1="37" y1="30" x2="38" y2="26" stroke-width="1.2"/>
+    <!-- Tick/check on first line -->
+    <path d="M15 17L17 19L21 15" stroke-width="1.5"/>
+  `),
+};
+---
+
+<Fragment set:html={icons[name] ?? ''} />

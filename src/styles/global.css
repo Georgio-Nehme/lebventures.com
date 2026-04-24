@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-brand-dark font-body;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-block bg-brand-primary text-white font-bold px-6 py-3 rounded-lg hover:bg-brand-olive transition-colors duration-200;
+  }
+
+  .btn-outline {
+    @apply inline-block border-2 border-brand-primary text-brand-primary font-bold px-6 py-3 rounded-lg hover:bg-brand-primary hover:text-white transition-colors duration-200;
+  }
+
+  .section-heading {
+    @apply text-3xl md:text-4xl font-heading font-bold text-brand-primary mb-4;
+  }
+
+  .section-subheading {
+    @apply text-lg text-brand-olive max-w-2xl;
+  }
+}

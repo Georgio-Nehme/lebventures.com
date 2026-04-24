@@ -1,0 +1,82 @@
+---
+import SEO from '../components/SEO.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  keywords?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+}
+
+const { title, description, keywords, ogImage, ogType } = Astro.props;
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Organization',
+      '@id': 'https://lebventures.com/#organization',
+      name: 'LebVentures',
+      url: 'https://lebventures.com',
+      description: 'Community-driven sustainable tourism and adventure experiences across Lebanon.',
+      foundingDate: '2020',
+      areaServed: 'Lebanon',
+      sameAs: [
+        'https://www.instagram.com/lebventures',
+        'https://www.facebook.com/lebventures',
+      ],
+    },
+    {
+      '@type': 'TouristInformationCenter',
+      '@id': 'https://lebventures.com/#business',
+      name: 'LebVentures',
+      url: 'https://lebventures.com',
+      description: 'Community-driven sustainable tourism guiding adventurers through Lebanon\'s trails, cedars, ruins, and landscapes.',
+      address: {
+        '@type': 'PostalAddress',
+        addressCountry: 'LB',
+        addressLocality: 'Lebanon',
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: '33.8547',
+        longitude: '35.8623',
+      },
+      touristType: ['Hikers', 'Nature enthusiasts', 'Adventure travelers', 'Eco-tourists'],
+    },
+    {
+      '@type': 'WebSite',
+      '@id': 'https://lebventures.com/#website',
+      url: 'https://lebventures.com',
+      name: 'LebVentures',
+      description: 'For the Love of Nature.',
+      publisher: { '@id': 'https://lebventures.com/#organization' },
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+
+    <SEO
+      title={title}
+      description={description}
+      keywords={keywords}
+      ogImage={ogImage}
+      ogType={ogType}
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body class="min-h-screen flex flex-col">
+    <slot />
+  </body>
+</html>

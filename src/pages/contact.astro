@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import '../styles/global.css';
+---
+
+<BaseLayout
+  title="Contact & Book an Adventure"
+  description="Get in touch with LebVentures to book a guided outdoor experience in Lebanon. Hiking, climbing, camping, heritage tours and more — we'll craft the perfect adventure for your group."
+  keywords="book adventure Lebanon, contact LebVentures, guided tours Lebanon, outdoor booking Lebanon"
+>
+  <Navbar />
+  <main class="pt-16">
+
+    <!-- Page header -->
+    <div class="bg-brand-primary text-white py-16 text-center">
+      <div class="max-w-2xl mx-auto px-4">
+        <span class="inline-block text-xs font-bold text-brand-gold uppercase tracking-widest mb-3">Get in Touch</span>
+        <h1 class="text-4xl md:text-5xl font-heading font-bold mb-4">Ready to Venture Out?</h1>
+        <p class="text-white/80 text-lg leading-relaxed">
+          Tell us about the experience you're dreaming of. We'll design it around your group, pace, and goals.
+        </p>
+      </div>
+    </div>
+
+    <Contact />
+
+    <!-- Info strip -->
+    <div class="bg-brand-sky/40 py-12">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        <div>
+          <div class="flex justify-center mb-2 text-brand-primary">
+            <Icon name="pin" class="w-10 h-10" />
+          </div>
+          <h3 class="font-heading font-bold text-brand-primary mb-1">Based in Lebanon</h3>
+          <p class="text-sm text-gray-600">Operating across Lebanon's mountains, valleys, and coast.</p>
+        </div>
+        <div>
+          <div class="flex justify-center mb-2 text-brand-primary">
+            <Icon name="envelope" class="w-10 h-10" />
+          </div>
+          <h3 class="font-heading font-bold text-brand-primary mb-1">Email Us</h3>
+          <a href="mailto:hello@lebventures.com" class="text-sm text-brand-primary hover:underline">hello@lebventures.com</a>
+        </div>
+        <div>
+          <div class="flex justify-center mb-2 text-brand-primary">
+            <Icon name="clock" class="w-10 h-10" />
+          </div>
+          <h3 class="font-heading font-bold text-brand-primary mb-1">Response Time</h3>
+          <p class="text-sm text-gray-600">We respond to all inquiries within 24 hours.</p>
+        </div>
+      </div>
+    </div>
+
+  </main>
+  <Footer />
+</BaseLayout>
