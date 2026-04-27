@@ -18,6 +18,7 @@ export interface Event {
   description: string;
   highlights: string[];
   guide: string;       // guide name
+  image?: string;      // path to event cover photo — e.g. '/images/events/ev-001.jpg'
 }
 
 // ---------------------------------------------------------------------------

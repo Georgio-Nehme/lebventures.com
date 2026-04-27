@@ -9,32 +9,44 @@ import Icon from './Icon.astro';
       <!-- Visual side -->
       <div class="order-2 lg:order-1">
         <div class="relative">
-          <!-- Scout badge-style card -->
-          <div class="bg-brand-dark rounded-3xl p-8 text-white shadow-2xl">
-            <div class="flex items-center gap-4 mb-6">
-              <div class="w-14 h-14 rounded-full bg-brand-gold flex items-center justify-center text-brand-dark">
-                <Icon name="scout" class="w-8 h-8" />
+          <!-- Photo card — drop /images/team.jpg or /images/group.jpg to activate -->
+          <div class="relative rounded-3xl overflow-hidden bg-brand-dark shadow-2xl min-h-[400px] flex flex-col justify-end">
+            <img
+              src="/images/team.jpg"
+              alt="Pierre Abboud and Gioia Wehbe leading an adventure in Lebanon"
+              class="absolute inset-0 w-full h-full object-cover object-center"
+              loading="lazy"
+              onerror="this.remove()"
+            />
+            <!-- Gradient overlay — always present so text is readable -->
+            <div class="absolute inset-0 bg-gradient-to-br from-brand-dark/85 via-brand-dark/50 to-transparent"></div>
+            <!-- Card content -->
+            <div class="relative z-10 p-8 text-white">
+              <div class="flex items-center gap-4 mb-5">
+                <div class="w-14 h-14 rounded-full bg-brand-gold flex items-center justify-center text-brand-dark shrink-0">
+                  <Icon name="scout" class="w-8 h-8" />
+                </div>
+                <div>
+                  <div class="font-heading font-bold text-lg text-brand-lime">Scout Alumni</div>
+                  <div class="text-gray-400 text-sm">Est. in the cedar forests of Lebanon</div>
+                </div>
               </div>
-              <div>
-                <div class="font-heading font-bold text-lg text-brand-lime">Scout Alumni</div>
-                <div class="text-gray-400 text-sm">Est. in the cedar forests of Lebanon</div>
-              </div>
-            </div>
-            <p class="text-gray-300 text-sm leading-relaxed mb-6">
-              "We met as teenagers in scouts, fell in love with the mountains, and with each other. After our wedding, we knew we had to find a way to share what Lebanon's nature had given us — the community, the discipline, the wonder."
-            </p>
-            <div class="flex gap-3">
-              <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
-                <div class="text-brand-gold font-bold text-lg">2019</div>
-                <div class="text-xs text-gray-400">Founded</div>
-              </div>
-              <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
-                <div class="text-brand-gold font-bold text-lg">Certified</div>
-                <div class="text-xs text-gray-400">Wilderness First Aid</div>
-              </div>
-              <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
-                <div class="text-brand-gold font-bold text-lg">Active</div>
-                <div class="text-xs text-gray-400">Ongoing training</div>
+              <p class="text-gray-300 text-sm leading-relaxed mb-5">
+                "We met as teenagers in scouts, fell in love with the mountains, and with each other. After our wedding, we knew we had to find a way to share what Lebanon's nature had given us — the community, the discipline, the wonder."
+              </p>
+              <div class="flex gap-3">
+                <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
+                  <div class="text-brand-gold font-bold text-lg">2019</div>
+                  <div class="text-xs text-gray-400">Founded</div>
+                </div>
+                <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
+                  <div class="text-brand-gold font-bold text-lg">Certified</div>
+                  <div class="text-xs text-gray-400">Wilderness First Aid</div>
+                </div>
+                <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
+                  <div class="text-brand-gold font-bold text-lg">Active</div>
+                  <div class="text-xs text-gray-400">Ongoing training</div>
+                </div>
               </div>
             </div>
           </div>

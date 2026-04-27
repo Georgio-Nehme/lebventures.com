@@ -84,18 +84,31 @@ const featuredAdventures = [
             </p>
             <a href="/about" class="btn-primary">Meet the Founders</a>
           </div>
-          <div class="bg-brand-primary rounded-3xl p-8 text-white shadow-2xl">
-            <div class="flex justify-center mb-5 opacity-80">
-              <Icon name="scout" class="w-16 h-16 text-brand-gold" />
-            </div>
-            <blockquote class="text-lg font-heading italic leading-relaxed text-center mb-6">
-              "The mountains of Lebanon are not just scenery — they are living history, sacred ground, and a responsibility."
-            </blockquote>
-            <div class="flex items-center justify-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-brand-gold flex items-center justify-center text-brand-dark font-bold text-sm">LV</div>
-              <div>
-                <div class="font-bold text-sm">Pierre Abboud & Gioia Wehbe</div>
-                <div class="text-brand-sky text-xs">Founders · Scout Alumni · Based in Byblos</div>
+          <div class="relative rounded-3xl overflow-hidden bg-brand-primary shadow-2xl min-h-64">
+            <!-- Team photo — drop /images/team.jpg to activate -->
+            <img
+              src="/images/team.jpg"
+              alt="Pierre Abboud and Gioia Wehbe — LebVentures founders on a mountain trail"
+              class="absolute inset-0 w-full h-full object-cover object-center"
+              loading="lazy"
+              onerror="this.remove()"
+            />
+            <!-- Overlay keeps text readable with or without a photo -->
+            <div class="absolute inset-0 bg-gradient-to-br from-brand-dark/80 via-brand-dark/60 to-brand-primary/50"></div>
+            <!-- Content -->
+            <div class="relative z-10 p-8 text-white">
+              <div class="flex justify-center mb-5 opacity-80">
+                <Icon name="scout" class="w-16 h-16 text-brand-gold" />
+              </div>
+              <blockquote class="text-lg font-heading italic leading-relaxed text-center mb-6">
+                "The mountains of Lebanon are not just scenery — they are living history, sacred ground, and a responsibility."
+              </blockquote>
+              <div class="flex items-center justify-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-brand-gold flex items-center justify-center text-brand-dark font-bold text-sm">LV</div>
+                <div>
+                  <div class="font-bold text-sm">Pierre Abboud & Gioia Wehbe</div>
+                  <div class="text-brand-sky text-xs">Founders · Scout Alumni · Based in Byblos</div>
+                </div>
               </div>
             </div>
           </div>

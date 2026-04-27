@@ -1,0 +1,49 @@
+LebVentures — Photo Guide
+==========================
+
+Drop your photos into this folder structure and they will
+automatically appear on the website.
+
+TEAM / FOUNDERS PHOTO
+-----------------------
+File:    /public/images/team.jpg
+Shows on: Homepage (About section) + About page
+Size:    Recommended 1200×900px or larger, landscape
+Alt:     Pierre Abboud and Gioia Wehbe — LebVentures founders
+
+EVENT COVER PHOTOS
+-------------------
+Files:   /public/images/events/ev-001.jpg  ← Billion Star Hotel
+         /public/images/events/ev-002.jpg  ← The Hermit Experience
+         /public/images/events/ev-003.jpg  ← Stalactite Caving
+         /public/images/events/ev-004.jpg  ← Muddy Trail
+         /public/images/events/ev-005.jpg  ← Biking the Phoenician Routes
+         /public/images/events/ev-006.jpg  ← Little Explorers
+         /public/images/events/ev-007.jpg  ← Hike to Paint
+         /public/images/events/ev-008.jpg  ← Go Vertical
+
+Shows on: Event listing cards + individual event detail pages
+Size:    Recommended 1200×800px or larger, landscape (16:9 or 3:2)
+
+THEN ACTIVATE IN CODE
+----------------------
+Open: src/data/events.ts
+Add the image field to each event, e.g.:
+
+  {
+    id: 'ev-001',
+    title: 'Billion Star Hotel ...',
+    image: '/images/events/ev-001.jpg',   // ← add this line
+    ...
+  }
+
+FILE FORMAT
+-----------
+.jpg is preferred (smaller file size).
+.png and .webp also work — just update the extension in events.ts.
+
+TIPS
+----
+- Compress photos before uploading (aim for < 300KB per image)
+- Use landscape orientation for best results
+- Natural lighting photos work best with the site's earthy color palette

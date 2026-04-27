@@ -118,6 +118,30 @@ const isFull = event.spotsLeft === 0;
       </div>
     </div>
 
+    <!-- Event photo -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      {event.image ? (
+        <div class="rounded-3xl overflow-hidden h-72 md:h-[460px] shadow-lg">
+          <img
+            src={event.image}
+            alt={`${event.title} — LebVentures`}
+            class="w-full h-full object-cover"
+            loading="eager"
+            onerror="this.parentElement.classList.add('hidden')"
+          />
+        </div>
+      ) : (
+        <div class="rounded-3xl h-56 bg-gradient-to-br from-brand-sky via-brand-primary/10 to-brand-lime/10 border-2 border-dashed border-brand-primary/20 flex flex-col items-center justify-center gap-3">
+          <svg class="w-12 h-12 text-brand-primary/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="15" rx="2"/>
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M8 5l1.5-2h5L16 5"/>
+          </svg>
+          <p class="text-sm text-brand-primary/40 font-medium">Event photos coming soon</p>
+        </div>
+      )}
+    </div>
+
     <!-- Main content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <div class="grid lg:grid-cols-5 gap-12 items-start">
@@ -350,12 +374,13 @@ const isFull = event.spotsLeft === 0;
           </div>
 
           <!-- Contact alternative -->
-          <div class="mt-4 text-center">
+          <div class="mt-4 text-center space-y-1">
             <p class="text-xs text-gray-500">
-              Prefer to book directly?
-              <a href="tel:+96170050590" class="text-brand-primary hover:underline font-semibold">Call +961 70-050590</a>
-              or
-              <a href="mailto:lebventures.lebanon@gmail.com" class="text-brand-primary hover:underline font-semibold">email us</a>
+              Prefer to schedule directly?
+              <a href="https://calendly.com/lebventures" target="_blank" rel="noopener noreferrer" class="text-brand-primary hover:underline font-semibold">Open Calendly →</a>
+            </p>
+            <p class="text-xs text-gray-400">
+              Or reach us at <a href="tel:+96170050590" class="hover:underline">+961 70-050590</a> · <a href="mailto:lebventures.lebanon@gmail.com" class="hover:underline">lebventures.lebanon@gmail.com</a>
             </p>
           </div>
         </aside>
