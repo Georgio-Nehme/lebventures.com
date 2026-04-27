@@ -16,6 +16,7 @@ permissions:
 jobs:
   deploy:
     name: Deploy to ECR
+    if: false  # Disabled on base_website branch — build & push runs on main only
     runs-on: ubuntu-latest
     environment: production
 
