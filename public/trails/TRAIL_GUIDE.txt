@@ -1,0 +1,48 @@
+LebVentures — Trail Files Guide
+================================
+
+Drop GPX or KML route files into this folder.
+They will be overlaid on the map on each event's detail page.
+
+FILE NAMING CONVENTION
+-----------------------
+ev-001.gpx  ←  Billion Star Hotel – Camping & Stargazing
+ev-002.gpx  ←  The Hermit Experience – Qadisha Valley
+ev-003.gpx  ←  Stalactite – Caving in Afqa
+ev-004.gpx  ←  Muddy Trail – Rainy Hike
+ev-005.gpx  ←  Biking the Phoenician Routes – Byblos
+ev-006.gpx  ←  Little Explorers – Family Hike
+ev-007.gpx  ←  Hike to Paint – MACAM
+ev-008.gpx  ←  Go Vertical – Rock Climbing
+
+KML files also work — just name them ev-001.kml etc.
+
+HOW TO ACTIVATE A TRAIL
+------------------------
+1. Drop the .gpx or .kml file into this folder
+2. Open: src/data/events.ts
+3. Add the trailFile field to the matching event, e.g.:
+
+   {
+     id: 'ev-002',
+     title: 'The Hermit Experience ...',
+     trailFile: '/trails/ev-002.gpx',   // ← add this line
+     ...
+   }
+
+4. The route will appear as a green overlay on the map automatically.
+
+HOW TO EXPORT GPX FROM COMMON APPS
+------------------------------------
+- Komoot: Activity → Export → .gpx
+- Wikiloc: Trail → Download → GPX
+- AllTrails: Record a route → Export GPX (Pro feature)
+- Garmin Connect: Activity → Export Original Format
+- Google Earth: File → Save Place As → .kml
+- Strava: Activity → Export GPX (from the activity page)
+
+TIPS
+----
+- GPX is preferred over KML (smaller, more compatible)
+- Compress large files if needed (any GPX optimizer works)
+- The map auto-fits to the trail bounds when a trail is loaded

@@ -142,6 +142,30 @@ const isFull = event.spotsLeft === 0;
       )}
     </div>
 
+    <!-- Route Map -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+      <div class="relative rounded-3xl overflow-hidden border border-brand-sky shadow-md bg-brand-sky/20">
+        <!-- Loading overlay -->
+        <div id="map-loading" class="absolute inset-0 flex flex-col items-center justify-center z-10 bg-brand-sky/40 backdrop-blur-sm">
+          <span class="text-3xl mb-2">🗺️</span>
+          <p class="text-sm text-gray-500 font-medium">Loading map…</p>
+        </div>
+        <div
+          id="event-map"
+          data-lat={event.lat}
+          data-lng={event.lng}
+          data-title={event.title}
+          data-location={event.location}
+          data-trail={event.trailFile ?? ''}
+          style="height: 400px;"
+        ></div>
+      </div>
+      <p class="text-xs text-gray-400 text-right mt-1.5 pr-1">
+        Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer" class="hover:underline">OpenStreetMap</a> contributors
+        {event.trailFile && <span> · Route overlay included</span>}
+      </p>
+    </div>
+
     <!-- Main content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
       <div class="grid lg:grid-cols-5 gap-12 items-start">
@@ -173,7 +197,6 @@ const isFull = event.spotsLeft === 0;
                 { label: 'Group size', value: `Max ${event.spots} participants` },
                 { label: 'Difficulty', value: event.difficulty },
                 { label: 'Duration', value: event.duration },
-                { label: 'Meeting point', value: event.location },
                 { label: 'Region', value: event.region },
               ].map(item => (
                 <div class="p-4 rounded-xl border border-brand-sky bg-white">
@@ -181,7 +204,51 @@ const isFull = event.spotsLeft === 0;
                   <dd class="text-sm text-gray-700 font-medium">{item.value}</dd>
                 </div>
               ))}
+              <!-- Meeting point with Google Maps link -->
+              <div class="p-4 rounded-xl border border-brand-sky bg-white">
+                <dt class="text-xs font-bold text-brand-primary uppercase tracking-wider mb-1">Meeting point</dt>
+                <dd class="text-sm font-medium">
+                  <a
+                    href={`https://www.google.com/maps?q=${event.lat},${event.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="text-brand-primary hover:underline inline-flex items-center gap-1"
+                  >
+                    📍 {event.location}
+                  </a>
+                </dd>
+              </div>
             </dl>
+          </section>
+
+          <!-- Weather Forecast -->
+          <section aria-labelledby="weather-heading">
+            <h2 id="weather-heading" class="text-xl font-heading font-bold text-brand-primary mb-4 flex items-center gap-2">
+              🌤 Weather Forecast
+              <span class="text-xs font-normal font-sans text-gray-400">· {event.location}</span>
+            </h2>
+            <div
+              id="weather-widget"
+              data-lat={event.lat}
+              data-lng={event.lng}
+              data-date={event.date}
+              class="p-5 rounded-2xl border border-brand-sky bg-white"
+            >
+              <div id="weather-loading" class="py-6 text-center">
+                <div class="text-3xl mb-2">🌤</div>
+                <p class="text-sm text-gray-400">Fetching forecast…</p>
+              </div>
+              <div id="weather-content" class="hidden"></div>
+              <div id="weather-error" class="hidden py-6 text-center">
+                <p class="text-sm text-gray-400">Forecast unavailable — try again later.</p>
+                <a
+                  href={`https://wttr.in/${encodeURIComponent(event.location)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-xs text-brand-primary hover:underline mt-1 inline-block"
+                >Check weather for {event.location} →</a>
+              </div>
+            </div>
           </section>
 
           <!-- Availability bar -->
@@ -411,4 +478,166 @@ const isFull = event.spotsLeft === 0;
     form.classList.add('hidden');
     success?.classList.remove('hidden');
   });
+</script>
+
+<!-- ── Weather Forecast (Open-Meteo, no API key) ───────────────── -->
+<script type="module" is:inline>
+  const widget = document.getElementById('weather-widget');
+  if (!widget) throw new Error('no widget');
+
+  const lat  = widget.dataset.lat;
+  const lng  = widget.dataset.lng;
+  const date = widget.dataset.date;
+
+  const loading = document.getElementById('weather-loading');
+  const content = document.getElementById('weather-content');
+  const errEl   = document.getElementById('weather-error');
+
+  function wmoInfo(code) {
+    if (code === 0)  return { icon: '☀️',  label: 'Clear' };
+    if (code <= 3)   return { icon: '⛅',  label: 'Partly cloudy' };
+    if (code <= 48)  return { icon: '🌫️', label: 'Foggy' };
+    if (code <= 55)  return { icon: '🌦️', label: 'Drizzle' };
+    if (code <= 67)  return { icon: '🌧️', label: 'Rain' };
+    if (code <= 77)  return { icon: '🌨️', label: 'Snow' };
+    if (code <= 82)  return { icon: '🌦️', label: 'Showers' };
+    if (code <= 99)  return { icon: '⛈️', label: 'Storm' };
+    return { icon: '🌡️', label: 'N/A' };
+  }
+
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max&timezone=Asia%2FBeirut&forecast_days=7`;
+    const res  = await fetch(url);
+    if (!res.ok) throw new Error('api error');
+    const data = await res.json();
+
+    const days = data.daily.time;
+    const eventIdx = days.indexOf(date);
+
+    let cards = '';
+    days.forEach((day, i) => {
+      const isEvent = day === date;
+      const { icon, label } = wmoInfo(data.daily.weathercode[i]);
+      const dayLabel = new Date(day + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'short' });
+      const dayNum   = new Date(day + 'T00:00:00').getDate();
+      const precip   = data.daily.precipitation_probability_max[i];
+      const tMax     = Math.round(data.daily.temperature_2m_max[i]);
+      const tMin     = Math.round(data.daily.temperature_2m_min[i]);
+
+      const base  = isEvent
+        ? 'bg-brand-primary text-white ring-2 ring-brand-primary ring-offset-1'
+        : 'bg-brand-sky/30 text-brand-dark hover:bg-brand-sky/60';
+      const sub   = isEvent ? 'text-white/60' : 'text-gray-400';
+      const label2 = isEvent ? 'text-brand-gold font-bold' : 'text-gray-500 font-bold';
+
+      cards += `
+        <div class="flex flex-col items-center p-2 rounded-xl text-center transition-colors ${base}">
+          <div class="text-[0.6rem] uppercase tracking-wider ${label2}">${dayLabel}</div>
+          <div class="text-[0.55rem] mb-1 ${sub}">${dayNum}</div>
+          <div class="text-2xl my-1 leading-none">${icon}</div>
+          <div class="text-[0.55rem] font-semibold leading-tight">${label}</div>
+          <div class="font-bold text-xs mt-1">${tMax}°C</div>
+          <div class="text-[0.6rem] ${sub}">${tMin}°C</div>
+          ${precip > 20 ? `<div class="text-[0.55rem] mt-0.5 ${isEvent ? 'text-blue-200' : 'text-blue-500'}">💧${precip}%</div>` : ''}
+        </div>`;
+    });
+
+    const windNote = eventIdx >= 0
+      ? `Event date highlighted · Wind: ${Math.round(data.daily.windspeed_10m_max[eventIdx])} km/h`
+      : 'Event date beyond 7-day forecast — showing current conditions';
+
+    content.innerHTML = `
+      <div class="grid grid-cols-7 gap-1.5">${cards}</div>
+      <p class="text-[0.65rem] text-gray-400 text-center mt-3">
+        ${windNote} · <a href="https://open-meteo.com" target="_blank" rel="noopener noreferrer" class="hover:underline">Open-Meteo</a>
+      </p>`;
+
+    loading.classList.add('hidden');
+    content.classList.remove('hidden');
+  } catch {
+    loading.classList.add('hidden');
+    errEl.classList.remove('hidden');
+  }
+</script>
+
+<!-- ── Route Map (Leaflet + OpenStreetMap, no API key) ─────────── -->
+<script type="module" is:inline>
+  const mapEl = document.getElementById('event-map');
+  if (!mapEl) throw new Error('no map element');
+
+  const lat      = parseFloat(mapEl.dataset.lat);
+  const lng      = parseFloat(mapEl.dataset.lng);
+  const title    = mapEl.dataset.title;
+  const location = mapEl.dataset.location;
+  const trail    = mapEl.dataset.trail;
+
+  // Inject Leaflet CSS
+  const leafletCSS = Object.assign(document.createElement('link'), {
+    rel: 'stylesheet',
+    href: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+  });
+  document.head.appendChild(leafletCSS);
+
+  // Load Leaflet JS
+  await new Promise((res, rej) => {
+    const s = Object.assign(document.createElement('script'), {
+      src: 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+      onload: res, onerror: rej,
+    });
+    document.head.appendChild(s);
+  });
+
+  const L = window.L;
+
+  const map = L.map(mapEl, { scrollWheelZoom: false }).setView([lat, lng], 13);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors',
+    maxZoom: 18,
+  }).addTo(map);
+
+  // Custom pin marker
+  const pin = L.divIcon({
+    html: `<div style="width:28px;height:28px;background:#1B4332;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35)"></div>`,
+    iconSize: [28, 28],
+    iconAnchor: [14, 28],
+    popupAnchor: [0, -30],
+    className: '',
+  });
+
+  L.marker([lat, lng], { icon: pin })
+    .addTo(map)
+    .bindPopup(`
+      <strong style="font-size:13px">${title}</strong><br>
+      <span style="font-size:11px;color:#666">${location}</span><br>
+      <a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" rel="noopener noreferrer"
+         style="font-size:11px;color:#1B4332;font-weight:600;margin-top:4px;display:inline-block">
+        📍 Open in Google Maps →
+      </a>`)
+    .openPopup();
+
+  // Load GPX / KML trail if provided
+  if (trail) {
+    await new Promise((res) => {
+      const s = Object.assign(document.createElement('script'), {
+        src: 'https://unpkg.com/leaflet-omnivore@0.3.4/leaflet-omnivore.min.js',
+        onload: res, onerror: res,
+      });
+      document.head.appendChild(s);
+    });
+
+    if (window.omnivore) {
+      const trailLayer = window.omnivore
+        .load(trail, null, L.geoJson(null, {
+          style: { color: '#1B4332', weight: 4, opacity: 0.85 },
+        }))
+        .addTo(map);
+      trailLayer.on('ready', () => {
+        try { map.fitBounds(trailLayer.getBounds(), { padding: [30, 30] }); } catch {}
+      });
+    }
+  }
+
+  // Remove loading overlay
+  document.getElementById('map-loading')?.remove();
 </script>

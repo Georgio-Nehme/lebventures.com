@@ -11,6 +11,8 @@ export interface Event {
   duration: string;    // human-readable — "Full day (8 hrs)"
   location: string;    // place name
   region: string;      // broader region
+  lat: number;         // latitude (for weather API + map)
+  lng: number;         // longitude (for weather API + map)
   difficulty: 'Easy' | 'Moderate' | 'Challenging' | 'Expert';
   spots: number;       // total capacity
   spotsLeft: number;   // remaining
@@ -19,6 +21,7 @@ export interface Event {
   highlights: string[];
   guide: string;       // guide name
   image?: string;      // path to event cover photo — e.g. '/images/events/ev-001.jpg'
+  trailFile?: string;  // path to GPX/KML route file — e.g. '/trails/ev-001.gpx'
 }
 
 // ---------------------------------------------------------------------------
@@ -37,6 +40,8 @@ export async function getEvents(): Promise<Event[]> {
       duration: '2 days / 1 night',
       location: 'Shouf Cedar Reserve',
       region: 'Mount Lebanon',
+      lat: 33.685,
+      lng: 35.565,
       difficulty: 'Easy',
       spots: 14,
       spotsLeft: 6,
@@ -45,6 +50,7 @@ export async function getEvents(): Promise<Event[]> {
         'An unforgettable camping experience under a star-filled sky — LebVentures\' signature overnight adventure. Set up camp in Lebanon\'s largest nature reserve, learn fire and shelter skills, and fall asleep under a billion stars.',
       highlights: ['Stargazing session with star chart', 'Fire & shelter workshop', 'Wildlife tracking at dawn', 'All camping gear included', 'Farm-fresh meals'],
       guide: 'Pierre & Gioia (founders)',
+      image: '/images/events/ev-001.jpg',
     },
     {
       id: 'ev-002',
@@ -55,6 +61,8 @@ export async function getEvents(): Promise<Event[]> {
       duration: 'Full day (8 hrs)',
       location: 'Qadisha Valley',
       region: 'North Lebanon',
+      lat: 34.215,
+      lng: 36.020,
       difficulty: 'Challenging',
       spots: 10,
       spotsLeft: 3,
@@ -73,6 +81,8 @@ export async function getEvents(): Promise<Event[]> {
       duration: 'Full day (7 hrs)',
       location: 'Afqa Caves',
       region: 'North Lebanon',
+      lat: 34.085,
+      lng: 35.900,
       difficulty: 'Challenging',
       spots: 8,
       spotsLeft: 8,
@@ -91,6 +101,8 @@ export async function getEvents(): Promise<Event[]> {
       duration: 'Half day (5 hrs)',
       location: 'North Lebanon Trails',
       region: 'North Lebanon',
+      lat: 34.200,
+      lng: 35.900,
       difficulty: 'Easy',
       spots: 16,
       spotsLeft: 11,
@@ -109,6 +121,8 @@ export async function getEvents(): Promise<Event[]> {
       duration: 'Full day (6 hrs)',
       location: 'Byblos & surroundings',
       region: 'North Governorate',
+      lat: 34.122,
+      lng: 35.652,
       difficulty: 'Moderate',
       spots: 12,
       spotsLeft: 9,
@@ -127,6 +141,8 @@ export async function getEvents(): Promise<Event[]> {
       duration: 'Half day (4 hrs)',
       location: 'Byblos Hills',
       region: 'North Governorate',
+      lat: 34.110,
+      lng: 35.645,
       difficulty: 'Easy',
       spots: 20,
       spotsLeft: 14,
@@ -145,6 +161,8 @@ export async function getEvents(): Promise<Event[]> {
       duration: 'Full day (6 hrs)',
       location: 'MACAM Museum & surroundings',
       region: 'Mount Lebanon',
+      lat: 33.887,
+      lng: 35.718,
       difficulty: 'Easy',
       spots: 14,
       spotsLeft: 10,
@@ -163,6 +181,8 @@ export async function getEvents(): Promise<Event[]> {
       duration: 'Full day (7 hrs)',
       location: 'Tannourine Cliffs',
       region: 'North Lebanon',
+      lat: 34.215,
+      lng: 35.915,
       difficulty: 'Moderate',
       spots: 20,
       spotsLeft: 15,
