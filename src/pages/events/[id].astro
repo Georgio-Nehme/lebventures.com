@@ -1,0 +1,389 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Navbar from '../../components/Navbar.astro';
+import Footer from '../../components/Footer.astro';
+import Icon from '../../components/Icon.astro';
+import { getEvents } from '../../data/events';
+import type { Event } from '../../data/events';
+import '../../styles/global.css';
+
+export async function getStaticPaths() {
+  const events = await getEvents();
+  return events.map(event => ({
+    params: { id: event.id },
+    props: { event },
+  }));
+}
+
+interface Props { event: Event }
+
+const { event } = Astro.props;
+
+const typeIcon: Record<Event['type'], string> = {
+  hiking:   'hiking',
+  climbing: 'climbing',
+  camping:  'camping',
+  heritage: 'heritage',
+  canyoning:'canyoning',
+  biking:   'biking',
+  workshop: 'workshop',
+  water:    'water',
+  snow:     'snow',
+  leisure:  'leisure',
+  kids:     'kids',
+};
+
+const difficultyColor: Record<Event['difficulty'], string> = {
+  Easy:        'bg-green-100 text-green-800',
+  Moderate:    'bg-yellow-100 text-yellow-800',
+  Challenging: 'bg-orange-100 text-orange-800',
+  Expert:      'bg-red-100 text-red-800',
+};
+
+function formatDate(iso: string) {
+  return new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', {
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  });
+}
+
+const spotsPercent = Math.round((event.spotsLeft / event.spots) * 100);
+const isFull = event.spotsLeft === 0;
+---
+
+<BaseLayout
+  title={`${event.title} — LebVentures`}
+  description={event.description}
+  keywords={`${event.type} Lebanon, ${event.location}, LebVentures events, adventure ${event.region}`}
+>
+  <Navbar />
+  <main class="pt-16">
+
+    <!-- Page header -->
+    <div class="bg-brand-primary text-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+        <!-- Back link -->
+        <a href="/events" class="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm font-medium mb-6 transition-colors">
+          <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 3L5 8L10 13"/>
+          </svg>
+          Back to all events
+        </a>
+
+        <div class="flex flex-wrap items-start gap-6">
+          <!-- Type icon -->
+          <div class="shrink-0 bg-white/10 rounded-2xl p-4 text-brand-lime">
+            <Icon name={typeIcon[event.type]} class="w-14 h-14" />
+          </div>
+
+          <div class="flex-1 min-w-0">
+            <div class="flex flex-wrap items-center gap-2 mb-2">
+              <span class="text-xs font-bold text-brand-gold uppercase tracking-widest capitalize">{event.type}</span>
+              <span class="text-white/30">·</span>
+              <span class:list={['text-xs font-bold px-2 py-0.5 rounded-full', difficultyColor[event.difficulty]]}>
+                {event.difficulty}
+              </span>
+              {isFull && (
+                <span class="text-xs font-bold bg-red-500 text-white px-2 py-0.5 rounded-full">Fully Booked</span>
+              )}
+            </div>
+            <h1 class="text-3xl md:text-4xl font-heading font-bold leading-tight mb-3">{event.title}</h1>
+            <p class="text-white/75 text-lg leading-relaxed max-w-2xl">{event.description}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick-info strip -->
+    <div class="bg-brand-dark text-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 sm:grid-cols-4 divide-x divide-white/10">
+          <div class="px-4 py-4 flex flex-col gap-0.5">
+            <span class="text-[0.65rem] font-bold text-brand-gold uppercase tracking-widest">Date</span>
+            <span class="text-sm font-semibold text-white">{formatDate(event.date)}</span>
+          </div>
+          <div class="px-4 py-4 flex flex-col gap-0.5">
+            <span class="text-[0.65rem] font-bold text-brand-gold uppercase tracking-widest">Start time</span>
+            <span class="text-sm font-semibold text-white">{event.time} · {event.duration}</span>
+          </div>
+          <div class="px-4 py-4 flex flex-col gap-0.5">
+            <span class="text-[0.65rem] font-bold text-brand-gold uppercase tracking-widest">Location</span>
+            <span class="text-sm font-semibold text-white">{event.location}, {event.region}</span>
+          </div>
+          <div class="px-4 py-4 flex flex-col gap-0.5">
+            <span class="text-[0.65rem] font-bold text-brand-gold uppercase tracking-widest">Price</span>
+            <span class="text-sm font-semibold text-white">{event.price === 0 ? 'Free' : `$${event.price} per person`}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="grid lg:grid-cols-5 gap-12 items-start">
+
+        <!-- ── LEFT: Event details ───────────────────────────────── -->
+        <div class="lg:col-span-3 space-y-10">
+
+          <!-- What's included -->
+          <section aria-labelledby="highlights-heading">
+            <h2 id="highlights-heading" class="text-xl font-heading font-bold text-brand-primary mb-5">What's Included</h2>
+            <ul class="grid sm:grid-cols-2 gap-3">
+              {event.highlights.map(h => (
+                <li class="flex items-start gap-3 p-3 rounded-xl bg-brand-sky/30 border border-brand-sky">
+                  <svg class="w-4 h-4 mt-0.5 shrink-0 text-brand-primary" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13.5 3.5L6 11L2.5 7.5"/>
+                  </svg>
+                  <span class="text-sm text-brand-dark font-medium">{h}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <!-- Event details -->
+          <section aria-labelledby="details-heading">
+            <h2 id="details-heading" class="text-xl font-heading font-bold text-brand-primary mb-5">Event Details</h2>
+            <dl class="grid sm:grid-cols-2 gap-4">
+              {[
+                { label: 'Guide', value: event.guide },
+                { label: 'Group size', value: `Max ${event.spots} participants` },
+                { label: 'Difficulty', value: event.difficulty },
+                { label: 'Duration', value: event.duration },
+                { label: 'Meeting point', value: event.location },
+                { label: 'Region', value: event.region },
+              ].map(item => (
+                <div class="p-4 rounded-xl border border-brand-sky bg-white">
+                  <dt class="text-xs font-bold text-brand-primary uppercase tracking-wider mb-1">{item.label}</dt>
+                  <dd class="text-sm text-gray-700 font-medium">{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+
+          <!-- Availability bar -->
+          <section aria-labelledby="availability-heading">
+            <h2 id="availability-heading" class="text-xl font-heading font-bold text-brand-primary mb-4">Availability</h2>
+            <div class="p-5 rounded-2xl border border-brand-sky bg-white">
+              <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-medium text-gray-600">
+                  {isFull ? 'This event is fully booked' : `${event.spotsLeft} of ${event.spots} spots remaining`}
+                </span>
+                <span class:list={[
+                  'text-sm font-bold',
+                  isFull ? 'text-red-600' : spotsPercent <= 30 ? 'text-orange-500' : 'text-brand-primary',
+                ]}>
+                  {isFull ? '0%' : `${spotsPercent}%`} available
+                </span>
+              </div>
+              <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                <div
+                  class:list={[
+                    'h-2.5 rounded-full transition-all',
+                    isFull ? 'bg-red-400' : spotsPercent <= 30 ? 'bg-orange-400' : 'bg-brand-primary',
+                  ]}
+                  style={`width: ${isFull ? 100 : 100 - spotsPercent}%; /* booked portion */`}
+                ></div>
+              </div>
+              <p class="text-xs text-gray-400 mt-2">Spots fill fast — reserve early to secure your place.</p>
+            </div>
+          </section>
+
+        </div>
+
+        <!-- ── RIGHT: Reservation form ────────────────────────────── -->
+        <aside class="lg:col-span-2 lg:sticky lg:top-24">
+          <div class="bg-white rounded-3xl border border-brand-sky shadow-xl overflow-hidden">
+
+            <!-- Form header -->
+            <div class="bg-brand-primary px-6 py-5">
+              <h2 class="font-heading font-bold text-white text-xl">
+                {isFull ? 'Join the Waitlist' : 'Reserve Your Spot'}
+              </h2>
+              <p class="text-white/70 text-sm mt-1">
+                {isFull
+                  ? "This event is full — leave your details and we'll notify you if a spot opens."
+                  : `Secure your place for ${event.title}.`}
+              </p>
+            </div>
+
+            <!-- Price summary -->
+            {!isFull && (
+              <div class="px-6 py-3 bg-brand-sky/30 border-b border-brand-sky flex justify-between items-center">
+                <span class="text-sm text-gray-600">Price per person</span>
+                <span class="font-heading font-bold text-brand-primary text-lg">
+                  {event.price === 0 ? 'Free' : `$${event.price}`}
+                </span>
+              </div>
+            )}
+
+            <!-- Form body -->
+            <form
+              id="reservation-form"
+              class="px-6 py-6 space-y-5"
+              action="#"
+              method="POST"
+              novalidate
+            >
+              <input type="hidden" name="event_id" value={event.id} />
+              <input type="hidden" name="event_title" value={event.title} />
+              <input type="hidden" name="event_date" value={event.date} />
+
+              <div>
+                <label for="res-name" class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-1.5">Full Name *</label>
+                <input
+                  type="text"
+                  id="res-name"
+                  name="name"
+                  required
+                  placeholder="Your name"
+                  class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white"
+                />
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                <div>
+                  <label for="res-email" class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-1.5">Email Address *</label>
+                  <input
+                    type="email"
+                    id="res-email"
+                    name="email"
+                    required
+                    placeholder="you@example.com"
+                    class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label for="res-phone" class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-1.5">Phone / WhatsApp *</label>
+                  <input
+                    type="tel"
+                    id="res-phone"
+                    name="phone"
+                    required
+                    placeholder="+961 XX XXX XXX"
+                    class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label for="res-group" class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-1.5">Group Size</label>
+                <select
+                  id="res-group"
+                  name="group_size"
+                  class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white"
+                >
+                  <option value="">How many people?</option>
+                  {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                    <option value={n}>{n} {n === 1 ? 'person' : 'people'}</option>
+                  ))}
+                  <option value="10+">10+ (large group)</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="res-experience" class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-1.5">What draws you to this experience?</label>
+                <textarea
+                  id="res-experience"
+                  name="message"
+                  rows={3}
+                  placeholder="Tell us your fitness level, any questions, special needs, or what you're hoping to get out of it…"
+                  class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white resize-none"
+                ></textarea>
+              </div>
+
+              <!-- Contact preference -->
+              <fieldset class="space-y-2">
+                <legend class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-2">How would you like us to reach out? *</legend>
+
+                <label class="flex items-start gap-3 p-3.5 rounded-xl border border-brand-primary/20 bg-brand-sky/20 cursor-pointer has-[:checked]:border-brand-primary has-[:checked]:bg-brand-sky/50 transition-colors">
+                  <input type="radio" name="contact_preference" value="call" required class="mt-0.5 accent-brand-primary shrink-0" />
+                  <div>
+                    <span class="block text-sm font-semibold text-brand-dark">📞 Book a discovery call</span>
+                    <span class="text-xs text-gray-500">We'll schedule a 10-min call at a time that suits you — our guide will walk you through everything.</span>
+                  </div>
+                </label>
+
+                <label class="flex items-start gap-3 p-3.5 rounded-xl border border-brand-primary/20 bg-brand-sky/20 cursor-pointer has-[:checked]:border-brand-primary has-[:checked]:bg-brand-sky/50 transition-colors">
+                  <input type="radio" name="contact_preference" value="callback" class="mt-0.5 accent-brand-primary shrink-0" />
+                  <div>
+                    <span class="block text-sm font-semibold text-brand-dark">💬 Have a guide contact me</span>
+                    <span class="text-xs text-gray-500">One of our guides will reach out via WhatsApp or email at their earliest convenience — usually within 24 hours.</span>
+                  </div>
+                </label>
+              </fieldset>
+
+              <button
+                type="submit"
+                class:list={[
+                  'w-full py-3.5 rounded-xl font-bold text-sm transition-colors duration-200',
+                  isFull
+                    ? 'bg-brand-gold text-brand-dark hover:bg-yellow-400'
+                    : 'bg-brand-primary text-white hover:bg-brand-olive',
+                ]}
+              >
+                {isFull ? 'Join Waitlist →' : 'Send My Request →'}
+              </button>
+
+              <p class="text-center text-xs text-gray-400 leading-relaxed">
+                Or reach us directly at
+                <a href="tel:+96170050590" class="text-brand-primary hover:underline font-medium">+961 70-050590</a>
+              </p>
+            </form>
+
+            <!-- Success message (shown after JS submit) -->
+            <div id="reservation-success" class="hidden px-6 pb-8 text-center">
+              <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17L4 12"/>
+                </svg>
+              </div>
+              <h3 class="font-heading font-bold text-brand-primary text-lg mb-2">Request Sent!</h3>
+              <p class="text-sm text-gray-600 leading-relaxed">
+                Thank you! One of our guides will be in touch shortly about <strong>{event.title}</strong> — either to confirm your call or reach out directly.
+              </p>
+              <p class="text-xs text-gray-400 mt-3">
+                Questions in the meantime? Call <a href="tel:+96170050590" class="text-brand-primary hover:underline">+961 70-050590</a>
+              </p>
+            </div>
+
+          </div>
+
+          <!-- Contact alternative -->
+          <div class="mt-4 text-center">
+            <p class="text-xs text-gray-500">
+              Prefer to book directly?
+              <a href="tel:+96170050590" class="text-brand-primary hover:underline font-semibold">Call +961 70-050590</a>
+              or
+              <a href="mailto:lebventures.lebanon@gmail.com" class="text-brand-primary hover:underline font-semibold">email us</a>
+            </p>
+          </div>
+        </aside>
+
+      </div>
+    </div>
+
+    <!-- Related events strip (back to all) -->
+    <div class="bg-brand-sky/30 border-t border-brand-sky py-10 text-center">
+      <p class="text-sm text-gray-600 mb-3">Looking for something different?</p>
+      <a href="/events" class="btn-outline">Browse All Events</a>
+    </div>
+
+  </main>
+  <Footer />
+</BaseLayout>
+
+<script>
+  const form = document.getElementById('reservation-form') as HTMLFormElement | null;
+  const success = document.getElementById('reservation-success');
+
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    form.classList.add('hidden');
+    success?.classList.remove('hidden');
+  });
+</script>
