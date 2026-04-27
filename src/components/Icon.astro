@@ -196,6 +196,93 @@ const icons: Record<string, string> = {
     <line x1="29" y1="13.5" x2="30" y2="14"/>
   `),
 
+  water: icon(`
+    <!-- Sea / lake fill -->
+    <path d="M2 32Q8 26 14 32Q20 26 26 32Q32 26 38 32Q44 26 46 30L46 44L2 44Z" fill="currentColor" fill-opacity="0.08" stroke="none"/>
+    <!-- Kayak paddle -->
+    <line x1="6" y1="12" x2="42" y2="28"/>
+    <ellipse cx="6" cy="11" rx="4" ry="2" transform="rotate(-20 6 11)" fill="currentColor" fill-opacity="0.2"/>
+    <ellipse cx="42" cy="29" rx="4" ry="2" transform="rotate(-20 42 29)" fill="currentColor" fill-opacity="0.2"/>
+    <!-- Kayak hull -->
+    <path d="M10 34Q24 28 38 34Q32 40 16 40Z" fill="currentColor" fill-opacity="0.15"/>
+    <path d="M10 34Q24 28 38 34Q32 40 16 40Z"/>
+    <!-- Paddler body -->
+    <circle cx="24" cy="28" r="3" fill="currentColor" fill-opacity="0.2"/>
+    <line x1="24" y1="31" x2="24" y2="35"/>
+    <!-- Wave lines -->
+    <path d="M2 32Q8 26 14 32Q20 26 26 32Q32 26 38 32Q44 26 46 30" stroke-width="1.4"/>
+    <path d="M2 38Q8 34 14 38Q20 34 26 38Q32 34 38 38Q44 34 46 36" stroke-width="1" opacity="0.5"/>
+  `),
+
+  snow: icon(`
+    <!-- Snowflake centre -->
+    <circle cx="24" cy="24" r="3" fill="currentColor" fill-opacity="0.3"/>
+    <!-- 6 arms -->
+    <line x1="24" y1="8" x2="24" y2="40"/>
+    <line x1="9.4" y1="16" x2="38.6" y2="32"/>
+    <line x1="9.4" y1="32" x2="38.6" y2="16"/>
+    <!-- Branch tips -->
+    <path d="M24 12L20 16M24 12L28 16"/>
+    <path d="M24 36L20 32M24 36L28 32"/>
+    <path d="M12 18L12 23M12 18L16 21"/>
+    <path d="M36 30L36 25M36 30L32 27"/>
+    <path d="M12 30L12 25M12 30L16 27"/>
+    <path d="M36 18L36 23M36 18L32 21"/>
+    <!-- Snow ground -->
+    <path d="M2 42Q12 38 24 42Q36 38 46 42" stroke-width="1.2" opacity="0.4"/>
+    <!-- Snowflakes small -->
+    <circle cx="8" cy="10" r="1.5" fill="currentColor" stroke="none" opacity="0.5"/>
+    <circle cx="40" cy="14" r="1" fill="currentColor" stroke="none" opacity="0.4"/>
+    <circle cx="14" cy="5" r="1" fill="currentColor" stroke="none" opacity="0.3"/>
+  `),
+
+  leisure: icon(`
+    <!-- Night sky fill -->
+    <path d="M2 2L46 2L46 32L2 32Z" fill="currentColor" fill-opacity="0.05" stroke="none"/>
+    <!-- Stars -->
+    <circle cx="10" cy="10" r="1.5" fill="currentColor" stroke="none"/>
+    <circle cx="24" cy="6" r="2" fill="currentColor" stroke="none"/>
+    <circle cx="38" cy="12" r="1.5" fill="currentColor" stroke="none"/>
+    <circle cx="16" cy="18" r="1" fill="currentColor" stroke="none" opacity="0.7"/>
+    <circle cx="34" cy="20" r="1" fill="currentColor" stroke="none" opacity="0.7"/>
+    <!-- Shooting star -->
+    <path d="M30 8L40 4" stroke-width="1" opacity="0.6"/>
+    <!-- Moon crescent -->
+    <path d="M6 6A10 10 0 0 0 14 24A8 8 0 0 1 6 6Z" fill="currentColor" fill-opacity="0.25"/>
+    <!-- Telescope on tripod -->
+    <path d="M22 38L26 24"/>
+    <path d="M26 24L34 20L38 28L30 32Z" fill="currentColor" fill-opacity="0.12"/>
+    <path d="M26 24L34 20L38 28L30 32Z"/>
+    <!-- Tripod legs -->
+    <line x1="22" y1="38" x2="16" y2="46"/>
+    <line x1="22" y1="38" x2="22" y2="46"/>
+    <line x1="22" y1="38" x2="28" y2="46"/>
+    <!-- Ground horizon -->
+    <path d="M2 44L46 44" stroke-width="1" opacity="0.3"/>
+  `),
+
+  kids: icon(`
+    <!-- Tree (nature) -->
+    <path d="M30 44L30 28" stroke-width="2"/>
+    <path d="M20 28Q20 14 30 10Q40 14 40 28Z" fill="currentColor" fill-opacity="0.12"/>
+    <path d="M20 28Q20 14 30 10Q40 14 40 28Z"/>
+    <!-- Child: head -->
+    <circle cx="14" cy="16" r="4" fill="currentColor" fill-opacity="0.15"/>
+    <!-- Body -->
+    <line x1="14" y1="20" x2="14" y2="32"/>
+    <!-- Arms raised (excited) -->
+    <line x1="14" y1="23" x2="8" y2="18"/>
+    <line x1="14" y1="23" x2="20" y2="18"/>
+    <!-- Legs -->
+    <line x1="14" y1="32" x2="10" y2="42"/>
+    <line x1="14" y1="32" x2="18" y2="42"/>
+    <!-- Magnifying glass -->
+    <circle cx="8" cy="17" r="3"/>
+    <line x1="10.5" y1="19.5" x2="13" y2="22"/>
+    <!-- Ground -->
+    <path d="M2 44L46 44" stroke-width="1" opacity="0.3"/>
+  `),
+
   /* ── SUSTAINABLE TOURISM PILLARS ────────────────────────────────── */
 
   leaf: icon(`
