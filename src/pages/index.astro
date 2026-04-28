@@ -20,7 +20,7 @@ const featuredAdventures = [
   description="LebVentures is a family-founded adventure tour operator based in Byblos, Lebanon. Founded in 2019 by Pierre Abboud and Gioia Wehbe, we offer hiking, camping, kayaking, snowshoeing, rock climbing, kids adventures, and more across Lebanon's stunning landscapes."
   keywords="adventure tourism Lebanon, hiking Lebanon, kayaking Lebanon, camping Lebanon, kids outdoor activities Lebanon, sustainable tourism Byblos, LebVentures, Pierre Abboud, Gioia Wehbe"
 >
-  <Navbar />
+  <Navbar transparent={true} />
   <main>
 
     <!-- Hero with banner image -->
@@ -28,12 +28,12 @@ const featuredAdventures = [
       useBanner={true}
       heading="For the Love<br />of Nature."
       subheading="LebVentures connects adventurers with Lebanon's hidden trails, sacred cedars, ancient ruins, and breathtaking landscapes — guided by people who truly love this land."
-      primaryCta={{ label: 'Explore Adventures', href: '/adventures' }}
-      secondaryCta={{ label: 'Our Story', href: '/about' }}
+      primaryCta={{ label: 'Plan Adventure', href: '/adventures' }}
+      secondaryCta={{ label: 'Book Event', href: '/events' }}
       stats={[
-        { value: '50+', label: 'Routes & Trails' },
+        { value: '20+', label: 'Events' },
         { value: '9', label: 'Adventure Types' },
-        { value: '1000+', label: 'Adventurers' },
+        { value: '100+', label: 'Adventurers' },
       ]}
     />
 
@@ -75,12 +75,12 @@ const featuredAdventures = [
         <div class="grid lg:grid-cols-2 gap-16 items-center">
           <div>
             <span class="inline-block text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">Our Story</span>
-            <h2 id="about-snippet-heading" class="section-heading">Born from Scouts,<br />Built for Lebanon</h2>
+            <h2 id="about-snippet-heading" class="section-heading">Family-Founded,<br />Adventure-Driven</h2>
             <p class="text-gray-600 leading-relaxed mb-6">
-              LebVentures was founded in 2019 by <strong>Pierre Abboud</strong> and <strong>Gioia Wehbe</strong>, a married couple who met as teenagers in the Lebanese scouts. They fell in love with the mountains — and with each other.
+              LebVentures is a family-founded tour operator specializing in adventure tourism. Founded in 2019 by <strong>Pierre Abboud</strong> and <strong>Gioia Wehbe</strong>, we organize diverse outdoor experiences — from hiking and camping to rock climbing, kayaking, and customized eco-tours — tailored for all adventure levels.
             </p>
             <p class="text-gray-600 leading-relaxed mb-8">
-              Both founders remain actively trained in wilderness skills, first aid, and sustainable tourism best practices. Every adventure is backed by real expertise and genuine passion — based out of Byblos, Lebanon.
+              Born out of a shared love for Lebanon's mountains, our mission is simple: connect people with Lebanon's extraordinary outdoors through inclusive, authentic, and sustainable adventures.
             </p>
             <a href="/about" class="btn-primary">Meet the Founders</a>
           </div>

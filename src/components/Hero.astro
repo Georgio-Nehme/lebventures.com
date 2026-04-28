@@ -7,6 +7,7 @@ interface Props {
   secondaryCta?: { label: string; href: string };
   stats?: { value: string; label: string }[];
   useBanner?: boolean;
+  videoSrc?: string;
 }
 
 const {
@@ -17,17 +18,34 @@ const {
   secondaryCta,
   stats,
   useBanner = false,
+  videoSrc,
 } = Astro.props;
 ---
 
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-brand-dark pt-16">
 
-  <!-- Banner image (when provided) -->
-  {useBanner && (
+  <!-- Video background (preferred) -->
+  {videoSrc && (
+    <div class="absolute inset-0 z-0">
+      <video
+        autoplay
+        muted
+        loop
+        playsinline
+        poster="/header_lebventures.png"
+        class="w-full h-full object-cover object-center"
+      >
+        <source src={videoSrc} type="video/mp4" />
+      </video>
+    </div>
+  )}
+
+  <!-- Banner image (fallback when no video) -->
+  {!videoSrc && useBanner && (
     <div class="absolute inset-0 z-0">
       <img
         src="/header_lebventures.png"
-        alt="LebVentures — For the Love of Nature" 
+        alt="LebVentures — For the Love of Nature"
         class="w-full h-full object-cover object-center opacity-90"
         loading="eager"
         fetchpriority="high"
@@ -36,7 +54,10 @@ const {
   )}
 
   <!-- Gradient overlay -->
-  <div class="absolute inset-0 bg-gradient-to-br from-brand-dark via-brand-olive/80 to-brand-primary/60 z-10"></div>
+  <div class="absolute inset-0 bg-gradient-to-br from-brand-dark via-brand-primary/80 to-brand-sage/50 z-10"></div>
+
+  <!-- Top scrim so transparent navbar text stays readable -->
+  <div class="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/40 to-transparent z-10 pointer-events-none"></div>
 
   <!-- Decorative hills -->
   <svg
@@ -54,14 +75,14 @@ const {
 
   <!-- Content -->
   <div class="relative z-20 text-center text-white px-4 max-w-4xl mx-auto">
-    <p class="text-brand-gold font-medium tracking-widest uppercase text-sm mb-4">{tagline}</p>
-    <h1 class="text-5xl md:text-7xl font-heading font-bold leading-tight mb-6 drop-shadow-lg" set:html={heading} />
+    <p class="text-brand-gold font-semibold tracking-widest uppercase text-sm mb-4">{tagline}</p>
+    <h1 class="text-5xl md:text-7xl font-heading font-black leading-tight mb-6 drop-shadow-lg" set:html={heading} />
     <p class="text-lg md:text-xl text-white/85 max-w-2xl mx-auto mb-10 leading-relaxed">{subheading}</p>
 
     {(primaryCta || secondaryCta) && (
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         {primaryCta && (
-          <a href={primaryCta.href} class="btn-primary bg-brand-gold text-brand-dark hover:bg-yellow-400 text-base px-8 py-4">
+          <a href={primaryCta.href} class="btn-primary bg-brand-gold text-brand-dark hover:bg-amber-400 text-base px-8 py-4 font-bold">
             {primaryCta.label}
           </a>
         )}

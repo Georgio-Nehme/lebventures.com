@@ -1,11 +1,16 @@
 ---
+interface Props {
+  transparent?: boolean;
+}
+
+const { transparent = false } = Astro.props;
 const pathname = new URL(Astro.request.url).pathname;
 
 const navLinks = [
   { href: '/adventures', label: 'Adventures' },
   { href: '/events', label: 'Events' },
-  { href: '/sustainable-tourism', label: 'Sustainable Tourism' },
-  { href: '/about', label: 'About Us' },
+  { href: '/sustainable-tourism', label: 'Sustainability' },
+  { href: '/about', label: 'Our Story' },
 ];
 
 function isActive(href: string) {
@@ -13,18 +18,21 @@ function isActive(href: string) {
 }
 ---
 
-<header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b border-brand-sky">
+<header
+  id="site-header"
+  class="site-header fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b border-brand-sky transition-all duration-300"
+  data-transparent={transparent ? 'true' : undefined}
+>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
 
-      <!-- Text logo -->
-      <a href="/" class="flex flex-col leading-tight group shrink-0">
-        <span class="font-heading font-bold text-xl text-brand-primary tracking-wider uppercase group-hover:text-brand-olive transition-colors">
-          LebVentures
-        </span>
-        <span class="font-heading italic text-[0.6rem] text-brand-lime tracking-wide -mt-0.5">
-          for the love of nature.
-        </span>
+      <!-- Logo -->
+      <a href="/" class="shrink-0">
+        <img
+          src="/logo-horizontal.png"
+          alt="LebVentures — For the Love of Nature"
+          class="logo-img h-10 w-auto"
+        />
       </a>
 
       <!-- Desktop Nav -->
@@ -33,9 +41,9 @@ function isActive(href: string) {
           <a
             href={link.href}
             class:list={[
-              'text-sm font-medium transition-colors duration-150',
+              'nav-link text-sm font-semibold transition-colors duration-150',
               isActive(link.href)
-                ? 'text-brand-primary border-b-2 border-brand-primary pb-0.5'
+                ? 'active text-brand-primary border-b-2 border-brand-primary pb-0.5'
                 : 'text-brand-olive hover:text-brand-primary',
             ]}
             aria-current={isActive(link.href) ? 'page' : undefined}
@@ -43,7 +51,7 @@ function isActive(href: string) {
             {link.label}
           </a>
         ))}
-        <a href="/contact" class="btn-primary text-sm py-2 px-4">Free Consultation</a>
+        <a href="/contact" class="nav-cta btn-primary text-sm py-2 px-4">Let's Connect</a>
       </nav>
 
       <!-- Mobile menu button -->
@@ -70,7 +78,7 @@ function isActive(href: string) {
         <a
           href={link.href}
           class:list={[
-            'font-medium transition-colors',
+            'font-semibold transition-colors',
             isActive(link.href)
               ? 'text-brand-primary font-bold'
               : 'text-brand-olive hover:text-brand-primary',
@@ -80,17 +88,66 @@ function isActive(href: string) {
           {link.label}
         </a>
       ))}
-      <a href="/contact" class="btn-primary text-center">Free Consultation</a>
+      <a href="/contact" class="btn-primary text-center">Let's Connect</a>
     </nav>
   </div>
 </header>
 
+<style is:global>
+  /* Transparent navbar state (before scroll) */
+  .site-header[data-transparent]:not(.scrolled) {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border-bottom-color: transparent !important;
+    backdrop-filter: none !important;
+  }
+
+  .site-header[data-transparent]:not(.scrolled) .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .site-header[data-transparent]:not(.scrolled) .nav-link:hover,
+  .site-header[data-transparent]:not(.scrolled) .nav-link.active {
+    color: #ffffff;
+    border-bottom-color: #ffffff !important;
+  }
+
+  .site-header[data-transparent]:not(.scrolled) .nav-cta {
+    background-color: transparent;
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .site-header[data-transparent]:not(.scrolled) .nav-cta:hover {
+    background-color: #ffffff;
+    color: #1C3818;
+  }
+
+  /* Wrap the logo in a light background pill when navbar is transparent */
+  .site-header[data-transparent]:not(.scrolled) .logo-img {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.5rem;
+  }
+</style>
+
 <script>
+  const header = document.getElementById('site-header');
   const toggle = document.getElementById('menu-toggle');
   const menu = document.getElementById('mobile-menu');
   const iconOpen = document.getElementById('icon-open');
   const iconClose = document.getElementById('icon-close');
 
+  // Transparent-on-scroll behaviour
+  if (header?.dataset.transparent === 'true') {
+    const update = () => {
+      header.classList.toggle('scrolled', window.scrollY > 20);
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+
+  // Mobile menu toggle
   toggle?.addEventListener('click', () => {
     const isHidden = menu?.classList.toggle('hidden');
     toggle.setAttribute('aria-expanded', String(!isHidden));

@@ -5,18 +5,21 @@ export default {
     extend: {
       colors: {
         brand: {
-          dark:    '#142800', // deep dark green (silhouette)
-          primary: '#3c6414', // forest green (logo text)
-          olive:   '#3c5000', // olive green
-          mid:     '#78a014', // medium green (hills)
-          lime:    '#78b400', // bright lime green (hills highlight)
-          gold:    '#f0c800', // sun yellow / gold accent
-          sky:     '#daeef7', // light sky blue (background)
+          dark:    '#0F2214', // deep dark forest green (footer/hero bg)
+          primary: '#1C3818', // main forest green (LEBVENTURES logo text)
+          olive:   '#4A6830', // olive green
+          sage:    '#7A9050', // sage green hills
+          lime:    '#90B060', // lighter sage-green (text on dark backgrounds)
+          gold:    '#D4890A', // sun amber/gold (logo sun)
+          sky:     '#E8EFE0', // light green tint background
+          sand:    '#C8A868', // warm sandy beige
+          teal:    '#2A4D68', // blue teal (water layer in logo)
         },
       },
       fontFamily: {
-        heading: ['Georgia', 'serif'],
-        body: ['system-ui', 'sans-serif'],
+        heading: ['Montserrat', 'sans-serif'],
+        script:  ['Dancing Script', 'cursive'],
+        body:    ['system-ui', 'sans-serif'],
       },
     },
   },
