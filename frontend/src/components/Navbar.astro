@@ -1,0 +1,158 @@
+---
+interface Props {
+  transparent?: boolean;
+}
+
+const { transparent = false } = Astro.props;
+const pathname = new URL(Astro.request.url).pathname;
+
+const navLinks = [
+  { href: '/adventures', label: 'Adventures' },
+  { href: '/activities', label: 'Activities' },
+  { href: '/events', label: 'Events' },
+  { href: '/sustainable-tourism', label: 'Sustainability' },
+  { href: '/about', label: 'Our Story' },
+];
+
+function isActive(href: string) {
+  return pathname === href || pathname.startsWith(href + '/');
+}
+---
+
+<header
+  id="site-header"
+  class="site-header fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b border-brand-sky transition-all duration-300"
+  data-transparent={transparent ? 'true' : undefined}
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+
+      <!-- Logo -->
+      <a href="/" class="shrink-0">
+        <img
+          src="/logo-horizontal.png"
+          alt="LebVentures — For the Love of Nature"
+          class="logo-img h-10 w-auto"
+        />
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden md:flex items-center gap-6">
+        {navLinks.map(link => (
+          <a
+            href={link.href}
+            class:list={[
+              'nav-link text-sm font-semibold transition-colors duration-150',
+              isActive(link.href)
+                ? 'active text-brand-primary border-b-2 border-brand-primary pb-0.5'
+                : 'text-brand-olive hover:text-brand-primary',
+            ]}
+            aria-current={isActive(link.href) ? 'page' : undefined}
+          >
+            {link.label}
+          </a>
+        ))}
+        <a href="/contact" class="nav-cta btn-primary text-sm py-2 px-4">Let's Connect</a>
+      </nav>
+
+      <!-- Mobile menu button -->
+      <button
+        id="menu-toggle"
+        class="md:hidden p-2 rounded-md text-brand-primary hover:bg-brand-sky transition-colors"
+        aria-label="Open menu"
+        aria-expanded="false"
+      >
+        <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Nav -->
+  <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-brand-sky">
+    <nav class="flex flex-col px-4 py-4 gap-4">
+      {navLinks.map(link => (
+        <a
+          href={link.href}
+          class:list={[
+            'font-semibold transition-colors',
+            isActive(link.href)
+              ? 'text-brand-primary font-bold'
+              : 'text-brand-olive hover:text-brand-primary',
+          ]}
+          aria-current={isActive(link.href) ? 'page' : undefined}
+        >
+          {link.label}
+        </a>
+      ))}
+      <a href="/contact" class="btn-primary text-center">Let's Connect</a>
+    </nav>
+  </div>
+</header>
+
+<style is:global>
+  /* Transparent navbar state (before scroll) */
+  .site-header[data-transparent]:not(.scrolled) {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border-bottom-color: transparent !important;
+    backdrop-filter: none !important;
+  }
+
+  .site-header[data-transparent]:not(.scrolled) .nav-link {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .site-header[data-transparent]:not(.scrolled) .nav-link:hover,
+  .site-header[data-transparent]:not(.scrolled) .nav-link.active {
+    color: #ffffff;
+    border-bottom-color: #ffffff !important;
+  }
+
+  .site-header[data-transparent]:not(.scrolled) .nav-cta {
+    background-color: transparent;
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .site-header[data-transparent]:not(.scrolled) .nav-cta:hover {
+    background-color: #ffffff;
+    color: #1C3818;
+  }
+
+  /* Wrap the logo in a light background pill when navbar is transparent */
+  .site-header[data-transparent]:not(.scrolled) .logo-img {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.5rem;
+  }
+</style>
+
+<script>
+  const header = document.getElementById('site-header');
+  const toggle = document.getElementById('menu-toggle');
+  const menu = document.getElementById('mobile-menu');
+  const iconOpen = document.getElementById('icon-open');
+  const iconClose = document.getElementById('icon-close');
+
+  // Transparent-on-scroll behaviour
+  if (header?.dataset.transparent === 'true') {
+    const update = () => {
+      header.classList.toggle('scrolled', window.scrollY > 20);
+    };
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  }
+
+  // Mobile menu toggle
+  toggle?.addEventListener('click', () => {
+    const isHidden = menu?.classList.toggle('hidden');
+    toggle.setAttribute('aria-expanded', String(!isHidden));
+    iconOpen?.classList.toggle('hidden', !isHidden);
+    iconClose?.classList.toggle('hidden', !!isHidden);
+  });
+</script>

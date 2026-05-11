@@ -1,0 +1,390 @@
+---
+// Reusable event form for create and edit pages
+// Props: mode ('create'|'edit'), eventId (for edit)
+interface Props {
+  mode: 'create' | 'edit';
+}
+const { mode } = Astro.props;
+const isEdit = mode === 'edit';
+---
+
+<form id="event-form" class="space-y-8" novalidate>
+
+  <!-- Status -->
+  <div id="form-status" class="hidden p-4 rounded-xl text-sm font-medium"></div>
+
+  <!-- Basic info -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <h2 class="font-heading font-bold text-brand-dark mb-5">Basic Information</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+      <div class="md:col-span-2">
+        <label class="form-label">Event Title *</label>
+        <input name="title" type="text" required class="form-input" placeholder="Billion Star Hotel – Camping & Stargazing" />
+      </div>
+
+      <div>
+        <label class="form-label">Type *</label>
+        <select name="type" required class="form-input">
+          <option value="">Select type…</option>
+          {['hiking','climbing','camping','heritage','canyoning','biking','workshop','water','snow','leisure','kids'].map(t => (
+            <option value={t} class="capitalize">{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label">Difficulty *</label>
+        <select name="difficulty" required class="form-input">
+          <option value="">Select difficulty…</option>
+          {['Easy','Moderate','Challenging','Expert'].map(d => (
+            <option value={d}>{d}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label class="form-label">Date *</label>
+        <input name="date" type="date" required class="form-input" />
+      </div>
+
+      <div>
+        <label class="form-label">Start Time *</label>
+        <input name="time" type="time" required class="form-input" />
+      </div>
+
+      <div>
+        <label class="form-label">Duration *</label>
+        <input name="duration" type="text" required class="form-input" placeholder="Full day (8 hrs)" />
+      </div>
+
+      <div>
+        <label class="form-label">Guide *</label>
+        <input name="guide" type="text" required class="form-input" placeholder="Pierre & Gioia (founders)" />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Location -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <h2 class="font-heading font-bold text-brand-dark mb-5">Location</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+      <div>
+        <label class="form-label">Location Name *</label>
+        <input name="location" type="text" required class="form-input" placeholder="Qadisha Valley" />
+      </div>
+
+      <div>
+        <label class="form-label">Region *</label>
+        <input name="region" type="text" required class="form-input" placeholder="North Lebanon" />
+      </div>
+
+      <div>
+        <label class="form-label">Latitude *</label>
+        <input name="lat" type="number" step="any" required class="form-input" placeholder="34.215" />
+      </div>
+
+      <div>
+        <label class="form-label">Longitude *</label>
+        <input name="lng" type="number" step="any" required class="form-input" placeholder="36.020" />
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Capacity & pricing -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <h2 class="font-heading font-bold text-brand-dark mb-5">Capacity & Pricing</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+
+      <div>
+        <label class="form-label">Total Spots *</label>
+        <input name="spots" type="number" min="1" required class="form-input" placeholder="12" />
+      </div>
+
+      <div>
+        <label class="form-label">Spots Remaining *</label>
+        <input name="spotsLeft" type="number" min="0" required class="form-input" placeholder="12" />
+      </div>
+
+      <div>
+        <label class="form-label">Price (USD) *</label>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-semibold">$</span>
+          <input name="price" type="number" min="0" step="0.01" required class="form-input pl-7" placeholder="0 = Free" />
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Description & highlights -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <h2 class="font-heading font-bold text-brand-dark mb-5">Description & Highlights</h2>
+
+    <div class="mb-5">
+      <label class="form-label">Description *</label>
+      <textarea name="description" rows="4" required class="form-input resize-none"
+        placeholder="An unforgettable experience…"></textarea>
+    </div>
+
+    <div>
+      <label class="form-label">Highlights * <span class="text-gray-400 font-normal">(one per line)</span></label>
+      <textarea name="highlights" id="highlights-textarea" rows="5" required class="form-input resize-none font-mono text-xs"
+        placeholder="Stargazing session with star chart&#10;Fire & shelter workshop&#10;Wildlife tracking at dawn"></textarea>
+    </div>
+  </div>
+
+  <!-- Media -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <h2 class="font-heading font-bold text-brand-dark mb-5">Media</h2>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+      <!-- Cover image -->
+      <div>
+        <label class="form-label">Cover Photo</label>
+        <div
+          id="image-drop"
+          class="mt-1 border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-brand-primary transition-colors cursor-pointer"
+        >
+          <div id="image-placeholder">
+            <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <p class="text-sm text-gray-400">Click or drag to upload</p>
+            <p class="text-xs text-gray-300 mt-1">JPEG, PNG or WebP · max 5 MB</p>
+          </div>
+          <img id="image-preview" class="hidden w-full h-40 object-cover rounded-lg" alt="Preview" />
+          <input id="image-input" type="file" accept="image/jpeg,image/png,image/webp" class="hidden" />
+        </div>
+        <input name="image" id="image-url-field" type="hidden" />
+        <p id="image-status" class="text-xs text-gray-400 mt-1.5"></p>
+      </div>
+
+      <!-- Trail file -->
+      <div>
+        <label class="form-label">Trail File <span class="text-gray-400 font-normal">(GPX / KML)</span></label>
+        <div
+          id="trail-drop"
+          class="mt-1 border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-brand-primary transition-colors cursor-pointer"
+        >
+          <svg class="w-8 h-8 mx-auto mb-2 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          </svg>
+          <p id="trail-filename" class="text-sm text-gray-400">Click or drag to upload</p>
+          <p class="text-xs text-gray-300 mt-1">GPX or KML</p>
+          <input id="trail-input" type="file" accept=".gpx,.kml,application/gpx+xml,application/vnd.google-earth.kml+xml" class="hidden" />
+        </div>
+        <input name="trailFile" id="trail-url-field" type="hidden" />
+        <p id="trail-status" class="text-xs text-gray-400 mt-1.5"></p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Submit -->
+  <div class="flex items-center justify-between">
+    <a href="/admin/dashboard" class="text-gray-500 hover:text-brand-dark text-sm font-medium transition-colors">
+      ← Back to Dashboard
+    </a>
+    <button
+      type="submit"
+      id="submit-btn"
+      class="inline-flex items-center gap-2 bg-brand-primary text-white px-8 py-3 rounded-xl font-bold text-sm hover:bg-brand-olive transition-colors"
+    >
+      <span id="btn-text">{isEdit ? 'Save Changes' : 'Create Event'}</span>
+      <svg id="btn-spinner" class="hidden w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+</form>
+
+<script define:vars={{ isEdit }}>
+const API = import.meta.env.PUBLIC_API_URL;
+const token = () => sessionStorage.getItem('lv_id_token');
+
+// In edit mode, read the event ID from the URL query string at runtime
+const eventId = isEdit
+  ? new URLSearchParams(window.location.search).get('id')
+  : null;
+
+async function loadEvent() {
+  if (!isEdit || !eventId) return;
+  try {
+    const res = await fetch(`${API}/events/${eventId}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const ev = await res.json();
+
+    const form = document.getElementById('event-form');
+    for (const [key, value] of Object.entries(ev)) {
+      if (key === 'highlights') {
+        document.getElementById('highlights-textarea').value = Array.isArray(value)
+          ? value.join('\n') : value;
+        continue;
+      }
+      const el = form.elements[key];
+      if (el) el.value = value ?? '';
+    }
+
+    if (ev.image) {
+      document.getElementById('image-url-field').value = ev.image;
+      const preview = document.getElementById('image-preview');
+      preview.src = ev.image;
+      preview.classList.remove('hidden');
+      document.getElementById('image-placeholder').classList.add('hidden');
+    }
+    if (ev.trailFile) {
+      document.getElementById('trail-url-field').value = ev.trailFile;
+      document.getElementById('trail-filename').textContent = ev.trailFile.split('/').pop();
+    }
+  } catch (err) {
+    showStatus(`Failed to load event: ${err.message}`, 'error');
+  }
+}
+
+async function uploadFile(file, purpose) {
+  let contentType = file.type;
+  if (!contentType || contentType === 'application/octet-stream') {
+    if (file.name.endsWith('.gpx')) contentType = 'application/gpx+xml';
+    if (file.name.endsWith('.kml')) contentType = 'application/vnd.google-earth.kml+xml';
+  }
+  const urlRes = await fetch(`${API}/upload-url`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
+    body: JSON.stringify({ filename: file.name, contentType }),
+  });
+  if (!urlRes.ok) throw new Error(`Upload URL request failed: HTTP ${urlRes.status}`);
+  const { uploadUrl, publicUrl } = await urlRes.json();
+  await fetch(uploadUrl, { method: 'PUT', headers: { 'Content-Type': contentType }, body: file });
+  return publicUrl;
+}
+
+function setFileStatus(id, msg, isError = false) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = `text-xs mt-1.5 ${isError ? 'text-red-500' : 'text-green-600'}`;
+}
+
+// Image upload
+const imageDrop  = document.getElementById('image-drop');
+const imageInput = document.getElementById('image-input');
+const imagePreview = document.getElementById('image-preview');
+const imagePlaceholder = document.getElementById('image-placeholder');
+
+imageDrop.addEventListener('click', () => imageInput.click());
+imageDrop.addEventListener('dragover', e => { e.preventDefault(); imageDrop.classList.add('border-brand-primary'); });
+imageDrop.addEventListener('dragleave', () => imageDrop.classList.remove('border-brand-primary'));
+imageDrop.addEventListener('drop', async e => { e.preventDefault(); imageDrop.classList.remove('border-brand-primary'); if (e.dataTransfer.files[0]) await handleImage(e.dataTransfer.files[0]); });
+imageInput.addEventListener('change', async () => { if (imageInput.files[0]) await handleImage(imageInput.files[0]); });
+
+async function handleImage(file) {
+  if (file.size > 5 * 1024 * 1024) { setFileStatus('image-status', 'File too large (max 5 MB).', true); return; }
+  const reader = new FileReader();
+  reader.onload = e => { imagePreview.src = e.target.result; imagePreview.classList.remove('hidden'); imagePlaceholder.classList.add('hidden'); };
+  reader.readAsDataURL(file);
+  setFileStatus('image-status', 'Uploading…');
+  try {
+    const url = await uploadFile(file, 'image');
+    document.getElementById('image-url-field').value = url;
+    setFileStatus('image-status', '✓ Uploaded');
+  } catch (err) { setFileStatus('image-status', `Upload failed: ${err.message}`, true); }
+}
+
+// Trail file upload
+const trailDrop  = document.getElementById('trail-drop');
+const trailInput = document.getElementById('trail-input');
+
+trailDrop.addEventListener('click', () => trailInput.click());
+trailDrop.addEventListener('dragover', e => { e.preventDefault(); trailDrop.classList.add('border-brand-primary'); });
+trailDrop.addEventListener('dragleave', () => trailDrop.classList.remove('border-brand-primary'));
+trailDrop.addEventListener('drop', async e => { e.preventDefault(); trailDrop.classList.remove('border-brand-primary'); if (e.dataTransfer.files[0]) await handleTrail(e.dataTransfer.files[0]); });
+trailInput.addEventListener('change', async () => { if (trailInput.files[0]) await handleTrail(trailInput.files[0]); });
+
+async function handleTrail(file) {
+  document.getElementById('trail-filename').textContent = file.name;
+  setFileStatus('trail-status', 'Uploading…');
+  try {
+    const url = await uploadFile(file, 'trail');
+    document.getElementById('trail-url-field').value = url;
+    setFileStatus('trail-status', '✓ Uploaded');
+  } catch (err) { setFileStatus('trail-status', `Upload failed: ${err.message}`, true); }
+}
+
+function showStatus(msg, type = 'success') {
+  const el = document.getElementById('form-status');
+  el.textContent = msg;
+  el.className = `p-4 rounded-xl text-sm font-medium ${type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`;
+  el.classList.remove('hidden');
+  el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function setLoading(loading) {
+  document.getElementById('submit-btn').disabled = loading;
+  document.getElementById('btn-spinner').classList.toggle('hidden', !loading);
+  document.getElementById('btn-text').textContent = loading ? 'Saving…' : (isEdit ? 'Save Changes' : 'Create Event');
+}
+
+document.getElementById('event-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  setLoading(true);
+
+  const formData = new FormData(e.target);
+  const raw = Object.fromEntries(formData.entries());
+
+  // Reshape into API schema
+  const data = {
+    title:       raw.title,
+    type:        raw.type,
+    date:        raw.date,
+    location:    raw.location,
+    difficulty:  raw.difficulty,
+    guide:       raw.guide,
+    description: raw.description,
+    highlights:  raw.highlights.split('\n').map(s => s.trim()).filter(Boolean),
+    spots:       Number(raw.spots),
+    spotsLeft:   Number(raw.spotsLeft),
+    price:       Number(raw.price),
+    coords:      { lat: Number(raw.lat), lng: Number(raw.lng) },
+    region:      raw.region || undefined,
+    time:        raw.time || undefined,
+    duration:    raw.duration || undefined,
+    image:       raw.image || undefined,
+    trailFile:   raw.trailFile || undefined,
+  };
+  // Remove undefined values
+  Object.keys(data).forEach(k => data[k] === undefined && delete data[k]);
+
+  try {
+    const res = await fetch(
+      isEdit ? `${API}/events/${eventId}` : `${API}/events`,
+      {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token()}` },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      throw new Error(errBody.error || `HTTP ${res.status}`);
+    }
+    showStatus(isEdit ? 'Event updated successfully.' : 'Event created successfully.');
+    if (!isEdit) setTimeout(() => { window.location.href = '/admin/dashboard'; }, 1500);
+  } catch (err) {
+    showStatus(`Error: ${err.message}`, 'error');
+  } finally {
+    setLoading(false);
+  }
+});
+
+loadEvent();
+</script>
+
+<style is:global>
+.form-label { @apply block text-sm font-semibold text-gray-700 mb-1.5; }
+.form-input { @apply w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-primary text-sm text-gray-800 bg-white; }
+</style>

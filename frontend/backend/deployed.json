@@ -1,0 +1,11 @@
+{
+  "tableName": "lebventures-events",
+  "bucketName": "lebventures-images-242618236763",
+  "imagesBaseUrl": "https://lebventures-images-242618236763.s3.eu-central-1.amazonaws.com",
+  "poolId": "eu-central-1_4GSFe0c5l",
+  "clientId": "48b8eannue9n1qv2s4lcsssi8m",
+  "issuerUrl": "https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_4GSFe0c5l",
+  "apiId": "1qjuflz4tj",
+  "apiEndpoint": "https://1qjuflz4tj.execute-api.eu-central-1.amazonaws.com",
+  "authorizerId": "9y04yy"
+}

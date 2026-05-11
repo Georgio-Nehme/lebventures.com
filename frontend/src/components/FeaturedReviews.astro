@@ -1,0 +1,54 @@
+---
+import { getFeaturedReviews } from '../data/reviews';
+import type { Review } from '../data/reviews';
+
+const reviews = await getFeaturedReviews();
+const hasReviews = reviews.length > 0;
+---
+
+{hasReviews && (
+<section class="py-20 bg-white" aria-labelledby="testimonials-heading">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <div class="text-center mb-14">
+      <span class="inline-block text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">From Our Community</span>
+      <h2 id="testimonials-heading" class="section-heading">What Adventurers Say</h2>
+      <p class="section-subheading mx-auto">Real experiences from the people who've explored Lebanon with us.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {reviews.map((r: Review) => (
+        <blockquote class="bg-brand-sky/20 rounded-2xl border border-brand-sky p-6 flex flex-col gap-4">
+          <!-- Stars -->
+          <div class="text-amber-400 text-lg" aria-label={`${r.rating} out of 5 stars`}>
+            {'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}
+          </div>
+
+          <!-- Review text -->
+          <p class="text-gray-700 text-sm leading-relaxed flex-1 italic">
+            "{r.text}"
+          </p>
+
+          <!-- Author + event -->
+          <footer class="flex items-center gap-3 pt-3 border-t border-brand-sky">
+            <div class="w-9 h-9 rounded-full bg-brand-primary flex items-center justify-center text-white font-bold text-sm shrink-0">
+              {r.author.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <cite class="not-italic font-semibold text-brand-dark text-sm">{r.author}</cite>
+              {r.eventTitle && (
+                <p class="text-xs text-gray-400 mt-0.5">{r.eventTitle}</p>
+              )}
+            </div>
+          </footer>
+        </blockquote>
+      ))}
+    </div>
+
+    <div class="text-center mt-10">
+      <a href="/activities" class="btn-outline">Browse Past Adventures</a>
+    </div>
+
+  </div>
+</section>
+)}

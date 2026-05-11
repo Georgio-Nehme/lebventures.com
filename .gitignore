@@ -1,24 +1,26 @@
-# build output
-dist/
-# generated types
-.astro/
+# === Frontend (Astro) ===
+frontend/dist/
+frontend/.astro/
+frontend/node_modules/
+frontend/.env
+frontend/.env.production
 
-# dependencies
-node_modules/
+# === Admin (Next.js) ===
+admin/.next/
+admin/node_modules/
+admin/.env
+admin/.env.local
+admin/.env.production
 
-# logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+# === API (Python) ===
+api/__pycache__/
+api/*.pyc
+api/*.pyo
+api/.venv/
+api/venv/
+api/.env
 
-
-# environment variables
-.env
-.env.production
-
-# macOS-specific files
+# === Shared ===
 .DS_Store
-
-# jetbrains setting folder
 .idea/
+*.log

@@ -1,0 +1,250 @@
+---
+interface Props {
+  eventId: string;
+  eventTitle: string;
+  eventDate: string;   // "YYYY-MM-DD"
+}
+
+const { eventId, eventTitle, eventDate } = Astro.props;
+const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
+---
+
+<section
+  id="event-reviews-section"
+  class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
+  data-event-id={eventId}
+  data-event-title={eventTitle}
+  data-event-date={eventDate}
+  data-api={apiUrl}
+>
+
+  <!-- Hidden until JS decides event is in the past -->
+  <div id="reviews-inner" class="hidden">
+
+    <h2 class="text-2xl font-heading font-bold text-brand-primary mb-2">Participant Reviews</h2>
+    <p class="text-gray-500 text-sm mb-10">Joined this adventure? Share your experience to help future adventurers.</p>
+
+    <div class="grid lg:grid-cols-5 gap-12 items-start">
+
+      <!-- Reviews list -->
+      <div class="lg:col-span-3 space-y-5">
+        <div id="reviews-list">
+          <div class="text-center py-12 text-gray-400">
+            <div class="w-8 h-8 border-2 border-brand-primary/30 border-t-brand-primary rounded-full animate-spin mx-auto mb-3"></div>
+            <p class="text-sm">Loading reviews…</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Review form -->
+      <aside class="lg:col-span-2 lg:sticky lg:top-24">
+        <div class="bg-white rounded-3xl border border-brand-sky shadow-xl overflow-hidden">
+
+          <div class="bg-brand-primary px-6 py-5">
+            <h3 class="font-heading font-bold text-white text-lg">Share Your Experience</h3>
+            <p class="text-white/70 text-sm mt-1">Your review helps fellow adventurers decide.</p>
+          </div>
+
+          <form id="review-form" class="px-6 py-6 space-y-4" novalidate>
+            <div>
+              <label class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-1.5">Your Name *</label>
+              <input id="rv-name" name="author" type="text" required placeholder="Full name"
+                class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white" />
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-1.5">Email (optional)</label>
+              <input id="rv-email" name="email" type="email" placeholder="you@example.com"
+                class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white" />
+            </div>
+
+            <!-- Star rating -->
+            <div>
+              <label class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-2">Rating *</label>
+              <div id="star-rating" class="flex gap-2" role="radiogroup" aria-label="Rating">
+                {[1,2,3,4,5].map(n => (
+                  <button
+                    type="button"
+                    data-star={n}
+                    aria-label={`${n} star${n > 1 ? 's' : ''}`}
+                    class="star-btn text-3xl text-gray-300 hover:text-amber-400 transition-colors focus:outline-none focus:text-amber-400"
+                  >★</button>
+                ))}
+              </div>
+              <input id="rv-rating" name="rating" type="hidden" required value="" />
+              <p id="rating-error" class="text-xs text-red-500 mt-1 hidden">Please select a rating.</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-brand-dark uppercase tracking-wider mb-1.5">Your Review *</label>
+              <textarea id="rv-text" name="text" rows={4} required
+                placeholder="How was the experience? What stood out? Any tips for future adventurers?"
+                class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white resize-none"
+              ></textarea>
+            </div>
+
+            <button type="submit"
+              class="w-full py-3.5 rounded-xl bg-brand-primary text-white font-bold text-sm hover:bg-brand-olive transition-colors duration-200">
+              Submit Review →
+            </button>
+
+            <p class="text-center text-xs text-gray-400 leading-relaxed">
+              Reviews are moderated before appearing publicly.
+            </p>
+          </form>
+
+          <div id="review-success" class="hidden px-6 pb-8 pt-4 text-center">
+            <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-3">
+              <svg class="w-7 h-7 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6L9 17L4 12"/>
+              </svg>
+            </div>
+            <h4 class="font-heading font-bold text-brand-primary text-lg mb-2">Review Submitted!</h4>
+            <p class="text-sm text-gray-600 leading-relaxed">Thank you for sharing your experience. It'll appear after a quick review by our team.</p>
+          </div>
+
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <!-- Upcoming event placeholder (shown if event hasn't happened yet) -->
+  <div id="reviews-upcoming" class="hidden text-center py-10 border border-dashed border-brand-sky rounded-2xl bg-brand-sky/10">
+    <p class="text-brand-primary font-semibold text-sm">🗓 This event hasn't taken place yet.</p>
+    <p class="text-gray-500 text-xs mt-1">Come back after the adventure to leave your review!</p>
+  </div>
+
+</section>
+
+<script>
+  const section = document.getElementById('event-reviews-section') as HTMLElement;
+  if (!section) throw new Error('reviews section not found');
+
+  const eventId    = section.dataset.eventId!;
+  const eventDate  = section.dataset.eventDate!;
+  const API        = section.dataset.api!;
+
+  const inner     = document.getElementById('reviews-inner')!;
+  const upcoming  = document.getElementById('reviews-upcoming')!;
+  const list      = document.getElementById('reviews-list')!;
+  const form      = document.getElementById('review-form') as HTMLFormElement;
+  const success   = document.getElementById('review-success')!;
+
+  const isPast = new Date(eventDate + 'T23:59:59') < new Date();
+
+  if (isPast) {
+    inner.classList.remove('hidden');
+    loadReviews();
+  } else {
+    upcoming.classList.remove('hidden');
+  }
+
+  // ── Load approved reviews ─────────────────────────────────────
+  async function loadReviews() {
+    try {
+      const res = await fetch(`${API}/events/${eventId}/reviews/public`);
+      const reviews: { id: string; author: string; rating: number; text: string; submittedAt: string; eventTitle?: string }[] = res.ok ? await res.json() : [];
+
+      if (reviews.length === 0) {
+        list.innerHTML = `<div class="bg-brand-sky/20 rounded-2xl border border-brand-sky p-8 text-center text-gray-500 text-sm">
+          No reviews yet — be the first to share your experience!
+        </div>`;
+        return;
+      }
+
+      const avg = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
+      const rounded = Math.round(avg);
+
+      list.innerHTML = `
+        <div class="flex items-center gap-3 mb-6 p-4 bg-brand-sky/20 rounded-xl border border-brand-sky">
+          <span class="text-amber-400 text-2xl">${'★'.repeat(rounded)}${'☆'.repeat(5 - rounded)}</span>
+          <div>
+            <span class="font-bold text-brand-primary text-lg">${avg.toFixed(1)}</span>
+            <span class="text-gray-500 text-sm ml-1">average · ${reviews.length} review${reviews.length === 1 ? '' : 's'}</span>
+          </div>
+        </div>
+        ${reviews.map(r => `
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <div class="flex items-start justify-between gap-3 mb-2">
+              <div>
+                <span class="font-semibold text-slate-900 text-sm">${escHtml(r.author)}</span>
+                <span class="text-amber-400 ml-2 text-sm">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+              </div>
+              <span class="text-xs text-gray-400 shrink-0">${new Date(r.submittedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+            </div>
+            <p class="text-sm text-gray-700 leading-relaxed">${escHtml(r.text)}</p>
+          </div>
+        `).join('')}
+      `;
+    } catch {
+      list.innerHTML = `<p class="text-sm text-gray-400 text-center py-8">Could not load reviews right now.</p>`;
+    }
+  }
+
+  // ── Star rating interaction ───────────────────────────────────
+  const ratingInput = document.getElementById('rv-rating') as HTMLInputElement;
+  const ratingError = document.getElementById('rating-error')!;
+  let selectedRating = 0;
+
+  document.querySelectorAll<HTMLButtonElement>('.star-btn').forEach(btn => {
+    btn.addEventListener('mouseover', () => highlightStars(Number(btn.dataset.star)));
+    btn.addEventListener('mouseout',  () => highlightStars(selectedRating));
+    btn.addEventListener('click', () => {
+      selectedRating = Number(btn.dataset.star);
+      ratingInput.value = String(selectedRating);
+      ratingError.classList.add('hidden');
+      highlightStars(selectedRating);
+    });
+  });
+
+  function highlightStars(n: number) {
+    document.querySelectorAll<HTMLButtonElement>('.star-btn').forEach(btn => {
+      const v = Number(btn.dataset.star);
+      btn.classList.toggle('text-amber-400', v <= n);
+      btn.classList.toggle('text-gray-300', v > n);
+    });
+  }
+
+  // ── Form submission ───────────────────────────────────────────
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!selectedRating) {
+      ratingError.classList.remove('hidden');
+      return;
+    }
+
+    const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    const fd = new FormData(form);
+    const body: Record<string, unknown> = {
+      author: fd.get('author'),
+      text:   fd.get('text'),
+      rating: selectedRating,
+    };
+    const email = fd.get('email');
+    if (email) body.email = email;
+
+    try {
+      const res = await fetch(`${API}/events/${eventId}/reviews`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) throw new Error();
+      form.classList.add('hidden');
+      success.classList.remove('hidden');
+    } catch {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Review →';
+      alert('Could not submit review — please try again or contact us directly.');
+    }
+  });
+
+  function escHtml(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>

@@ -1,0 +1,42 @@
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - api
+    networks:
+      - lebventures
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./api/.env
+    networks:
+      - lebventures
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./admin/.env.local
+    depends_on:
+      - api
+    networks:
+      - lebventures
+
+networks:
+  lebventures:
+    driver: bridge

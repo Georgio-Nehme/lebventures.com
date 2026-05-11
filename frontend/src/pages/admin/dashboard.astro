@@ -1,0 +1,229 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Dashboard">
+  <!-- Auth guard runs before any content renders -->
+  <script>
+    if (!sessionStorage.getItem('lv_id_token')) {
+      window.location.replace('/admin');
+    }
+  </script>
+
+  <div class="min-h-screen bg-gray-50">
+
+    <!-- Top nav -->
+    <header class="bg-brand-dark text-white px-6 py-4 flex items-center justify-between shadow-md">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-brand-gold flex items-center justify-center">
+          <span class="text-brand-dark font-bold text-xs">LV</span>
+        </div>
+        <span class="font-heading font-bold text-lg">LebVentures Admin</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span id="admin-email" class="text-brand-lime text-sm hidden"></span>
+        <button id="logout-btn" class="text-sm bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-lg transition-colors">
+          Sign Out
+        </button>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+
+      <!-- Page header -->
+      <div class="flex items-center justify-between mb-8">
+        <div>
+          <h1 class="text-2xl font-heading font-bold text-brand-dark">Events</h1>
+          <p class="text-gray-500 text-sm mt-0.5">Create, edit and manage upcoming adventures</p>
+        </div>
+        <a
+          href="/admin/events/new"
+          class="inline-flex items-center gap-2 bg-brand-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-brand-olive transition-colors"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"/>
+          </svg>
+          New Event
+        </a>
+      </div>
+
+      <!-- Status banner -->
+      <div id="status-banner" class="hidden mb-6 p-4 rounded-xl text-sm font-medium"></div>
+
+      <!-- Events table -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div id="loading-state" class="p-12 text-center text-gray-400">
+          <svg class="w-6 h-6 animate-spin mx-auto mb-3 text-brand-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4" stroke-linecap="round"/>
+          </svg>
+          Loading events…
+        </div>
+        <div id="empty-state" class="hidden p-12 text-center text-gray-400">
+          <p class="text-lg font-medium mb-2">No events yet</p>
+          <p class="text-sm">Create your first event to get started.</p>
+        </div>
+        <table id="events-table" class="hidden w-full text-sm">
+          <thead class="bg-gray-50 border-b border-gray-100">
+            <tr>
+              <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Event</th>
+              <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Date</th>
+              <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Type</th>
+              <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Spots</th>
+              <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Price</th>
+              <th class="px-6 py-3.5 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="events-tbody" class="divide-y divide-gray-50"></tbody>
+        </table>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Delete confirm modal -->
+  <div id="delete-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+    <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
+      <h3 class="font-heading font-bold text-lg text-brand-dark mb-2">Delete Event?</h3>
+      <p id="delete-modal-text" class="text-gray-600 text-sm mb-6"></p>
+      <div class="flex gap-3">
+        <button id="delete-cancel" class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors">Cancel</button>
+        <button id="delete-confirm" class="flex-1 py-2.5 rounded-xl bg-red-600 text-white text-sm font-bold hover:bg-red-700 transition-colors">Delete</button>
+      </div>
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+const API = import.meta.env.PUBLIC_API_URL;
+const token = () => sessionStorage.getItem('lv_id_token');
+
+// ── Auth ──────────────────────────────────────────────────────────────────
+document.getElementById('logout-btn').addEventListener('click', () => {
+  sessionStorage.clear();
+  window.location.href = '/admin';
+});
+
+// Show admin email from token payload
+try {
+  const payload = JSON.parse(atob(token().split('.')[1]));
+  const emailEl = document.getElementById('admin-email');
+  emailEl.textContent = payload.email ?? '';
+  emailEl.classList.remove('hidden');
+} catch {}
+
+// ── Status banner ─────────────────────────────────────────────────────────
+function showStatus(msg, type = 'success') {
+  const el = document.getElementById('status-banner');
+  el.textContent = msg;
+  el.className = `mb-6 p-4 rounded-xl text-sm font-medium ${
+    type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+  }`;
+  el.classList.remove('hidden');
+  setTimeout(() => el.classList.add('hidden'), 4000);
+}
+
+// ── Fetch and render events ───────────────────────────────────────────────
+const DIFFICULTY_COLORS = {
+  Easy: 'bg-green-100 text-green-800',
+  Moderate: 'bg-yellow-100 text-yellow-800',
+  Challenging: 'bg-orange-100 text-orange-800',
+  Expert: 'bg-red-100 text-red-800',
+};
+
+function formatDate(iso) {
+  return new Date(iso + 'T00:00:00').toLocaleDateString('en-GB', {
+    day: 'numeric', month: 'short', year: 'numeric',
+  });
+}
+
+async function loadEvents() {
+  try {
+    const res = await fetch(`${API}/events`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const events = await res.json();
+
+    document.getElementById('loading-state').classList.add('hidden');
+
+    if (events.length === 0) {
+      document.getElementById('empty-state').classList.remove('hidden');
+      return;
+    }
+
+    const tbody = document.getElementById('events-tbody');
+    tbody.innerHTML = events.map(ev => `
+      <tr class="hover:bg-gray-50 transition-colors">
+        <td class="px-6 py-4">
+          <div class="font-semibold text-brand-dark">${escHtml(ev.title)}</div>
+          <div class="text-xs text-gray-400 mt-0.5">${escHtml(ev.id)}</div>
+        </td>
+        <td class="px-6 py-4 text-gray-600">${formatDate(ev.date)}</td>
+        <td class="px-6 py-4">
+          <span class="capitalize text-gray-600">${escHtml(ev.type)}</span>
+        </td>
+        <td class="px-6 py-4 text-gray-600">${ev.spotsLeft}/${ev.spots}</td>
+        <td class="px-6 py-4 font-semibold text-brand-primary">${ev.price === 0 ? 'Free' : `$${ev.price}`}</td>
+        <td class="px-6 py-4">
+          <div class="flex items-center gap-2">
+            <a href="/admin/events/edit?id=${ev.id}" class="text-brand-primary hover:text-brand-olive font-semibold text-xs px-3 py-1.5 rounded-lg bg-brand-sky/60 hover:bg-brand-sky transition-colors">Edit</a>
+            <button
+              class="delete-btn text-red-600 hover:text-red-800 font-semibold text-xs px-3 py-1.5 rounded-lg bg-red-50 hover:bg-red-100 transition-colors"
+              data-id="${ev.id}"
+              data-title="${escHtml(ev.title)}"
+            >Delete</button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+
+    document.getElementById('events-table').classList.remove('hidden');
+
+    // Delete button listeners
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', () => openDeleteModal(btn.dataset.id, btn.dataset.title));
+    });
+
+  } catch (err) {
+    document.getElementById('loading-state').innerHTML =
+      `<p class="text-red-500">Failed to load events: ${err.message}</p>`;
+  }
+}
+
+function escHtml(str) {
+  return String(str ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ── Delete modal ──────────────────────────────────────────────────────────
+let pendingDeleteId = null;
+
+function openDeleteModal(id, title) {
+  pendingDeleteId = id;
+  document.getElementById('delete-modal-text').textContent =
+    `"${title}" will be permanently removed. This cannot be undone.`;
+  document.getElementById('delete-modal').classList.remove('hidden');
+}
+
+document.getElementById('delete-cancel').addEventListener('click', () => {
+  document.getElementById('delete-modal').classList.add('hidden');
+  pendingDeleteId = null;
+});
+
+document.getElementById('delete-confirm').addEventListener('click', async () => {
+  if (!pendingDeleteId) return;
+  document.getElementById('delete-modal').classList.add('hidden');
+
+  try {
+    const res = await fetch(`${API}/events/${pendingDeleteId}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token()}` },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    showStatus('Event deleted successfully.');
+    await loadEvents();
+  } catch (err) {
+    showStatus(`Delete failed: ${err.message}`, 'error');
+  }
+  pendingDeleteId = null;
+});
+
+loadEvents();
+</script>

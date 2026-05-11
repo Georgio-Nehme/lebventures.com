@@ -1,0 +1,35 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import EventForm from '../../../components/admin/EventForm.astro';
+---
+
+<AdminLayout title="New Event">
+  <script>
+    if (!sessionStorage.getItem('lv_id_token')) window.location.replace('/admin');
+  </script>
+
+  <div class="min-h-screen bg-gray-50">
+
+    <!-- Top nav -->
+    <header class="bg-brand-dark text-white px-6 py-4 flex items-center justify-between shadow-md">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-brand-gold flex items-center justify-center">
+          <span class="text-brand-dark font-bold text-xs">LV</span>
+        </div>
+        <span class="font-heading font-bold text-lg">LebVentures Admin</span>
+      </div>
+      <a href="/admin/dashboard" class="text-sm bg-white/10 hover:bg-white/20 px-4 py-1.5 rounded-lg transition-colors">
+        ← Dashboard
+      </a>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+      <div class="mb-8">
+        <h1 class="text-2xl font-heading font-bold text-brand-dark">Create New Event</h1>
+        <p class="text-gray-500 text-sm mt-0.5">Fill in the details below to publish a new adventure</p>
+      </div>
+
+      <EventForm mode="create" />
+    </main>
+  </div>
+</AdminLayout>

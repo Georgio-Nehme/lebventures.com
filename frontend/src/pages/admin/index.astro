@@ -1,0 +1,196 @@
+---
+// Admin login page — all auth logic runs client-side via Cognito SRP
+import AdminLayout from '../../layouts/AdminLayout.astro';
+---
+
+<AdminLayout title="Login">
+  <div class="min-h-screen flex items-center justify-center bg-brand-dark px-4">
+    <div class="w-full max-w-md">
+
+      <!-- Logo / branding -->
+      <div class="text-center mb-10">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-gold mb-4">
+          <svg viewBox="0 0 32 32" class="w-10 h-10 text-brand-dark fill-current">
+            <path d="M16 2 L19 11 L29 11 L21 17 L24 26 L16 20 L8 26 L11 17 L3 11 L13 11 Z"/>
+          </svg>
+        </div>
+        <h1 class="text-2xl font-heading font-bold text-white">LebVentures Admin</h1>
+        <p class="text-brand-lime text-sm mt-1">Sign in to manage events</p>
+      </div>
+
+      <!-- Login card -->
+      <div class="bg-white rounded-2xl shadow-2xl p-8">
+        <form id="login-form" class="space-y-5" novalidate>
+          <div>
+            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
+            <input
+              id="email"
+              type="email"
+              autocomplete="email"
+              required
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-primary text-sm"
+              placeholder="admin@lebventures.com"
+            />
+          </div>
+
+          <div>
+            <label for="password" class="block text-sm font-semibold text-gray-700 mb-1.5">Password</label>
+            <input
+              id="password"
+              type="password"
+              autocomplete="current-password"
+              required
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-primary text-sm"
+              placeholder="••••••••••"
+            />
+          </div>
+
+          <!-- New-password challenge (hidden until required) -->
+          <div id="new-password-section" class="hidden space-y-3">
+            <p class="text-sm text-amber-600 font-medium bg-amber-50 rounded-xl p-3">
+              You must set a new password before continuing.
+            </p>
+            <div>
+              <label for="new-password" class="block text-sm font-semibold text-gray-700 mb-1.5">New Password</label>
+              <input
+                id="new-password"
+                type="password"
+                class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-primary text-sm"
+                placeholder="Min 10 characters"
+              />
+            </div>
+          </div>
+
+          <div id="error-msg" class="hidden text-sm text-red-600 bg-red-50 rounded-xl p-3"></div>
+
+          <button
+            type="submit"
+            id="submit-btn"
+            class="w-full py-3 rounded-xl bg-brand-primary text-white font-bold text-sm hover:bg-brand-olive transition-colors duration-200 flex items-center justify-center gap-2"
+          >
+            <span id="btn-text">Sign In</span>
+            <svg id="btn-spinner" class="hidden w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</AdminLayout>
+
+<script>
+const REGION    = import.meta.env.PUBLIC_COGNITO_POOL_ID?.split('_')[0] ?? 'eu-central-1';
+const CLIENT_ID = import.meta.env.PUBLIC_COGNITO_CLIENT_ID;
+const COGNITO_ENDPOINT = `https://cognito-idp.${REGION}.amazonaws.com/`;
+
+// Redirect if already authenticated
+const existingToken = sessionStorage.getItem('lv_id_token');
+if (existingToken) {
+  try {
+    const payload = JSON.parse(atob(existingToken.split('.')[1]));
+    if (payload.exp * 1000 > Date.now()) window.location.href = '/admin/dashboard';
+  } catch { /* malformed token — continue to login */ }
+}
+
+const form         = document.getElementById('login-form');
+const emailInput   = document.getElementById('email');
+const passwordInput= document.getElementById('password');
+const newPwSection = document.getElementById('new-password-section');
+const newPwInput   = document.getElementById('new-password');
+const errorMsg     = document.getElementById('error-msg');
+const submitBtn    = document.getElementById('submit-btn');
+const btnText      = document.getElementById('btn-text');
+const btnSpinner   = document.getElementById('btn-spinner');
+
+let pendingSession  = null; // holds Cognito Session string during new-password challenge
+let pendingUsername = null;
+
+function setLoading(on) {
+  submitBtn.disabled = on;
+  btnSpinner.classList.toggle('hidden', !on);
+  btnText.textContent = on ? 'Signing in…' : (pendingSession ? 'Set New Password' : 'Sign In');
+}
+
+function showError(msg) {
+  errorMsg.textContent = msg;
+  errorMsg.classList.remove('hidden');
+}
+
+function hideError() { errorMsg.classList.add('hidden'); }
+
+async function cognitoPost(target, body) {
+  const res = await fetch(COGNITO_ENDPOINT, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-amz-json-1.1',
+      'X-Amz-Target': `AWSCognitoIdentityProviderService.${target}`,
+    },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || data.__type || 'Auth error');
+  return data;
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideError();
+
+  // ── Step 2: new-password challenge ──────────────────────────────────────────
+  if (pendingSession) {
+    const newPw = newPwInput.value.trim();
+    if (!newPw) { showError('Enter your new password.'); return; }
+    setLoading(true);
+    try {
+      const data = await cognitoPost('RespondToAuthChallenge', {
+        ChallengeName: 'NEW_PASSWORD_REQUIRED',
+        ClientId: CLIENT_ID,
+        ChallengeResponses: { USERNAME: pendingUsername, NEW_PASSWORD: newPw },
+        Session: pendingSession,
+      });
+      saveAndRedirect(data.AuthenticationResult);
+    } catch (err) {
+      setLoading(false);
+      showError(err.message);
+    }
+    return;
+  }
+
+  // ── Step 1: initial login ────────────────────────────────────────────────────
+  const email    = emailInput.value.trim();
+  const password = passwordInput.value;
+  if (!email || !password) { showError('Please enter your email and password.'); return; }
+
+  setLoading(true);
+  try {
+    const data = await cognitoPost('InitiateAuth', {
+      AuthFlow: 'USER_PASSWORD_AUTH',
+      ClientId: CLIENT_ID,
+      AuthParameters: { USERNAME: email, PASSWORD: password },
+    });
+
+    if (data.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
+      pendingSession  = data.Session;
+      pendingUsername = email;
+      setLoading(false);
+      btnText.textContent = 'Set New Password';
+      newPwSection.classList.remove('hidden');
+      return;
+    }
+
+    saveAndRedirect(data.AuthenticationResult);
+  } catch (err) {
+    setLoading(false);
+    showError(err.message || 'Authentication failed. Check your credentials.');
+  }
+});
+
+function saveAndRedirect(auth) {
+  sessionStorage.setItem('lv_id_token',      auth.IdToken);
+  sessionStorage.setItem('lv_access_token',  auth.AccessToken);
+  sessionStorage.setItem('lv_refresh_token', auth.RefreshToken);
+  window.location.href = '/admin/dashboard';
+}
+</script>
