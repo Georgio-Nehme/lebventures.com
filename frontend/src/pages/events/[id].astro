@@ -97,17 +97,7 @@ const allTypes = ['hiking','climbing','camping','heritage','canyoning','biking',
     <!-- Event photo (hidden until JS sets src) -->
     <div id="ev-photo-wrap" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 hidden">
       <div class="rounded-3xl overflow-hidden h-72 md:h-[460px] shadow-lg">
-        <img id="ev-photo" src="" alt="" class="w-full h-full object-cover" loading="eager" onerror="this.closest('#ev-photo-wrap').classList.add('hidden'); document.getElementById('ev-no-photo-wrap').classList.remove('hidden');" />
-      </div>
-    </div>
-    <div id="ev-no-photo-wrap" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 hidden">
-      <div class="rounded-3xl h-56 bg-gradient-to-br from-brand-sky via-brand-primary/10 to-brand-lime/10 border-2 border-dashed border-brand-primary/20 flex flex-col items-center justify-center gap-3">
-        <svg class="w-12 h-12 text-brand-primary/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="5" width="20" height="15" rx="2"/>
-          <circle cx="12" cy="12" r="4"/>
-          <path d="M8 5l1.5-2h5L16 5"/>
-        </svg>
-        <p class="text-sm text-brand-primary/40 font-medium">Event photos coming soon</p>
+        <img id="ev-photo" src="" alt="" class="w-full h-full object-cover" loading="eager" />
       </div>
     </div>
 
