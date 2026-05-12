@@ -175,7 +175,7 @@ const allTypes = ['hiking','climbing','camping','heritage','canyoning','biking',
         </div>
 
         <!-- ── RIGHT: Reservation form ────────────────────────────── -->
-        <aside class="lg:col-span-2 lg:sticky lg:top-24">
+        <aside id="ev-reservation-aside" class="lg:col-span-2 lg:sticky lg:top-24">
           <div class="bg-white rounded-3xl border border-brand-sky shadow-xl overflow-hidden">
 
             <!-- Form header -->
@@ -401,11 +401,15 @@ const allTypes = ['hiking','climbing','camping','heritage','canyoning','biking',
     }
     // No image → leave photo section hidden (no placeholder)
 
+    // Coords may be nested under ev.coords or flat on ev (legacy)
+    const evLat = ev.coords?.lat ?? ev.lat;
+    const evLng = ev.coords?.lng ?? ev.lng;
+
     // Map
     const mapEl = document.getElementById('event-map');
-    if (ev.lat || ev.lng || ev.trailFile) {
-      mapEl.dataset.lat = ev.lat ?? '';
-      mapEl.dataset.lng = ev.lng ?? '';
+    if (evLat || evLng || ev.trailFile) {
+      mapEl.dataset.lat = evLat ?? '';
+      mapEl.dataset.lng = evLng ?? '';
       mapEl.dataset.title = ev.title ?? '';
       mapEl.dataset.location = ev.location ?? '';
       mapEl.dataset.trail = ev.trailFile ?? '';
@@ -415,8 +419,8 @@ const allTypes = ['hiking','climbing','camping','heritage','canyoning','biking',
 
     // Weather widget
     const widget = document.getElementById('weather-widget');
-    widget.dataset.lat = ev.lat ?? '';
-    widget.dataset.lng = ev.lng ?? '';
+    widget.dataset.lat = evLat ?? '';
+    widget.dataset.lng = evLng ?? '';
     widget.dataset.date = ev.date ?? '';
     widget.dataset.location = ev.location ?? '';
     document.getElementById('ev-weather-loc').textContent = ev.location ? `· ${ev.location}` : '';
@@ -434,8 +438,8 @@ const allTypes = ['hiking','climbing','camping','heritage','canyoning','biking',
     [{ label: 'Guide', value: ev.guide }, { label: 'Group size', value: ev.spots ? `Max ${ev.spots} participants` : '' }, { label: 'Difficulty', value: ev.difficulty }, { label: 'Duration', value: ev.duration }, { label: 'Region', value: ev.region }]
       .filter(d => d.value)
       .forEach(({ label, value }) => dl.insertAdjacentHTML('beforeend', `<div class="p-4 rounded-xl border border-brand-sky bg-white"><dt class="text-xs font-bold text-brand-primary uppercase tracking-wider mb-1">${label}</dt><dd class="text-sm text-gray-700 font-medium">${value}</dd></div>`));
-    if (ev.lat && ev.lng) {
-      dl.insertAdjacentHTML('beforeend', `<div class="p-4 rounded-xl border border-brand-sky bg-white"><dt class="text-xs font-bold text-brand-primary uppercase tracking-wider mb-1">Meeting point</dt><dd class="text-sm font-medium"><a href="https://www.google.com/maps?q=${ev.lat},${ev.lng}" target="_blank" rel="noopener noreferrer" class="text-brand-primary hover:underline inline-flex items-center gap-1">📍 ${ev.location ?? ''}</a></dd></div>`);
+    if (evLat && evLng) {
+      dl.insertAdjacentHTML('beforeend', `<div class="p-4 rounded-xl border border-brand-sky bg-white"><dt class="text-xs font-bold text-brand-primary uppercase tracking-wider mb-1">Meeting point</dt><dd class="text-sm font-medium"><a href="https://www.google.com/maps?q=${evLat},${evLng}" target="_blank" rel="noopener noreferrer" class="text-brand-primary hover:underline inline-flex items-center gap-1">📍 ${ev.location ?? ''}</a></dd></div>`);
     }
 
     // Availability
@@ -467,6 +471,20 @@ const allTypes = ['hiking','climbing','camping','heritage','canyoning','biking',
     }
     const successTitle = document.getElementById('ev-success-title');
     if (successTitle) successTitle.textContent = ev.title;
+
+    // Hide reservation form for past events
+    const isPastEvent = new Date(ev.date + 'T23:59:59') < new Date();
+    if (isPastEvent) {
+      const aside = document.getElementById('ev-reservation-aside');
+      if (aside) {
+        aside.innerHTML = `<div class="bg-brand-sky/20 rounded-3xl border border-brand-sky p-8 text-center">
+          <div class="text-4xl mb-3">🏔️</div>
+          <h3 class="font-heading font-bold text-brand-primary text-lg mb-2">This adventure has ended</h3>
+          <p class="text-sm text-gray-500 leading-relaxed">Bookings for this event are closed. Browse upcoming events to join your next adventure.</p>
+          <a href="/events" class="inline-block mt-5 px-5 py-2.5 rounded-xl bg-brand-primary text-white text-sm font-semibold hover:bg-brand-olive transition-colors">Browse Upcoming Events →</a>
+        </div>`;
+      }
+    }
 
     document.title = `${ev.title} — LebVentures`;
     document.getElementById('ev-loading').classList.add('hidden');

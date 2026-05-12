@@ -163,6 +163,26 @@ def subscribe(event_id: str, body: SubscriptionCreate):
         **body.model_dump(exclude_none=True),
     }
     subs_table.put_item(Item=item)
+
+    # Decrement spotsLeft by the number of people booked (floor at 0)
+    num_people = body.numberOfPeople or 1
+    try:
+        events_table.update_item(
+            Key={"id": event_id},
+            UpdateExpression="SET spotsLeft = if_not_exists(spotsLeft, :zero) - :n",
+            ConditionExpression="spotsLeft >= :n",
+            ExpressionAttributeValues={":n": num_people, ":zero": 0},
+        )
+    except ClientError as e:
+        if e.response["Error"]["Code"] != "ConditionalCheckFailedException":
+            raise
+        # Already at or below the requested count — set to 0
+        events_table.update_item(
+            Key={"id": event_id},
+            UpdateExpression="SET spotsLeft = :zero",
+            ExpressionAttributeValues={":zero": 0},
+        )
+
     return item
 
 

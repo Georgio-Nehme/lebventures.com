@@ -74,7 +74,7 @@ class ReviewCreate(BaseModel):
 
 
 class ReviewStatusUpdate(BaseModel):
-    status: Literal['approved', 'rejected', 'pending']
+    status: Optional[Literal['approved', 'rejected', 'pending']] = None
     featured: Optional[bool] = None
 
 

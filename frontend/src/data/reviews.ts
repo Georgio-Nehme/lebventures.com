@@ -2,7 +2,7 @@ export interface Review {
   id: string;
   eventId: string;
   eventTitle?: string;
-  author: string;
+  authorName: string;
   rating: number;
   text: string;
   submittedAt: string;

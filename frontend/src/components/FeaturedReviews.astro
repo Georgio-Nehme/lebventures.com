@@ -32,10 +32,10 @@ const hasReviews = reviews.length > 0;
           <!-- Author + event -->
           <footer class="flex items-center gap-3 pt-3 border-t border-brand-sky">
             <div class="w-9 h-9 rounded-full bg-brand-primary flex items-center justify-center text-white font-bold text-sm shrink-0">
-              {r.author.charAt(0).toUpperCase()}
+              {r.authorName.charAt(0).toUpperCase()}
             </div>
             <div>
-              <cite class="not-italic font-semibold text-brand-dark text-sm">{r.author}</cite>
+              <cite class="not-italic font-semibold text-brand-dark text-sm">{r.authorName}</cite>
               {r.eventTitle && (
                 <p class="text-xs text-gray-400 mt-0.5">{r.eventTitle}</p>
               )}

@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/lib/api';
 
-type Review = { id: string; eventId: string; eventTitle?: string; author: string; email?: string; rating: number; text: string; submittedAt: string; status: 'pending' | 'approved' | 'rejected'; featured?: boolean };
+type Review = { id: string; eventId: string; eventTitle?: string; authorName: string; authorEmail?: string; rating: number; text: string; submittedAt: string; status: 'pending' | 'approved' | 'rejected'; featured?: boolean };
 type StatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
 
 const TABS: StatusFilter[] = ['all', 'pending', 'approved', 'rejected'];
@@ -80,8 +80,8 @@ export default function ReviewsPage() {
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2 flex-wrap">
-                    <span className="font-semibold text-slate-900">{r.author}</span>
-                    {r.email && <span className="text-slate-400 text-sm">{r.email}</span>}
+                    <span className="font-semibold text-slate-900">{r.authorName}</span>
+                    {r.authorEmail && <span className="text-slate-400 text-sm">{r.authorEmail}</span>}
                     <span className="text-amber-500 text-sm">{'★'.repeat(r.rating)}{'☆'.repeat(5 - r.rating)}</span>
                     <span className={`text-xs px-2 py-0.5 rounded-full border capitalize font-medium ${STATUS_COLORS[r.status]}`}>{r.status}</span>
                     {r.featured && <span className="text-xs px-2 py-0.5 rounded-full border border-amber-300 bg-amber-50 text-amber-700 font-medium">⭐ Featured</span>}
