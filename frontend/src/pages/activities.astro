@@ -1,11 +1,11 @@
 ---
-import BaseLayout from '../../layouts/BaseLayout.astro';
-import Navbar from '../../components/Navbar.astro';
-import Footer from '../../components/Footer.astro';
-import Icon from '../../components/Icon.astro';
-import { getEvents } from '../../data/events';
-import type { Event } from '../../data/events';
-import '../../styles/global.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import Icon from '../components/Icon.astro';
+import { getEvents } from '../data/events';
+import type { Event } from '../data/events';
+import '../styles/global.css';
 
 const allEvents = await getEvents();
 const today = new Date();
