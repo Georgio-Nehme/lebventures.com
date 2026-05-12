@@ -151,6 +151,13 @@ const apiUrl = import.meta.env.PUBLIC_API_URL;
         lng: e.coords?.lng ? parseFloat(e.coords.lng) : undefined,
       }));
 
+      // Keep only upcoming events and sort by date ascending
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      events = events
+        .filter(e => e.date && new Date(e.date + 'T00:00:00') >= today)
+        .sort((a, b) => a.date.localeCompare(b.date));
+
       loading.classList.add('hidden');
 
       if (events.length === 0) {
