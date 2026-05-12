@@ -17,7 +17,7 @@ services:
     image: ${ECR_REGISTRY}/lebventures-api:latest
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     env_file:
       - ./api.env
     networks:
@@ -27,7 +27,7 @@ services:
     image: ${ECR_REGISTRY}/lebventures-frontend:latest
     restart: unless-stopped
     ports:
-      - "8080:80"   # host nginx proxies to :8080 → container nginx on :80
+      - "127.0.0.1:8080:80"   # host nginx proxies to :8080 → container nginx on :80
     env_file:
       - ./frontend.env
     depends_on:
@@ -39,7 +39,7 @@ services:
     image: ${ECR_REGISTRY}/lebventures-admin:latest
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     env_file:
       - ./admin.env
     depends_on:
