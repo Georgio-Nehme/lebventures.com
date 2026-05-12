@@ -23,6 +23,9 @@ from models import (
 
 load_dotenv()
 
+_cors_env = os.getenv("CORS_ORIGINS", "*")
+CORS_ORIGINS = [o.strip() for o in _cors_env.split(",")] if _cors_env != "*" else ["*"]
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -33,7 +36,7 @@ app = FastAPI(title="LebVentures API", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=CORS_ORIGINS,
     allow_methods=["*"],
     allow_headers=["*"],
 )

@@ -19,6 +19,8 @@ api/*.pyo
 api/.venv/
 api/venv/
 api/.env
+api/tests/
+api/requirements-test.txt
 
 # === Shared ===
 .DS_Store
