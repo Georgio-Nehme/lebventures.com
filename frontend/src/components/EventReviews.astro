@@ -215,7 +215,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 
       const fd = new FormData(form);
       const body: Record<string, unknown> = {
-        author: fd.get('author'),
+        authorName: fd.get('author'),
         text:   fd.get('text'),
         rating: selectedRating,
       };
