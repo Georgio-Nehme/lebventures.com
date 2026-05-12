@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "LebVentures Admin",
   description: "Admin panel for LebVentures",
-  robots: "noindex, nofollow, noarchive",
+  robots: "noindex, nofollow, noarchive, nosnippet",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
