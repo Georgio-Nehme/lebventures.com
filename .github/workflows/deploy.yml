@@ -2,6 +2,31 @@ name: Deploy to Amazon ECR
 
 on:
   workflow_dispatch:
+    inputs:
+      next_public_cognito_region:
+        description: 'NEXT_PUBLIC_COGNITO_REGION (overrides secret)'
+        required: false
+        default: ''
+      next_public_cognito_client_id:
+        description: 'NEXT_PUBLIC_COGNITO_CLIENT_ID (overrides secret)'
+        required: false
+        default: ''
+      next_public_api_url:
+        description: 'NEXT_PUBLIC_API_URL (overrides secret)'
+        required: false
+        default: ''
+      public_cognito_pool_id:
+        description: 'PUBLIC_COGNITO_POOL_ID for frontend (overrides secret)'
+        required: false
+        default: ''
+      public_cognito_client_id:
+        description: 'PUBLIC_COGNITO_CLIENT_ID for frontend (overrides secret)'
+        required: false
+        default: ''
+      public_api_url:
+        description: 'PUBLIC_API_URL for frontend (overrides secret)'
+        required: false
+        default: ''
   push:
     branches: [main]
 
@@ -62,9 +87,9 @@ jobs:
           IMAGE_TAG:    ${{ github.sha }}
         run: |
           docker build \
-            --build-arg PUBLIC_API_URL=${{ secrets.PUBLIC_API_URL }} \
-            --build-arg PUBLIC_COGNITO_POOL_ID=${{ secrets.PUBLIC_COGNITO_POOL_ID }} \
-            --build-arg PUBLIC_COGNITO_CLIENT_ID=${{ secrets.PUBLIC_COGNITO_CLIENT_ID }} \
+            --build-arg PUBLIC_API_URL=${{ inputs.public_api_url || secrets.PUBLIC_API_URL }} \
+            --build-arg PUBLIC_COGNITO_POOL_ID=${{ inputs.public_cognito_pool_id || secrets.PUBLIC_COGNITO_POOL_ID }} \
+            --build-arg PUBLIC_COGNITO_CLIENT_ID=${{ inputs.public_cognito_client_id || secrets.PUBLIC_COGNITO_CLIENT_ID }} \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./frontend
           docker tag  $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
                       $ECR_REGISTRY/$ECR_REPOSITORY:latest
@@ -136,9 +161,9 @@ jobs:
           IMAGE_TAG:    ${{ github.sha }}
         run: |
           docker build \
-            --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
-            --build-arg NEXT_PUBLIC_COGNITO_REGION=${{ secrets.NEXT_PUBLIC_COGNITO_REGION }} \
-            --build-arg NEXT_PUBLIC_COGNITO_CLIENT_ID=${{ secrets.NEXT_PUBLIC_COGNITO_CLIENT_ID }} \
+            --build-arg NEXT_PUBLIC_API_URL=${{ inputs.next_public_api_url || secrets.NEXT_PUBLIC_API_URL }} \
+            --build-arg NEXT_PUBLIC_COGNITO_REGION=${{ inputs.next_public_cognito_region || secrets.NEXT_PUBLIC_COGNITO_REGION }} \
+            --build-arg NEXT_PUBLIC_COGNITO_CLIENT_ID=${{ inputs.next_public_cognito_client_id || secrets.NEXT_PUBLIC_COGNITO_CLIENT_ID }} \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG ./admin
           docker tag  $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
                       $ECR_REGISTRY/$ECR_REPOSITORY:latest
