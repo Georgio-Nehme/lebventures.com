@@ -78,3 +78,20 @@ def ensure_tables():
         )
         print(f"✅  Created table {REVIEWS_TABLE}")
 
+    if IMAGES_BUCKET:
+        cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
+        if cors_origins:
+            _s3.put_bucket_cors(
+                Bucket=IMAGES_BUCKET,
+                CORSConfiguration={
+                    "CORSRules": [{
+                        "AllowedHeaders": ["*"],
+                        "AllowedMethods": ["GET", "PUT", "HEAD"],
+                        "AllowedOrigins": cors_origins,
+                        "ExposeHeaders": ["ETag"],
+                        "MaxAgeSeconds": 3000,
+                    }]
+                },
+            )
+            print(f"✅  S3 CORS set for {IMAGES_BUCKET}")
+
