@@ -1,14 +1,16 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signIn, setNewPassword, saveAuth, isAuthenticated } from '@/lib/auth';
+import { signIn, setNewPassword, confirmForgotPassword, saveAuth } from '@/lib/auth';
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
   const [newPw, setNewPw]       = useState('');
+  const [code, setCode]         = useState('');
   const [challenge, setChallenge] = useState<{ session: string; username: string } | null>(null);
+  const [resetRequired, setResetRequired] = useState<{ username: string } | null>(null);
   const [loading, setLoading]   = useState(false);
   const [error, setError]       = useState('');
 
@@ -17,7 +19,18 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
-      if (challenge) {
+      if (resetRequired) {
+        await confirmForgotPassword(resetRequired.username, code, newPw);
+        setResetRequired(null);
+        setPassword('');
+        setError('');
+        // Now sign in with new password
+        const result = await signIn(resetRequired.username, newPw);
+        if ('idToken' in result) {
+          saveAuth(result);
+          router.replace('/dashboard');
+        }
+      } else if (challenge) {
         const auth = await setNewPassword(challenge.username, newPw, challenge.session);
         saveAuth(auth);
         router.replace('/dashboard');
@@ -25,6 +38,8 @@ export default function LoginPage() {
         const result = await signIn(email, password);
         if ('type' in result && result.type === 'NEW_PASSWORD_REQUIRED') {
           setChallenge({ session: result.session, username: result.username });
+        } else if ('type' in result && result.type === 'PASSWORD_RESET_REQUIRED') {
+          setResetRequired({ username: result.username });
         } else if ('idToken' in result) {
           saveAuth(result);
           router.replace('/dashboard');
@@ -51,7 +66,25 @@ export default function LoginPage() {
         </div>
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
-            {!challenge ? (
+            {resetRequired ? (
+              <div className="space-y-4">
+                <div className="bg-amber-50 text-amber-700 rounded-xl p-3 text-sm font-medium">
+                  A verification code was sent to your email. Enter it below with your new password.
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Verification Code</label>
+                  <input type="text" required value={code} onChange={e => setCode(e.target.value)}
+                    placeholder="123456"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm" />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">New Password</label>
+                  <input type="password" required value={newPw} onChange={e => setNewPw(e.target.value)}
+                    placeholder="Min 10 characters"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm" />
+                </div>
+              </div>
+            ) : !challenge ? (
               <>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
@@ -85,7 +118,7 @@ export default function LoginPage() {
                   <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4" strokeLinecap="round"/>
                 </svg>
               )}
-              {challenge ? 'Set Password' : loading ? 'Signing in…' : 'Sign In'}
+              {resetRequired ? 'Reset Password' : challenge ? 'Set Password' : loading ? 'Signing in…' : 'Sign In'}
             </button>
           </form>
         </div>

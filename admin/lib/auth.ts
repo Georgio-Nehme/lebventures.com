@@ -28,25 +28,51 @@ export interface NewPasswordRequired {
   username: string;
 }
 
+export interface PasswordResetRequired {
+  type: 'PASSWORD_RESET_REQUIRED';
+  username: string;
+}
+
 export async function signIn(
   username: string,
   password: string
-): Promise<AuthResult | NewPasswordRequired> {
-  const data = await cognitoPost('InitiateAuth', {
-    AuthFlow: 'USER_PASSWORD_AUTH',
-    ClientId: CLIENT_ID,
-    AuthParameters: { USERNAME: username, PASSWORD: password },
-  });
+): Promise<AuthResult | NewPasswordRequired | PasswordResetRequired> {
+  try {
+    const data = await cognitoPost('InitiateAuth', {
+      AuthFlow: 'USER_PASSWORD_AUTH',
+      ClientId: CLIENT_ID,
+      AuthParameters: { USERNAME: username, PASSWORD: password },
+    });
 
-  if (data.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
-    return { type: 'NEW_PASSWORD_REQUIRED', session: data.Session, username };
+    if (data.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
+      return { type: 'NEW_PASSWORD_REQUIRED', session: data.Session, username };
+    }
+
+    return {
+      idToken:      data.AuthenticationResult.IdToken,
+      accessToken:  data.AuthenticationResult.AccessToken,
+      refreshToken: data.AuthenticationResult.RefreshToken,
+    };
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message.includes('PasswordResetRequiredException')) {
+      await cognitoPost('ForgotPassword', { ClientId: CLIENT_ID, Username: username });
+      return { type: 'PASSWORD_RESET_REQUIRED', username };
+    }
+    throw err;
   }
+}
 
-  return {
-    idToken:      data.AuthenticationResult.IdToken,
-    accessToken:  data.AuthenticationResult.AccessToken,
-    refreshToken: data.AuthenticationResult.RefreshToken,
-  };
+export async function confirmForgotPassword(
+  username: string,
+  code: string,
+  newPassword: string
+): Promise<void> {
+  await cognitoPost('ConfirmForgotPassword', {
+    ClientId: CLIENT_ID,
+    Username: username,
+    ConfirmationCode: code,
+    Password: newPassword,
+  });
 }
 
 export async function setNewPassword(
