@@ -118,133 +118,137 @@ const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 </section>
 
 <script>
-  const section = document.getElementById('event-reviews-section') as HTMLElement;
-  if (!section) throw new Error('reviews section not found');
+  function initReviews(eventId: string, eventDate: string, api: string) {
+    const inner     = document.getElementById('reviews-inner')!;
+    const upcoming  = document.getElementById('reviews-upcoming')!;
+    const list      = document.getElementById('reviews-list')!;
+    const form      = document.getElementById('review-form') as HTMLFormElement;
+    const success   = document.getElementById('review-success')!;
 
-  const eventId    = section.dataset.eventId!;
-  const eventDate  = section.dataset.eventDate!;
-  const API        = section.dataset.api!;
+    const isPast = new Date(eventDate + 'T23:59:59') < new Date();
 
-  const inner     = document.getElementById('reviews-inner')!;
-  const upcoming  = document.getElementById('reviews-upcoming')!;
-  const list      = document.getElementById('reviews-list')!;
-  const form      = document.getElementById('review-form') as HTMLFormElement;
-  const success   = document.getElementById('review-success')!;
+    if (isPast) {
+      inner.classList.remove('hidden');
+      loadReviews();
+    } else {
+      upcoming.classList.remove('hidden');
+    }
 
-  const isPast = new Date(eventDate + 'T23:59:59') < new Date();
+    // ── Load approved reviews ─────────────────────────────────────
+    async function loadReviews() {
+      try {
+        const res = await fetch(`${api}/events/${eventId}/reviews/public`);
+        const reviews: { id: string; author: string; rating: number; text: string; submittedAt: string; eventTitle?: string }[] = res.ok ? await res.json() : [];
 
-  if (isPast) {
-    inner.classList.remove('hidden');
-    loadReviews();
-  } else {
-    upcoming.classList.remove('hidden');
-  }
+        if (reviews.length === 0) {
+          list.innerHTML = `<div class="bg-brand-sky/20 rounded-2xl border border-brand-sky p-8 text-center text-gray-500 text-sm">
+            No reviews yet — be the first to share your experience!
+          </div>`;
+          return;
+        }
 
-  // ── Load approved reviews ─────────────────────────────────────
-  async function loadReviews() {
-    try {
-      const res = await fetch(`${API}/events/${eventId}/reviews/public`);
-      const reviews: { id: string; author: string; rating: number; text: string; submittedAt: string; eventTitle?: string }[] = res.ok ? await res.json() : [];
+        const avg = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
+        const rounded = Math.round(avg);
 
-      if (reviews.length === 0) {
-        list.innerHTML = `<div class="bg-brand-sky/20 rounded-2xl border border-brand-sky p-8 text-center text-gray-500 text-sm">
-          No reviews yet — be the first to share your experience!
-        </div>`;
+        list.innerHTML = `
+          <div class="flex items-center gap-3 mb-6 p-4 bg-brand-sky/20 rounded-xl border border-brand-sky">
+            <span class="text-amber-400 text-2xl">${'★'.repeat(rounded)}${'☆'.repeat(5 - rounded)}</span>
+            <div>
+              <span class="font-bold text-brand-primary text-lg">${avg.toFixed(1)}</span>
+              <span class="text-gray-500 text-sm ml-1">average · ${reviews.length} review${reviews.length === 1 ? '' : 's'}</span>
+            </div>
+          </div>
+          ${reviews.map(r => `
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+              <div class="flex items-start justify-between gap-3 mb-2">
+                <div>
+                  <span class="font-semibold text-slate-900 text-sm">${escHtml(r.author)}</span>
+                  <span class="text-amber-400 ml-2 text-sm">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+                </div>
+                <span class="text-xs text-gray-400 shrink-0">${new Date(r.submittedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              </div>
+              <p class="text-sm text-gray-700 leading-relaxed">${escHtml(r.text)}</p>
+            </div>
+          `).join('')}
+        `;
+      } catch {
+        list.innerHTML = `<p class="text-sm text-gray-400 text-center py-8">Could not load reviews right now.</p>`;
+      }
+    }
+
+    // ── Star rating interaction ───────────────────────────────────
+    const ratingInput = document.getElementById('rv-rating') as HTMLInputElement;
+    const ratingError = document.getElementById('rating-error')!;
+    let selectedRating = 0;
+
+    document.querySelectorAll<HTMLButtonElement>('.star-btn').forEach(btn => {
+      btn.addEventListener('mouseover', () => highlightStars(Number(btn.dataset.star)));
+      btn.addEventListener('mouseout',  () => highlightStars(selectedRating));
+      btn.addEventListener('click', () => {
+        selectedRating = Number(btn.dataset.star);
+        ratingInput.value = String(selectedRating);
+        ratingError.classList.add('hidden');
+        highlightStars(selectedRating);
+      });
+    });
+
+    function highlightStars(n: number) {
+      document.querySelectorAll<HTMLButtonElement>('.star-btn').forEach(btn => {
+        const v = Number(btn.dataset.star);
+        btn.classList.toggle('text-amber-400', v <= n);
+        btn.classList.toggle('text-gray-300', v > n);
+      });
+    }
+
+    // ── Form submission ───────────────────────────────────────────
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!selectedRating) {
+        ratingError.classList.remove('hidden');
         return;
       }
 
-      const avg = reviews.reduce((s, r) => s + r.rating, 0) / reviews.length;
-      const rounded = Math.round(avg);
+      const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
 
-      list.innerHTML = `
-        <div class="flex items-center gap-3 mb-6 p-4 bg-brand-sky/20 rounded-xl border border-brand-sky">
-          <span class="text-amber-400 text-2xl">${'★'.repeat(rounded)}${'☆'.repeat(5 - rounded)}</span>
-          <div>
-            <span class="font-bold text-brand-primary text-lg">${avg.toFixed(1)}</span>
-            <span class="text-gray-500 text-sm ml-1">average · ${reviews.length} review${reviews.length === 1 ? '' : 's'}</span>
-          </div>
-        </div>
-        ${reviews.map(r => `
-          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <div class="flex items-start justify-between gap-3 mb-2">
-              <div>
-                <span class="font-semibold text-slate-900 text-sm">${escHtml(r.author)}</span>
-                <span class="text-amber-400 ml-2 text-sm">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
-              </div>
-              <span class="text-xs text-gray-400 shrink-0">${new Date(r.submittedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-            </div>
-            <p class="text-sm text-gray-700 leading-relaxed">${escHtml(r.text)}</p>
-          </div>
-        `).join('')}
-      `;
-    } catch {
-      list.innerHTML = `<p class="text-sm text-gray-400 text-center py-8">Could not load reviews right now.</p>`;
-    }
-  }
+      const fd = new FormData(form);
+      const body: Record<string, unknown> = {
+        author: fd.get('author'),
+        text:   fd.get('text'),
+        rating: selectedRating,
+      };
+      const email = fd.get('email');
+      if (email) body.email = email;
 
-  // ── Star rating interaction ───────────────────────────────────
-  const ratingInput = document.getElementById('rv-rating') as HTMLInputElement;
-  const ratingError = document.getElementById('rating-error')!;
-  let selectedRating = 0;
-
-  document.querySelectorAll<HTMLButtonElement>('.star-btn').forEach(btn => {
-    btn.addEventListener('mouseover', () => highlightStars(Number(btn.dataset.star)));
-    btn.addEventListener('mouseout',  () => highlightStars(selectedRating));
-    btn.addEventListener('click', () => {
-      selectedRating = Number(btn.dataset.star);
-      ratingInput.value = String(selectedRating);
-      ratingError.classList.add('hidden');
-      highlightStars(selectedRating);
+      try {
+        const res = await fetch(`${api}/events/${eventId}/reviews`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+        if (!res.ok) throw new Error();
+        form.classList.add('hidden');
+        success.classList.remove('hidden');
+      } catch {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Review →';
+        alert('Could not submit review — please try again or contact us directly.');
+      }
     });
-  });
 
-  function highlightStars(n: number) {
-    document.querySelectorAll<HTMLButtonElement>('.star-btn').forEach(btn => {
-      const v = Number(btn.dataset.star);
-      btn.classList.toggle('text-amber-400', v <= n);
-      btn.classList.toggle('text-gray-300', v > n);
-    });
+    function escHtml(s: string) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
   }
 
-  // ── Form submission ───────────────────────────────────────────
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    if (!selectedRating) {
-      ratingError.classList.remove('hidden');
-      return;
-    }
-
-    const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting…';
-
-    const fd = new FormData(form);
-    const body: Record<string, unknown> = {
-      author: fd.get('author'),
-      text:   fd.get('text'),
-      rating: selectedRating,
-    };
-    const email = fd.get('email');
-    if (email) body.email = email;
-
-    try {
-      const res = await fetch(`${API}/events/${eventId}/reviews`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-      if (!res.ok) throw new Error();
-      form.classList.add('hidden');
-      success.classList.remove('hidden');
-    } catch {
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Submit Review →';
-      alert('Could not submit review — please try again or contact us directly.');
-    }
+  // Trigger when the main event fetch completes
+  document.addEventListener('ev:loaded', (e: Event) => {
+    const ev = (e as CustomEvent).detail;
+    const section = document.getElementById('event-reviews-section') as HTMLElement;
+    if (!section) return;
+    const api = section.dataset.api!;
+    initReviews(ev.id, ev.date ?? '', api);
   });
-
-  function escHtml(s: string) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
 </script>
