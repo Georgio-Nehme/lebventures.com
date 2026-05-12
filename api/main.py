@@ -32,7 +32,7 @@ async def lifespan(app: FastAPI):
     ensure_tables()
     yield
 
-app = FastAPI(title="LebVentures API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="LebVentures API", version="1.0.1", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
