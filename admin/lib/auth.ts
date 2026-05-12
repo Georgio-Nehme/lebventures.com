@@ -54,7 +54,7 @@ export async function signIn(
       refreshToken: data.AuthenticationResult.RefreshToken,
     };
   } catch (err: unknown) {
-    if (err instanceof Error && err.message.includes('PasswordResetRequiredException')) {
+    if (err instanceof Error && (err.message.includes('PasswordResetRequiredException') || err.message.includes('Password reset required'))) {
       await cognitoPost('ForgotPassword', { ClientId: CLIENT_ID, Username: username });
       return { type: 'PASSWORD_RESET_REQUIRED', username };
     }
