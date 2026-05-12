@@ -11,13 +11,14 @@ from dotenv import load_dotenv
 
 from auth import verify_token
 from database import (
-    events_table, subs_table, reviews_table,
+    events_table, subs_table, reviews_table, contacts_table,
     s3_client, IMAGES_BUCKET, REGION, ensure_tables, floats_to_decimal,
 )
 from models import (
     EventCreate, EventUpdate, EventOut,
     SubscriptionCreate, SubscriptionOut,
     ReviewCreate, ReviewStatusUpdate, ReviewOut,
+    ContactCreate, ContactOut,
     UploadUrlRequest, UploadUrlResponse,
 )
 
@@ -321,3 +322,49 @@ def get_upload_url(body: UploadUrlRequest, _=Depends(verify_token)):
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+# ═══════════════════════════════════════════════════════════════
+#  CONTACT
+# ═══════════════════════════════════════════════════════════════
+
+@app.post("/contact", response_model=ContactOut, status_code=201)
+def submit_contact(body: ContactCreate):
+    """Public: store a contact form submission."""
+    item = {
+        "id": str(uuid.uuid4()),
+        "submittedAt": now_iso(),
+        "read": False,
+        **body.model_dump(exclude_none=True),
+    }
+    contacts_table.put_item(Item=item)
+    return item
+
+
+@app.get("/contacts", response_model=List[ContactOut])
+def list_contacts(_=Depends(verify_token)):
+    """Admin: list all contact submissions, newest first."""
+    resp = contacts_table.scan()
+    items = resp.get("Items", [])
+    return sorted(items, key=lambda x: x.get("submittedAt", ""), reverse=True)
+
+
+@app.patch("/contacts/{contact_id}/read", response_model=ContactOut)
+def mark_contact_read(contact_id: str, _=Depends(verify_token)):
+    """Admin: mark a contact message as read."""
+    existing = contacts_table.get_item(Key={"id": contact_id}).get("Item")
+    if not existing:
+        raise HTTPException(status_code=404, detail="Contact not found")
+    contacts_table.update_item(
+        Key={"id": contact_id},
+        UpdateExpression="SET #r = :r",
+        ExpressionAttributeNames={"#r": "read"},
+        ExpressionAttributeValues={":r": True},
+    )
+    return {**existing, "read": True}
+
+
+@app.delete("/contacts/{contact_id}", status_code=204)
+def delete_contact(contact_id: str, _=Depends(verify_token)):
+    """Admin: delete a contact message."""
+    contacts_table.delete_item(Key={"id": contact_id})

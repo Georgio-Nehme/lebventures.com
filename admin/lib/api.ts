@@ -43,4 +43,9 @@ export const api = {
   getEventReviews:    (eventId: string) => apiFetch(`/events/${eventId}/reviews`),
   updateReviewStatus: (id: string, body: object) => apiFetch(`/reviews/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
   deleteReview:       (id: string)      => apiFetch(`/reviews/${id}`, { method: 'DELETE' }),
+
+  // Contacts
+  getContacts:       () => apiFetch('/contacts'),
+  markContactRead:   (id: string) => apiFetch(`/contacts/${id}/read`, { method: 'PATCH' }),
+  deleteContact:     (id: string) => apiFetch(`/contacts/${id}`, { method: 'DELETE' }),
 };

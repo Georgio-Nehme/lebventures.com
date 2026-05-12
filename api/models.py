@@ -86,6 +86,21 @@ class ReviewOut(ReviewCreate):
     submittedAt: str
 
 
+# ── Contact ───────────────────────────────────────────────────────────────────
+
+class ContactCreate(BaseModel):
+    name: str
+    email: str
+    adventure: Optional[str] = None
+    message: Optional[str] = None
+
+
+class ContactOut(ContactCreate):
+    id: str
+    submittedAt: str
+    read: bool = False
+
+
 # ── Upload ────────────────────────────────────────────────────────────────────
 
 class UploadUrlRequest(BaseModel):

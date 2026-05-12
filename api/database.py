@@ -6,19 +6,21 @@ from dotenv import load_dotenv
 load_dotenv()
 
 REGION        = os.getenv("AWS_REGION", "eu-central-1")
-EVENTS_TABLE  = os.getenv("EVENTS_TABLE", "lebventures-events")
-SUBS_TABLE    = os.getenv("SUBS_TABLE",   "lebventures-subscriptions")
-REVIEWS_TABLE = os.getenv("REVIEWS_TABLE","lebventures-reviews")
-IMAGES_BUCKET = os.getenv("IMAGES_BUCKET")
+EVENTS_TABLE   = os.getenv("EVENTS_TABLE",   "lebventures-events")
+SUBS_TABLE     = os.getenv("SUBS_TABLE",     "lebventures-subscriptions")
+REVIEWS_TABLE  = os.getenv("REVIEWS_TABLE",  "lebventures-reviews")
+CONTACTS_TABLE = os.getenv("CONTACTS_TABLE", "lebventures-contacts")
+IMAGES_BUCKET  = os.getenv("IMAGES_BUCKET")
 
 _dynamodb = boto3.resource("dynamodb", region_name=REGION)
 _ddb_client = boto3.client("dynamodb", region_name=REGION)
 _s3       = boto3.client("s3", region_name=REGION)
 
-events_table  = _dynamodb.Table(EVENTS_TABLE)
-subs_table    = _dynamodb.Table(SUBS_TABLE)
-reviews_table = _dynamodb.Table(REVIEWS_TABLE)
-s3_client     = _s3
+events_table   = _dynamodb.Table(EVENTS_TABLE)
+subs_table     = _dynamodb.Table(SUBS_TABLE)
+reviews_table  = _dynamodb.Table(REVIEWS_TABLE)
+contacts_table = _dynamodb.Table(CONTACTS_TABLE)
+s3_client      = _s3
 
 
 def floats_to_decimal(obj):
@@ -77,6 +79,17 @@ def ensure_tables():
             ],
         )
         print(f"✅  Created table {REVIEWS_TABLE}")
+
+    if CONTACTS_TABLE not in existing:
+        _ddb_client.create_table(
+            TableName=CONTACTS_TABLE,
+            BillingMode="PAY_PER_REQUEST",
+            AttributeDefinitions=[
+                {"AttributeName": "id", "AttributeType": "S"},
+            ],
+            KeySchema=[{"AttributeName": "id", "KeyType": "HASH"}],
+        )
+        print(f"✅  Created table {CONTACTS_TABLE}")
 
     if IMAGES_BUCKET:
         cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
