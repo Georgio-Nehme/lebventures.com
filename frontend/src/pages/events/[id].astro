@@ -398,7 +398,7 @@ const allTypes = ['hiking','climbing','camping','heritage','canyoning','biking',
 
     // Quick-info strip
     document.getElementById('ev-date').textContent = ev.date ? new Date(ev.date + 'T00:00:00').toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '';
-    document.getElementById('ev-time').textContent = ev.startTime ?? '';
+    document.getElementById('ev-time').textContent = ev.time ?? '';
     document.getElementById('ev-location').textContent = ev.location ?? '';
     document.getElementById('ev-price').textContent = ev.price === 0 ? 'Free' : ev.price ? `$${ev.price}` : '';
 
@@ -408,9 +408,8 @@ const allTypes = ['hiking','climbing','camping','heritage','canyoning','biking',
       img.src = ev.image;
       img.alt = `${ev.title} — LebVentures`;
       document.getElementById('ev-photo-wrap').classList.remove('hidden');
-    } else {
-      document.getElementById('ev-no-photo-wrap').classList.remove('hidden');
     }
+    // No image → leave photo section hidden (no placeholder)
 
     // Map
     const mapEl = document.getElementById('event-map');
