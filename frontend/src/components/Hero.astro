@@ -1,4 +1,6 @@
 ---
+import { getContent, show, isExternalHref } from '../data/content';
+
 interface Props {
   tagline?: string;
   heading: string;
@@ -13,6 +15,14 @@ interface Props {
   /** Explicit content keys for the CTA labels (they differ per page). */
   ctaPrimaryKey?: string;
   ctaSecondaryKey?: string;
+  /** Explicit content keys for visibility toggles (they differ per page). */
+  ctaPrimaryShowKey?: string;
+  ctaSecondaryShowKey?: string;
+  statsShowKey?: string;
+  /** Explicit content keys for CTA link targets (they differ per page); when
+   * set, the content value overrides the `href` on primaryCta/secondaryCta. */
+  ctaPrimaryHrefKey?: string;
+  ctaSecondaryHrefKey?: string;
 }
 
 const {
@@ -27,7 +37,19 @@ const {
   prefix,
   ctaPrimaryKey,
   ctaSecondaryKey,
+  ctaPrimaryShowKey,
+  ctaSecondaryShowKey,
+  statsShowKey,
+  ctaPrimaryHrefKey,
+  ctaSecondaryHrefKey,
 } = Astro.props;
+
+// Cached by getContent() itself, so calling it here (in addition to the
+// page that passes down the resolved props) is free.
+const c = await getContent();
+
+const primaryHref = ctaPrimaryHrefKey ? c[ctaPrimaryHrefKey] : primaryCta?.href;
+const secondaryHref = ctaSecondaryHrefKey ? c[ctaSecondaryHrefKey] : secondaryCta?.href;
 ---
 
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-brand-dark pt-16">
@@ -91,12 +113,28 @@ const {
     {(primaryCta || secondaryCta) && (
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         {primaryCta && (
-          <a href={primaryCta.href} class="btn-primary bg-brand-gold text-brand-dark hover:bg-amber-400 text-base px-8 py-4 font-bold">
+          <a
+            href={primaryHref}
+            class="btn-primary bg-brand-gold text-brand-dark hover:bg-amber-400 text-base px-8 py-4 font-bold"
+            data-c-show={ctaPrimaryShowKey}
+            hidden={ctaPrimaryShowKey ? !show(c, ctaPrimaryShowKey) : undefined}
+            data-c-href={ctaPrimaryHrefKey}
+            target={isExternalHref(primaryHref) ? '_blank' : undefined}
+            rel={isExternalHref(primaryHref) ? 'noopener noreferrer' : undefined}
+          >
             <span data-c={ctaPrimaryKey}>{primaryCta.label}</span>
           </a>
         )}
         {secondaryCta && (
-          <a href={secondaryCta.href} class="btn-outline border-white text-white hover:bg-white hover:text-brand-dark text-base px-8 py-4">
+          <a
+            href={secondaryHref}
+            class="btn-outline border-white text-white hover:bg-white hover:text-brand-dark text-base px-8 py-4"
+            data-c-show={ctaSecondaryShowKey}
+            hidden={ctaSecondaryShowKey ? !show(c, ctaSecondaryShowKey) : undefined}
+            data-c-href={ctaSecondaryHrefKey}
+            target={isExternalHref(secondaryHref) ? '_blank' : undefined}
+            rel={isExternalHref(secondaryHref) ? 'noopener noreferrer' : undefined}
+          >
             <span data-c={ctaSecondaryKey}>{secondaryCta.label}</span>
           </a>
         )}
@@ -104,7 +142,11 @@ const {
     )}
 
     {stats && stats.length > 0 && (
-      <div class="mt-16 grid grid-cols-3 gap-6 border-t border-white/20 pt-8">
+      <div
+        class="mt-16 grid grid-cols-3 gap-6 border-t border-white/20 pt-8"
+        data-c-show={statsShowKey}
+        hidden={statsShowKey ? !show(c, statsShowKey) : undefined}
+      >
         {stats.map((stat, i) => (
           <div>
             <div class="text-3xl font-heading font-bold text-brand-gold" data-c={prefix ? `${prefix}.stat${i + 1}.value` : undefined}>{stat.value}</div>

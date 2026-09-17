@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import { getContent } from '../data/content';
+import { getContent, show, isExternalHref } from '../data/content';
 
 const c = await getContent();
 
@@ -45,8 +45,15 @@ const adventures = ICONS.map((icon, i) => {
       ))}
     </div>
 
-    <div class="text-center mt-12">
-      <a href="/contact" class="btn-primary" data-c="adventures.section.cta">{c['adventures.section.cta']}</a>
+    <div class="text-center mt-12" data-c-show="adventures.section.cta.show" hidden={!show(c, 'adventures.section.cta.show')}>
+      <a
+        href={c['adventures.section.cta.href']}
+        class="btn-primary"
+        data-c="adventures.section.cta"
+        data-c-href="adventures.section.cta.href"
+        target={isExternalHref(c['adventures.section.cta.href']) ? '_blank' : undefined}
+        rel={isExternalHref(c['adventures.section.cta.href']) ? 'noopener noreferrer' : undefined}
+      >{c['adventures.section.cta']}</a>
     </div>
   </div>
 </section>

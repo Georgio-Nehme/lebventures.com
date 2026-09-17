@@ -40,3 +40,9 @@
 [data-c-multiline] {
   white-space: pre-line;
 }
+
+/* Visibility toggles: the `hidden` attribute must win over Tailwind display
+   utilities (flex/grid/inline-block/etc.) applied to the same element. */
+[data-c-show][hidden] {
+  display: none !important;
+}

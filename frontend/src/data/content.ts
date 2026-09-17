@@ -331,6 +331,70 @@ const CONTACT: Content = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// VISIBILITY TOGGLES (buttons and sections)
+// Markup binds these with data-c-show="<key>"; "false" hides the element.
+// ─────────────────────────────────────────────────────────────────────────────
+const TOGGLES: Content = {
+  'global.navbar.cta.show': 'true',
+  'global.footer.social.show': 'true',
+
+  'home.hero.cta_primary.show': 'true',
+  'home.hero.cta_secondary.show': 'true',
+  'home.hero.stats.show': 'true',
+  'home.offer.show': 'true',
+  'home.offer.cta.show': 'true',
+  'home.story.show': 'true',
+  'home.story.cta.show': 'true',
+  'home.eco.show': 'true',
+  'home.eco.cta.show': 'true',
+  'home.community.show': 'true',
+  'home.community.cta.show': 'true',
+
+  'adventures.hero.cta.show': 'true',
+  'adventures.section.cta.show': 'true',
+
+  'sustainability.intro.show': 'true',
+  'sustainability.commitments.show': 'true',
+  'sustainability.cta.show': 'true',
+  'sustainability.cta.button.show': 'true',
+
+  'about.story.show': 'true',
+  'about.timeline.show': 'true',
+  'about.cta.show': 'true',
+  'about.cta.button.show': 'true',
+
+  'contact.form.show': 'true',
+  'contact.call.show': 'true',
+  'contact.info.show': 'true',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// BUTTON LINKS
+// Markup binds these with data-c-href="<key>" (no data-c-prefix — the value
+// is a full route or URL, not a mailto:/tel: suffix).
+// ─────────────────────────────────────────────────────────────────────────────
+const LINKS: Content = {
+  'global.navbar.cta.href': '/contact',
+
+  'home.hero.cta_primary.href': '/adventures',
+  'home.hero.cta_secondary.href': '/contact',
+  'home.offer.card1.href': '/adventures',
+  'home.offer.card2.href': '/adventures',
+  'home.offer.card3.href': '/adventures',
+  'home.offer.cta.href': '/adventures',
+  'home.story.cta.href': '/about',
+  'home.eco.cta.href': '/sustainable-tourism',
+  'home.community.cta.href': '/contact',
+
+  'adventures.hero.cta.href': '/contact',
+  'adventures.section.cta.href': '/contact',
+
+  'sustainability.cta.button.href': '/contact',
+
+  'about.cta.button.href': '/contact',
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Registry
 // ─────────────────────────────────────────────────────────────────────────────
 export const DEFAULTS: Content = {
@@ -340,6 +404,8 @@ export const DEFAULTS: Content = {
   ...SUSTAINABILITY,
   ...ABOUT,
   ...CONTACT,
+  ...TOGGLES,
+  ...LINKS,
 };
 
 // Fields whose value is multi-line ("textarea" in the schema) — used by
@@ -416,6 +482,18 @@ export async function getContent(): Promise<Content> {
   })();
 
   return contentPromise;
+}
+
+// Whether a togglable button/section should render. Anything other than
+// the literal string "false" is treated as visible (fail open).
+export function show(c: Content, key: string): boolean {
+  return c[key] !== 'false';
+}
+
+// Whether a button-link value is an absolute URL (vs. a site-relative
+// route) — such links open in a new tab so visitors don't leave the site.
+export function isExternalHref(href: string | undefined): boolean {
+  return !!href && href.startsWith('http');
 }
 
 // HTML-escape a value, then turn newlines into <br /> — for headings that

@@ -1,5 +1,5 @@
 ---
-import { getContent } from '../data/content';
+import { getContent, show } from '../data/content';
 
 const c = await getContent();
 ---
@@ -46,7 +46,7 @@ const c = await getContent();
             <a href={`tel:${c['global.contact.phone_href']}`} class="hover:text-brand-gold transition-colors" data-c-href="global.contact.phone_href" data-c-prefix="tel:"><span data-c="global.contact.phone">{c['global.contact.phone']}</span></a>
           </li>
           <li data-c="global.contact.address">{c['global.contact.address']}</li>
-          <li class="flex gap-4 pt-2">
+          <li class="flex gap-4 pt-2" data-c-show="global.footer.social.show" hidden={!show(c, 'global.footer.social.show')}>
             <!-- Instagram -->
             <a href={c['global.social.instagram']} aria-label="Instagram" class="hover:text-brand-gold transition-colors" data-c-href="global.social.instagram">
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

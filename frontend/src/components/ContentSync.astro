@@ -50,8 +50,29 @@ const apiUrl = import.meta.env.PUBLIC_API_URL as string | undefined;
           const key = el.getAttribute('data-c-href');
           if (key && Object.prototype.hasOwnProperty.call(content, key)) {
             const prefix = el.getAttribute('data-c-prefix') || '';
-            const href = prefix + content[key];
+            const value = content[key];
+            const href = prefix + value;
             if (el.getAttribute('href') !== href) el.setAttribute('href', href);
+
+            // mailto:/tel: anchors (identified by data-c-prefix) are never
+            // external-link buttons — leave their target/rel alone.
+            if (!el.hasAttribute('data-c-prefix')) {
+              if (typeof value === 'string' && value.startsWith('http')) {
+                if (el.getAttribute('target') !== '_blank') el.setAttribute('target', '_blank');
+                if (el.getAttribute('rel') !== 'noopener noreferrer') el.setAttribute('rel', 'noopener noreferrer');
+              } else {
+                if (el.hasAttribute('target')) el.removeAttribute('target');
+                if (el.hasAttribute('rel')) el.removeAttribute('rel');
+              }
+            }
+          }
+        });
+
+        document.querySelectorAll('[data-c-show]').forEach((el) => {
+          const key = el.getAttribute('data-c-show');
+          if (key && Object.prototype.hasOwnProperty.call(content, key)) {
+            const shouldHide = content[key] === 'false';
+            if (el.hidden !== shouldHide) el.hidden = shouldHide;
           }
         });
       }

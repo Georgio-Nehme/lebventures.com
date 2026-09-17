@@ -372,6 +372,20 @@ def update_content(body: ContentUpdate, _=Depends(verify_token)):
     unknown = [k for k in body.values if k not in content_schema.DEFAULTS]
     if unknown:
         raise HTTPException(status_code=400, detail=f"Unknown content keys: {', '.join(unknown)}")
+    bad = [
+        k for k, v in body.values.items()
+        if content_schema.FIELD_TYPES.get(k) == "toggle" and v.strip() not in ("", "true", "false")
+    ]
+    if bad:
+        raise HTTPException(status_code=400, detail=f"Toggle keys must be 'true' or 'false': {', '.join(bad)}")
+    bad_links = [
+        k for k, v in body.values.items()
+        if content_schema.FIELD_TYPES.get(k) == "link"
+        and v.strip() != ""
+        and not (v.strip().startswith("/") or v.strip().startswith(("http://", "https://", "mailto:", "tel:")))
+    ]
+    if bad_links:
+        raise HTTPException(status_code=400, detail=f"Links must start with / or http(s):// : {', '.join(bad_links)}")
     now = now_iso()
     for key, value in body.values.items():
         value = value.strip()

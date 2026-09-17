@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar.astro';
 import Hero from '../components/Hero.astro';
 import About from '../components/About.astro';
 import Footer from '../components/Footer.astro';
-import { getContent, lines } from '../data/content';
+import { getContent, lines, show, isExternalHref } from '../data/content';
 import '../styles/global.css';
 
 const c = await getContent();
@@ -33,7 +33,7 @@ const timeline = [1, 2, 3, 4, 5].map(n => ({
     <About />
 
     <!-- Founders timeline -->
-    <section class="py-20 bg-brand-sky/30" aria-labelledby="timeline-heading">
+    <section class="py-20 bg-brand-sky/30" aria-labelledby="timeline-heading" data-c-show="about.timeline.show" hidden={!show(c, 'about.timeline.show')}>
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-14">
           <h2 id="timeline-heading" class="section-heading" data-c="about.timeline.heading">{c['about.timeline.heading']}</h2>
@@ -56,11 +56,20 @@ const timeline = [1, 2, 3, 4, 5].map(n => ({
     </section>
 
     <!-- CTA -->
-    <section class="py-16 bg-white text-center">
+    <section class="py-16 bg-white text-center" data-c-show="about.cta.show" hidden={!show(c, 'about.cta.show')}>
       <div class="max-w-xl mx-auto px-4">
         <h2 class="section-heading" data-c="about.cta.heading">{c['about.cta.heading']}</h2>
         <p class="section-subheading mx-auto mb-8" data-c="about.cta.text" data-c-multiline>{c['about.cta.text']}</p>
-        <a href="/contact" class="btn-primary px-10 py-4 text-base" data-c="about.cta.button">{c['about.cta.button']}</a>
+        <a
+          href={c['about.cta.button.href']}
+          class="btn-primary px-10 py-4 text-base"
+          data-c="about.cta.button"
+          data-c-show="about.cta.button.show"
+          hidden={!show(c, 'about.cta.button.show')}
+          data-c-href="about.cta.button.href"
+          target={isExternalHref(c['about.cta.button.href']) ? '_blank' : undefined}
+          rel={isExternalHref(c['about.cta.button.href']) ? 'noopener noreferrer' : undefined}
+        >{c['about.cta.button']}</a>
       </div>
     </section>
 

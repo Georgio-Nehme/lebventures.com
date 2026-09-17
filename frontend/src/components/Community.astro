@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import { getContent } from '../data/content';
+import { getContent, show, isExternalHref } from '../data/content';
 
 const c = await getContent();
 
@@ -11,7 +11,7 @@ const cards = [
 ];
 ---
 
-<section id="community" class="py-20 bg-brand-primary">
+<section id="community" class="py-20 bg-brand-primary" data-c-show="home.community.show" hidden={!show(c, 'home.community.show')}>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
     <span class="inline-block text-xs font-bold text-brand-gold uppercase tracking-widest mb-3" data-c="home.community.tagline">{c['home.community.tagline']}</span>
     <h2 class="text-3xl md:text-4xl font-heading font-bold mb-4" data-c="home.community.heading">{c['home.community.heading']}</h2>
@@ -31,7 +31,16 @@ const cards = [
       ))}
     </div>
 
-    <a href="/contact" class="btn-primary bg-brand-gold text-brand-dark hover:bg-yellow-400 text-base px-10 py-4 inline-block" data-c="home.community.cta">
+    <a
+      href={c['home.community.cta.href']}
+      class="btn-primary bg-brand-gold text-brand-dark hover:bg-yellow-400 text-base px-10 py-4 inline-block"
+      data-c="home.community.cta"
+      data-c-show="home.community.cta.show"
+      hidden={!show(c, 'home.community.cta.show')}
+      data-c-href="home.community.cta.href"
+      target={isExternalHref(c['home.community.cta.href']) ? '_blank' : undefined}
+      rel={isExternalHref(c['home.community.cta.href']) ? 'noopener noreferrer' : undefined}
+    >
       {c['home.community.cta']}
     </a>
   </div>

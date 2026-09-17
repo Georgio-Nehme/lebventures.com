@@ -4,7 +4,7 @@ import Navbar from '../components/Navbar.astro';
 import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
 import Icon from '../components/Icon.astro';
-import { getContent } from '../data/content';
+import { getContent, show } from '../data/content';
 import '../styles/global.css';
 
 const c = await getContent();
@@ -32,7 +32,7 @@ const c = await getContent();
     <Contact />
 
     <!-- Free discovery call -->
-    <div class="bg-brand-primary/5 border-y border-brand-sky py-12">
+    <div class="bg-brand-primary/5 border-y border-brand-sky py-12" data-c-show="contact.call.show" hidden={!show(c, 'contact.call.show')}>
       <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
         <span class="inline-block text-xs font-bold text-brand-gold uppercase tracking-widest mb-3" data-c="contact.call.tagline">{c['contact.call.tagline']}</span>
         <h2 class="font-heading font-bold text-brand-primary text-2xl md:text-3xl mb-3" data-c="contact.call.heading">{c['contact.call.heading']}</h2>
@@ -53,7 +53,7 @@ const c = await getContent();
     </div>
 
     <!-- Info strip -->
-    <div class="bg-brand-sky/40 py-12">
+    <div class="bg-brand-sky/40 py-12" data-c-show="contact.info.show" hidden={!show(c, 'contact.info.show')}>
       <div class="max-w-4xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
         <div>
           <div class="flex justify-center mb-2 text-brand-primary">

@@ -1,11 +1,11 @@
 ---
-import { getContent } from '../data/content';
+import { getContent, show } from '../data/content';
 
 const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 const c = await getContent();
 ---
 
-<section id="contact" class="py-20 bg-white">
+<section id="contact" class="py-20 bg-white" data-c-show="contact.form.show" hidden={!show(c, 'contact.form.show')}>
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-12">
       <span class="inline-block text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">Get in Touch</span>

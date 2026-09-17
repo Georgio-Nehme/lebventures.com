@@ -5,15 +5,15 @@ import Hero from '../components/Hero.astro';
 import Community from '../components/Community.astro';
 import Footer from '../components/Footer.astro';
 import Icon from '../components/Icon.astro';
-import { getContent, lines } from '../data/content';
+import { getContent, lines, show, isExternalHref } from '../data/content';
 import '../styles/global.css';
 
 const c = await getContent();
 
 const featuredAdventures = [
-  { icon: 'hiking', key: 'card1', href: '/adventures' },
-  { icon: 'water', key: 'card2', href: '/adventures' },
-  { icon: 'kids', key: 'card3', href: '/adventures' },
+  { icon: 'hiking', key: 'card1', hrefKey: 'home.offer.card1.href' },
+  { icon: 'water', key: 'card2', hrefKey: 'home.offer.card2.href' },
+  { icon: 'kids', key: 'card3', hrefKey: 'home.offer.card3.href' },
 ];
 ---
 
@@ -36,6 +36,11 @@ const featuredAdventures = [
       secondaryCta={{ label: c['home.hero.cta_secondary'], href: '/contact' }}
       ctaPrimaryKey="home.hero.cta_primary"
       ctaSecondaryKey="home.hero.cta_secondary"
+      ctaPrimaryShowKey="home.hero.cta_primary.show"
+      ctaSecondaryShowKey="home.hero.cta_secondary.show"
+      ctaPrimaryHrefKey="home.hero.cta_primary.href"
+      ctaSecondaryHrefKey="home.hero.cta_secondary.href"
+      statsShowKey="home.hero.stats.show"
       stats={[
         { value: c['home.hero.stat1.value'], label: c['home.hero.stat1.label'] },
         { value: c['home.hero.stat2.value'], label: c['home.hero.stat2.label'] },
@@ -44,7 +49,7 @@ const featuredAdventures = [
     />
 
     <!-- Featured adventures snippet -->
-    <section class="py-20 bg-white" aria-labelledby="featured-heading">
+    <section class="py-20 bg-white" aria-labelledby="featured-heading" data-c-show="home.offer.show" hidden={!show(c, 'home.offer.show')}>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
           <h2 id="featured-heading" class="section-heading" data-c="home.offer.heading">{c['home.offer.heading']}</h2>
@@ -53,7 +58,10 @@ const featuredAdventures = [
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           {featuredAdventures.map(adv => (
             <a
-              href={adv.href}
+              href={c[adv.hrefKey]}
+              data-c-href={adv.hrefKey}
+              target={isExternalHref(c[adv.hrefKey]) ? '_blank' : undefined}
+              rel={isExternalHref(c[adv.hrefKey]) ? 'noopener noreferrer' : undefined}
               class="group p-6 rounded-2xl border border-brand-sky bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
               <div class="mb-4 text-brand-primary">
@@ -69,14 +77,21 @@ const featuredAdventures = [
             </a>
           ))}
         </div>
-        <div class="text-center mt-10">
-          <a href="/adventures" class="btn-outline" data-c="home.offer.cta">{c['home.offer.cta']}</a>
+        <div class="text-center mt-10" data-c-show="home.offer.cta.show" hidden={!show(c, 'home.offer.cta.show')}>
+          <a
+            href={c['home.offer.cta.href']}
+            class="btn-outline"
+            data-c="home.offer.cta"
+            data-c-href="home.offer.cta.href"
+            target={isExternalHref(c['home.offer.cta.href']) ? '_blank' : undefined}
+            rel={isExternalHref(c['home.offer.cta.href']) ? 'noopener noreferrer' : undefined}
+          >{c['home.offer.cta']}</a>
         </div>
       </div>
     </section>
 
     <!-- About snippet -->
-    <section class="py-20 bg-brand-sky/30" aria-labelledby="about-snippet-heading">
+    <section class="py-20 bg-brand-sky/30" aria-labelledby="about-snippet-heading" data-c-show="home.story.show" hidden={!show(c, 'home.story.show')}>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-16 items-center">
           <div>
@@ -88,7 +103,16 @@ const featuredAdventures = [
             <p class="text-gray-600 leading-relaxed mb-8" data-c="home.story.p2" data-c-multiline>
               {c['home.story.p2']}
             </p>
-            <a href="/about" class="btn-primary" data-c="home.story.cta">{c['home.story.cta']}</a>
+            <a
+              href={c['home.story.cta.href']}
+              class="btn-primary"
+              data-c="home.story.cta"
+              data-c-show="home.story.cta.show"
+              hidden={!show(c, 'home.story.cta.show')}
+              data-c-href="home.story.cta.href"
+              target={isExternalHref(c['home.story.cta.href']) ? '_blank' : undefined}
+              rel={isExternalHref(c['home.story.cta.href']) ? 'noopener noreferrer' : undefined}
+            >{c['home.story.cta']}</a>
           </div>
           <div class="relative rounded-3xl overflow-hidden bg-brand-primary shadow-2xl min-h-64">
             <!-- Team photo — drop /images/team.jpg to activate -->
@@ -124,7 +148,7 @@ const featuredAdventures = [
     </section>
 
     <!-- Sustainable Tourism snippet -->
-    <section class="py-20 bg-white" aria-labelledby="eco-snippet-heading">
+    <section class="py-20 bg-white" aria-labelledby="eco-snippet-heading" data-c-show="home.eco.show" hidden={!show(c, 'home.eco.show')}>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <span class="inline-block text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">Sustainability</span>
         <h2 id="eco-snippet-heading" class="section-heading" data-c="home.eco.heading">{c['home.eco.heading']}</h2>
@@ -146,7 +170,16 @@ const featuredAdventures = [
             </div>
           ))}
         </div>
-        <a href="/sustainable-tourism" class="btn-outline" data-c="home.eco.cta">{c['home.eco.cta']}</a>
+        <a
+          href={c['home.eco.cta.href']}
+          class="btn-outline"
+          data-c="home.eco.cta"
+          data-c-show="home.eco.cta.show"
+          hidden={!show(c, 'home.eco.cta.show')}
+          data-c-href="home.eco.cta.href"
+          target={isExternalHref(c['home.eco.cta.href']) ? '_blank' : undefined}
+          rel={isExternalHref(c['home.eco.cta.href']) ? 'noopener noreferrer' : undefined}
+        >{c['home.eco.cta']}</a>
       </div>
     </section>
 

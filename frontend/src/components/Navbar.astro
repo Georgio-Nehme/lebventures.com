@@ -1,10 +1,13 @@
 ---
+import { getContent, show, isExternalHref } from '../data/content';
+
 interface Props {
   transparent?: boolean;
 }
 
 const { transparent = false } = Astro.props;
 const pathname = new URL(Astro.request.url).pathname;
+const c = await getContent();
 
 const navLinks = [
   { href: '/adventures', label: 'Adventures' },
@@ -50,7 +53,15 @@ function isActive(href: string) {
             {link.label}
           </a>
         ))}
-        <a href="/contact" class="nav-cta btn-primary text-sm py-2 px-4">Let's Connect</a>
+        <a
+          href={c['global.navbar.cta.href']}
+          class="nav-cta btn-primary text-sm py-2 px-4"
+          data-c-show="global.navbar.cta.show"
+          hidden={!show(c, 'global.navbar.cta.show')}
+          data-c-href="global.navbar.cta.href"
+          target={isExternalHref(c['global.navbar.cta.href']) ? '_blank' : undefined}
+          rel={isExternalHref(c['global.navbar.cta.href']) ? 'noopener noreferrer' : undefined}
+        >Let's Connect</a>
       </nav>
 
       <!-- Mobile menu button -->
@@ -87,7 +98,15 @@ function isActive(href: string) {
           {link.label}
         </a>
       ))}
-      <a href="/contact" class="btn-primary text-center">Let's Connect</a>
+      <a
+        href={c['global.navbar.cta.href']}
+        class="btn-primary text-center"
+        data-c-show="global.navbar.cta.show"
+        hidden={!show(c, 'global.navbar.cta.show')}
+        data-c-href="global.navbar.cta.href"
+        target={isExternalHref(c['global.navbar.cta.href']) ? '_blank' : undefined}
+        rel={isExternalHref(c['global.navbar.cta.href']) ? 'noopener noreferrer' : undefined}
+      >Let's Connect</a>
     </nav>
   </div>
 </header>

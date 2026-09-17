@@ -5,7 +5,7 @@ import Hero from '../components/Hero.astro';
 import Ecotourism from '../components/Ecotourism.astro';
 import Footer from '../components/Footer.astro';
 import Icon from '../components/Icon.astro';
-import { getContent, lines } from '../data/content';
+import { getContent, lines, show, isExternalHref } from '../data/content';
 import '../styles/global.css';
 
 const c = await getContent();
@@ -40,7 +40,7 @@ const commitments = COMMITMENT_ICONS.map((icon, i) => {
     <Ecotourism />
 
     <!-- Extended commitments -->
-    <section class="py-20 bg-white" aria-labelledby="commitments-heading">
+    <section class="py-20 bg-white" aria-labelledby="commitments-heading" data-c-show="sustainability.commitments.show" hidden={!show(c, 'sustainability.commitments.show')}>
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-14">
           <h2 id="commitments-heading" class="section-heading" data-c="sustainability.commitments.heading">{c['sustainability.commitments.heading']}</h2>
@@ -61,11 +61,20 @@ const commitments = COMMITMENT_ICONS.map((icon, i) => {
     </section>
 
     <!-- CTA -->
-    <section class="py-16 bg-brand-primary text-white text-center">
+    <section class="py-16 bg-brand-primary text-white text-center" data-c-show="sustainability.cta.show" hidden={!show(c, 'sustainability.cta.show')}>
       <div class="max-w-2xl mx-auto px-4">
         <h2 class="text-3xl font-heading font-bold mb-4" data-c="sustainability.cta.heading">{c['sustainability.cta.heading']}</h2>
         <p class="text-white/80 mb-8" data-c="sustainability.cta.text" data-c-multiline>{c['sustainability.cta.text']}</p>
-        <a href="/contact" class="btn-primary bg-brand-gold text-brand-dark hover:bg-yellow-400 px-10 py-4 text-base" data-c="sustainability.cta.button">{c['sustainability.cta.button']}</a>
+        <a
+          href={c['sustainability.cta.button.href']}
+          class="btn-primary bg-brand-gold text-brand-dark hover:bg-yellow-400 px-10 py-4 text-base"
+          data-c="sustainability.cta.button"
+          data-c-show="sustainability.cta.button.show"
+          hidden={!show(c, 'sustainability.cta.button.show')}
+          data-c-href="sustainability.cta.button.href"
+          target={isExternalHref(c['sustainability.cta.button.href']) ? '_blank' : undefined}
+          rel={isExternalHref(c['sustainability.cta.button.href']) ? 'noopener noreferrer' : undefined}
+        >{c['sustainability.cta.button']}</a>
       </div>
     </section>
 

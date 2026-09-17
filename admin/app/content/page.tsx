@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '@/lib/api';
 
-type FieldType = 'text' | 'textarea' | 'image' | 'url';
+type FieldType = 'text' | 'textarea' | 'image' | 'url' | 'toggle' | 'link';
 type Field = { key: string; label: string; type: FieldType; default: string; value: string; updatedAt?: string };
 type ContentPage = { id: string; label: string; fields: Field[] };
 
@@ -179,17 +179,37 @@ export default function ContentPage() {
           )}
         </div>
 
+        {f.type === 'toggle' && (
+          <label className="inline-flex items-center gap-3 cursor-pointer select-none">
+            <span
+              role="switch"
+              aria-checked={value === 'true'}
+              tabIndex={0}
+              onClick={() => setDraftValue(f.key, value === 'true' ? 'false' : 'true')}
+              onKeyDown={e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); setDraftValue(f.key, value === 'true' ? 'false' : 'true'); } }}
+              className={`relative inline-block w-11 h-6 rounded-full transition-colors ${value === 'true' ? 'bg-amber-500' : 'bg-slate-300'}`}
+            >
+              <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${value === 'true' ? 'translate-x-5' : ''}`} />
+            </span>
+            <span className="text-sm text-slate-700">{value === 'true' ? 'Visible' : 'Hidden'}</span>
+          </label>
+        )}
+
         {f.type === 'textarea' && (
           <AutoTextarea value={value} onChange={v => setDraftValue(f.key, v)} />
         )}
 
-        {(f.type === 'text' || f.type === 'url') && (
+        {(f.type === 'text' || f.type === 'url' || f.type === 'link') && (
           <input
             type={f.type === 'url' ? 'url' : 'text'}
             value={value}
             onChange={e => setDraftValue(f.key, e.target.value)}
+            placeholder={f.type === 'link' ? '/contact or https://…' : undefined}
             className={inputCls}
           />
+        )}
+        {f.type === 'link' && (
+          <p className="text-xs text-slate-400">A site route like <code>/adventures</code> or a full URL like <code>https://example.com</code>.</p>
         )}
 
         {f.type === 'image' && (

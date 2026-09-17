@@ -11,6 +11,8 @@ Types:
   textarea  – multi-line plain text; newlines are rendered as line breaks
   image     – URL (site-relative like /images/team.jpg or absolute S3 URL)
   url       – external link
+  toggle    – "true" / "false"; controls whether a button or section is shown
+  link      – button target: a site route like /contact or a full https:// URL
 
 Keys are dot-separated: <page>.<section>.<field>. Never rename a key once
 shipped; the frontend and stored values depend on it.
@@ -23,6 +25,16 @@ Field = Dict[str, Any]
 
 def f(key: str, label: str, default: str, type_: str = "text") -> Field:
     return {"key": key, "label": label, "type": type_, "default": default}
+
+
+def t(key: str, label: str, default: bool = True) -> Field:
+    """Visibility toggle for a button or section."""
+    return f(key, label, "true" if default else "false", "toggle")
+
+
+def l(key: str, label: str, default: str) -> Field:
+    """Button link target (site route or full URL)."""
+    return f(key, label, default, "link")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -279,6 +291,90 @@ CONTACT: List[Field] = [
     f("contact.info.location.text", "Location text", "El Tine Street, Amchit — operating across Lebanon's mountains, valleys, and coast.", "textarea"),
     f("contact.info.email.title", "Email title", "Email Us"),
     f("contact.info.phone.title", "Phone title", "Call / WhatsApp"),
+]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# VISIBILITY TOGGLES (buttons and sections)
+# Frontend binds these with data-c-show="<key>"; "false" hides the element.
+# ─────────────────────────────────────────────────────────────────────────────
+GLOBAL += [
+    t("global.navbar.cta.show", "Show \"Let's Connect\" button in navbar"),
+    t("global.footer.social.show", "Show social icons in footer"),
+]
+
+HOME += [
+    t("home.hero.cta_primary.show", "Show primary button"),
+    t("home.hero.cta_secondary.show", "Show secondary button"),
+    t("home.hero.stats.show", "Show stats row"),
+    t("home.offer.show", "Show \"What We Offer\" section"),
+    t("home.offer.cta.show", "Show section button"),
+    t("home.story.show", "Show \"Our Story\" section"),
+    t("home.story.cta.show", "Show story button"),
+    t("home.eco.show", "Show sustainability section"),
+    t("home.eco.cta.show", "Show sustainability button"),
+    t("home.community.show", "Show community section"),
+    t("home.community.cta.show", "Show community button"),
+]
+
+ADVENTURES += [
+    t("adventures.hero.cta.show", "Show hero button"),
+    t("adventures.section.cta.show", "Show section button"),
+]
+
+SUSTAINABILITY += [
+    t("sustainability.intro.show", "Show intro section (pillars + quote)"),
+    t("sustainability.commitments.show", "Show \"How We Operate\" section"),
+    t("sustainability.cta.show", "Show closing section"),
+    t("sustainability.cta.button.show", "Show closing button"),
+]
+
+ABOUT += [
+    t("about.story.show", "Show story section"),
+    t("about.timeline.show", "Show timeline section"),
+    t("about.cta.show", "Show closing section"),
+    t("about.cta.button.show", "Show closing button"),
+]
+
+CONTACT += [
+    t("contact.form.show", "Show contact form"),
+    t("contact.call.show", "Show discovery call section"),
+    t("contact.info.show", "Show info strip (location / email / phone)"),
+]
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# BUTTON LINKS
+# Frontend binds these with data-c-href="<key>". Values may be a site route
+# (/contact) or a full URL (https://...).
+# ─────────────────────────────────────────────────────────────────────────────
+GLOBAL += [
+    l("global.navbar.cta.href", "\"Let's Connect\" button link", "/contact"),
+]
+
+HOME += [
+    l("home.hero.cta_primary.href", "Primary button link", "/adventures"),
+    l("home.hero.cta_secondary.href", "Secondary button link", "/contact"),
+    l("home.offer.card1.href", "Card 1 link", "/adventures"),
+    l("home.offer.card2.href", "Card 2 link", "/adventures"),
+    l("home.offer.card3.href", "Card 3 link", "/adventures"),
+    l("home.offer.cta.href", "Section button link", "/adventures"),
+    l("home.story.cta.href", "Story button link", "/about"),
+    l("home.eco.cta.href", "Sustainability button link", "/sustainable-tourism"),
+    l("home.community.cta.href", "Community button link", "/contact"),
+]
+
+ADVENTURES += [
+    l("adventures.hero.cta.href", "Hero button link", "/contact"),
+    l("adventures.section.cta.href", "Section button link", "/contact"),
+]
+
+SUSTAINABILITY += [
+    l("sustainability.cta.button.href", "Closing button link", "/contact"),
+]
+
+ABOUT += [
+    l("about.cta.button.href", "Closing button link", "/contact"),
 ]
 
 # ─────────────────────────────────────────────────────────────────────────────
