@@ -68,6 +68,26 @@ const apiUrl = import.meta.env.PUBLIC_API_URL as string | undefined;
           }
         });
 
+        // Anchors that can be switched to non-clickable
+        document.querySelectorAll('[data-c-link]').forEach((el) => {
+          const key = el.getAttribute('data-c-link');
+          if (key && Object.prototype.hasOwnProperty.call(content, key)) {
+            const clickable = content[key] !== 'false';
+            const target = el.getAttribute('data-href') || el.getAttribute('href') || '';
+            if (!clickable) {
+              if (el.hasAttribute('href')) el.setAttribute('data-href', el.getAttribute('href'));
+              el.removeAttribute('href');
+              el.removeAttribute('target');
+              el.removeAttribute('rel');
+              el.setAttribute('aria-disabled', 'true');
+            } else if (!el.hasAttribute('href') && target) {
+              el.setAttribute('href', target);
+              el.removeAttribute('aria-disabled');
+              if (/^https?:/.test(target)) { el.setAttribute('target', '_blank'); el.setAttribute('rel', 'noopener noreferrer'); }
+            }
+          }
+        });
+
         document.querySelectorAll('[data-c-show]').forEach((el) => {
           const key = el.getAttribute('data-c-show');
           if (key && Object.prototype.hasOwnProperty.call(content, key)) {

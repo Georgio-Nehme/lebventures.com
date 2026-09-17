@@ -9,6 +9,7 @@ import { getContent, lines, show, isExternalHref } from '../data/content';
 import '../styles/global.css';
 
 const c = await getContent();
+const cardsClickable = show(c, 'home.offer.cards.link.show');
 
 const featuredAdventures = [
   { icon: 'hiking', key: 'card1', hrefKey: 'home.offer.card1.href' },
@@ -58,10 +59,13 @@ const featuredAdventures = [
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           {featuredAdventures.map(adv => (
             <a
-              href={c[adv.hrefKey]}
+              href={cardsClickable ? c[adv.hrefKey] : undefined}
+              data-href={c[adv.hrefKey]}
               data-c-href={adv.hrefKey}
-              target={isExternalHref(c[adv.hrefKey]) ? '_blank' : undefined}
-              rel={isExternalHref(c[adv.hrefKey]) ? 'noopener noreferrer' : undefined}
+              data-c-link="home.offer.cards.link.show"
+              aria-disabled={cardsClickable ? undefined : 'true'}
+              target={cardsClickable && isExternalHref(c[adv.hrefKey]) ? '_blank' : undefined}
+              rel={cardsClickable && isExternalHref(c[adv.hrefKey]) ? 'noopener noreferrer' : undefined}
               class="group p-6 rounded-2xl border border-brand-sky bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
             >
               <div class="mb-4 text-brand-primary">
@@ -71,7 +75,7 @@ const featuredAdventures = [
                 {c[`home.offer.${adv.key}.title`]}
               </h3>
               <p class="text-sm text-gray-600 leading-relaxed" data-c={`home.offer.${adv.key}.desc`} data-c-multiline>{c[`home.offer.${adv.key}.desc`]}</p>
-              <span class="inline-block mt-4 text-brand-primary text-sm font-semibold group-hover:underline">
+              <span class="inline-block mt-4 text-brand-primary text-sm font-semibold group-hover:underline" data-c-show="home.offer.cards.link.show" hidden={!cardsClickable}>
                 Learn more →
               </span>
             </a>

@@ -308,6 +308,7 @@ HOME += [
     t("home.hero.cta_secondary.show", "Show secondary button"),
     t("home.hero.stats.show", "Show stats row"),
     t("home.offer.show", "Show \"What We Offer\" section"),
+    t("home.offer.cards.link.show", "Cards clickable (show \"Learn more\")"),
     t("home.offer.cta.show", "Show section button"),
     t("home.story.show", "Show \"Our Story\" section"),
     t("home.story.cta.show", "Show story button"),

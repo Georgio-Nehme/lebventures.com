@@ -46,3 +46,9 @@
 [data-c-show][hidden] {
   display: none !important;
 }
+
+/* Anchors switched to non-clickable from the admin */
+a[data-c-link][aria-disabled="true"] {
+  pointer-events: none;
+  cursor: default;
+}

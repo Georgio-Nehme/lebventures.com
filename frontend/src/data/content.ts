@@ -342,6 +342,7 @@ const TOGGLES: Content = {
   'home.hero.cta_secondary.show': 'true',
   'home.hero.stats.show': 'true',
   'home.offer.show': 'true',
+  'home.offer.cards.link.show': 'true',
   'home.offer.cta.show': 'true',
   'home.story.show': 'true',
   'home.story.cta.show': 'true',
