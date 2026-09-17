@@ -2,16 +2,17 @@ import os
 import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
-from typing import List, Optional
-from fastapi import FastAPI, HTTPException, Depends, Query, status
+from typing import Dict, List, Optional
+from fastapi import FastAPI, HTTPException, Depends, Query, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key, Attr
 from dotenv import load_dotenv
 
+import content_schema
 from auth import verify_token
 from database import (
-    events_table, subs_table, reviews_table, contacts_table,
+    events_table, subs_table, reviews_table, contacts_table, content_table,
     s3_client, IMAGES_BUCKET, REGION, ensure_tables, floats_to_decimal,
 )
 from models import (
@@ -20,6 +21,7 @@ from models import (
     ReviewCreate, ReviewStatusUpdate, ReviewOut,
     ContactCreate, ContactOut,
     UploadUrlRequest, UploadUrlResponse,
+    ContentFieldOut, ContentPageOut, ContentUpdate,
 )
 
 load_dotenv()
@@ -33,7 +35,7 @@ async def lifespan(app: FastAPI):
     ensure_tables()
     yield
 
-app = FastAPI(title="LebVentures API", version="1.0.1", lifespan=lifespan)
+app = FastAPI(title="LebVentures API", version="1.1.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -305,7 +307,10 @@ def delete_review(review_id: str, _=Depends(verify_token)):
 def get_upload_url(body: UploadUrlRequest, _=Depends(verify_token)):
     if not IMAGES_BUCKET:
         raise HTTPException(status_code=500, detail="S3 bucket not configured")
-    key = f"events/{uuid.uuid4()}/{body.filename}"
+    folder = body.folder or "events"
+    if folder not in ("events", "content"):
+        raise HTTPException(status_code=400, detail="folder must be 'events' or 'content'")
+    key = f"{folder}/{uuid.uuid4()}/{body.filename}"
     upload_url = s3_client.generate_presigned_url(
         "put_object",
         Params={"Bucket": IMAGES_BUCKET, "Key": key, "ContentType": body.contentType},
@@ -313,6 +318,85 @@ def get_upload_url(body: UploadUrlRequest, _=Depends(verify_token)):
     )
     public_url = f"https://{IMAGES_BUCKET}.s3.{REGION}.amazonaws.com/{key}"
     return UploadUrlResponse(uploadUrl=upload_url, publicUrl=public_url)
+
+
+# ═══════════════════════════════════════════════════════════════
+#  CONTENT
+# ═══════════════════════════════════════════════════════════════
+
+def _stored_content_values():
+    """Scan the content table and return {key: {value, updatedAt}}."""
+    resp = content_table.scan()
+    return {i["key"]: i for i in resp.get("Items", [])}
+
+
+@app.get("/content", response_model=Dict[str, str])
+def get_content(response: Response):
+    """Public: flat key → current value map for every schema key (stored value, or default)."""
+    stored = _stored_content_values()
+    response.headers["Cache-Control"] = "public, max-age=60"
+    return {
+        key: stored[key]["value"] if key in stored else default
+        for key, default in content_schema.DEFAULTS.items()
+    }
+
+
+@app.get("/content/schema", response_model=List[ContentPageOut])
+def get_content_schema(_=Depends(verify_token)):
+    """Admin: pages/fields from the schema, each field enriched with its current value + updatedAt."""
+    stored = _stored_content_values()
+    pages = []
+    for page in content_schema.PAGES:
+        fields = []
+        for fld in page["fields"]:
+            row = stored.get(fld["key"])
+            fields.append(ContentFieldOut(
+                key=fld["key"],
+                label=fld["label"],
+                type=fld["type"],
+                default=fld["default"],
+                value=row["value"] if row else fld["default"],
+                updatedAt=row.get("updatedAt") if row else None,
+            ))
+        pages.append(ContentPageOut(id=page["id"], label=page["label"], fields=fields))
+    return pages
+
+
+@app.put("/content", response_model=Dict[str, str])
+def update_content(body: ContentUpdate, _=Depends(verify_token)):
+    """Admin: bulk-update content values by key.
+
+    An empty string value resets the key back to its schema default (stored as
+    the default) rather than being saved as an empty value.
+    """
+    unknown = [k for k in body.values if k not in content_schema.DEFAULTS]
+    if unknown:
+        raise HTTPException(status_code=400, detail=f"Unknown content keys: {', '.join(unknown)}")
+    now = now_iso()
+    for key, value in body.values.items():
+        value = value.strip()
+        if value == "":
+            value = content_schema.DEFAULTS[key]
+        content_table.put_item(Item={"key": key, "value": value, "updatedAt": now})
+    stored = _stored_content_values()
+    return {
+        key: stored[key]["value"] if key in stored else default
+        for key, default in content_schema.DEFAULTS.items()
+    }
+
+
+@app.delete("/content/{key}", response_model=Dict[str, str])
+def reset_content(key: str, _=Depends(verify_token)):
+    """Admin: reset a single key back to its schema default."""
+    if key not in content_schema.DEFAULTS:
+        raise HTTPException(status_code=404, detail="Unknown content key")
+    default = content_schema.DEFAULTS[key]
+    content_table.put_item(Item={"key": key, "value": default, "updatedAt": now_iso()})
+    stored = _stored_content_values()
+    return {
+        k: stored[k]["value"] if k in stored else d
+        for k, d in content_schema.DEFAULTS.items()
+    }
 
 
 # ═══════════════════════════════════════════════════════════════

@@ -1,0 +1,75 @@
+---
+// Refreshes editable content in the DOM after hydration, so admin edits
+// show up without a rebuild. Safe no-op when PUBLIC_API_URL is unset, and
+// any failure is swallowed — the build-time defaults already rendered.
+const apiUrl = import.meta.env.PUBLIC_API_URL as string | undefined;
+---
+
+{apiUrl && (
+  <script define:vars={{ apiUrl }}>
+    (function () {
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function toHtmlLines(value) {
+        return escapeHtml(value).replace(/\n/g, '<br />');
+      }
+
+      function apply(content) {
+        document.querySelectorAll('[data-c]').forEach((el) => {
+          const key = el.getAttribute('data-c');
+          if (key && Object.prototype.hasOwnProperty.call(content, key)) {
+            const value = content[key];
+            if (el.textContent !== value) el.textContent = value;
+          }
+        });
+
+        document.querySelectorAll('[data-c-html]').forEach((el) => {
+          const key = el.getAttribute('data-c-html');
+          if (key && Object.prototype.hasOwnProperty.call(content, key)) {
+            const html = toHtmlLines(content[key]);
+            if (el.innerHTML !== html) el.innerHTML = html;
+          }
+        });
+
+        document.querySelectorAll('[data-c-src]').forEach((el) => {
+          const key = el.getAttribute('data-c-src');
+          if (key && Object.prototype.hasOwnProperty.call(content, key)) {
+            const value = content[key];
+            if (el.getAttribute('src') !== value) el.setAttribute('src', value);
+          }
+        });
+
+        document.querySelectorAll('[data-c-href]').forEach((el) => {
+          const key = el.getAttribute('data-c-href');
+          if (key && Object.prototype.hasOwnProperty.call(content, key)) {
+            const prefix = el.getAttribute('data-c-prefix') || '';
+            const href = prefix + content[key];
+            if (el.getAttribute('href') !== href) el.setAttribute('href', href);
+          }
+        });
+      }
+
+      try {
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 5000);
+        fetch(apiUrl + '/content', { signal: controller.signal })
+          .then((res) => {
+            clearTimeout(timer);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            return res.json();
+          })
+          .then((json) => apply(json || {}))
+          .catch((err) => console.warn('[content-sync] skipped:', err));
+      } catch (err) {
+        console.warn('[content-sync] skipped:', err);
+      }
+    })();
+  </script>
+)}

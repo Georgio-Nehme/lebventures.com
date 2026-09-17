@@ -8,6 +8,11 @@ interface Props {
   stats?: { value: string; label: string }[];
   useBanner?: boolean;
   videoSrc?: string;
+  /** Content-key prefix, e.g. "home.hero" — wires data-c* attributes when set. */
+  prefix?: string;
+  /** Explicit content keys for the CTA labels (they differ per page). */
+  ctaPrimaryKey?: string;
+  ctaSecondaryKey?: string;
 }
 
 const {
@@ -19,6 +24,9 @@ const {
   stats,
   useBanner = false,
   videoSrc,
+  prefix,
+  ctaPrimaryKey,
+  ctaSecondaryKey,
 } = Astro.props;
 ---
 
@@ -49,6 +57,7 @@ const {
         class="w-full h-full object-cover object-center opacity-90"
         loading="eager"
         fetchpriority="high"
+        data-c-src={prefix ? `${prefix}.image` : undefined}
       />
     </div>
   )}
@@ -75,20 +84,20 @@ const {
 
   <!-- Content -->
   <div class="relative z-20 text-center text-white px-4 max-w-4xl mx-auto">
-    <p class="text-brand-gold font-semibold tracking-widest uppercase text-sm mb-4">{tagline}</p>
-    <h1 class="text-5xl md:text-7xl font-heading font-black leading-tight mb-6 drop-shadow-lg" set:html={heading} />
-    <p class="text-lg md:text-xl text-white/85 max-w-2xl mx-auto mb-10 leading-relaxed">{subheading}</p>
+    <p class="text-brand-gold font-semibold tracking-widest uppercase text-sm mb-4" data-c={prefix ? `${prefix}.tagline` : undefined}>{tagline}</p>
+    <h1 class="text-5xl md:text-7xl font-heading font-black leading-tight mb-6 drop-shadow-lg" data-c-html={prefix ? `${prefix}.heading` : undefined} set:html={heading} />
+    <p class="text-lg md:text-xl text-white/85 max-w-2xl mx-auto mb-10 leading-relaxed" data-c={prefix ? `${prefix}.subheading` : undefined} data-c-multiline>{subheading}</p>
 
     {(primaryCta || secondaryCta) && (
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         {primaryCta && (
           <a href={primaryCta.href} class="btn-primary bg-brand-gold text-brand-dark hover:bg-amber-400 text-base px-8 py-4 font-bold">
-            {primaryCta.label}
+            <span data-c={ctaPrimaryKey}>{primaryCta.label}</span>
           </a>
         )}
         {secondaryCta && (
           <a href={secondaryCta.href} class="btn-outline border-white text-white hover:bg-white hover:text-brand-dark text-base px-8 py-4">
-            {secondaryCta.label}
+            <span data-c={ctaSecondaryKey}>{secondaryCta.label}</span>
           </a>
         )}
       </div>
@@ -96,10 +105,10 @@ const {
 
     {stats && stats.length > 0 && (
       <div class="mt-16 grid grid-cols-3 gap-6 border-t border-white/20 pt-8">
-        {stats.map(stat => (
+        {stats.map((stat, i) => (
           <div>
-            <div class="text-3xl font-heading font-bold text-brand-gold">{stat.value}</div>
-            <div class="text-sm text-white/70 mt-1">{stat.label}</div>
+            <div class="text-3xl font-heading font-bold text-brand-gold" data-c={prefix ? `${prefix}.stat${i + 1}.value` : undefined}>{stat.value}</div>
+            <div class="text-sm text-white/70 mt-1" data-c={prefix ? `${prefix}.stat${i + 1}.label` : undefined}>{stat.label}</div>
           </div>
         ))}
       </div>

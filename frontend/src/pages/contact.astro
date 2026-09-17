@@ -4,13 +4,16 @@ import Navbar from '../components/Navbar.astro';
 import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
 import Icon from '../components/Icon.astro';
+import { getContent } from '../data/content';
 import '../styles/global.css';
+
+const c = await getContent();
 ---
 
 <BaseLayout
-  title="Contact & Book an Adventure"
-  description="Get in touch with LebVentures to book a guided outdoor experience in Lebanon. Hiking, climbing, camping, heritage tours and more — we'll craft the perfect adventure for your group."
-  keywords="book adventure Lebanon, contact LebVentures, guided tours Lebanon, outdoor booking Lebanon"
+  title="Contact Us"
+  description="Get in touch with LebVentures to plan a guided outdoor experience in Lebanon. Hiking, climbing, camping, heritage tours and more — we'll craft the perfect adventure for your group."
+  keywords="contact LebVentures, guided tours Lebanon, adventure tours Lebanon"
 >
   <Navbar />
   <main class="pt-16">
@@ -18,10 +21,10 @@ import '../styles/global.css';
     <!-- Page header -->
     <div class="bg-brand-primary text-white py-16 text-center">
       <div class="max-w-2xl mx-auto px-4">
-        <span class="inline-block text-xs font-bold text-brand-gold uppercase tracking-widest mb-3">Get in Touch</span>
-        <h1 class="text-4xl md:text-5xl font-heading font-bold mb-4">Ready to Venture Out?</h1>
-        <p class="text-white/80 text-lg leading-relaxed">
-          Tell us about the experience you're dreaming of. We'll design it around your group, pace, and goals.
+        <span class="inline-block text-xs font-bold text-brand-gold uppercase tracking-widest mb-3" data-c="contact.header.tagline">{c['contact.header.tagline']}</span>
+        <h1 class="text-4xl md:text-5xl font-heading font-bold mb-4" data-c="contact.header.heading">{c['contact.header.heading']}</h1>
+        <p class="text-white/80 text-lg leading-relaxed" data-c="contact.header.subheading" data-c-multiline>
+          {c['contact.header.subheading']}
         </p>
       </div>
     </div>
@@ -31,20 +34,21 @@ import '../styles/global.css';
     <!-- Free discovery call -->
     <div class="bg-brand-primary/5 border-y border-brand-sky py-12">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-        <span class="inline-block text-xs font-bold text-brand-gold uppercase tracking-widest mb-3">Not sure where to start?</span>
-        <h2 class="font-heading font-bold text-brand-primary text-2xl md:text-3xl mb-3">Book a Free Discovery Call</h2>
-        <p class="text-gray-600 text-base leading-relaxed max-w-xl mx-auto mb-6">
-          Jump on a free 10-minute call with Pierre or Gioia. Tell us what you're looking for and we'll point you toward the perfect experience — no pressure, no commitment.
+        <span class="inline-block text-xs font-bold text-brand-gold uppercase tracking-widest mb-3" data-c="contact.call.tagline">{c['contact.call.tagline']}</span>
+        <h2 class="font-heading font-bold text-brand-primary text-2xl md:text-3xl mb-3" data-c="contact.call.heading">{c['contact.call.heading']}</h2>
+        <p class="text-gray-600 text-base leading-relaxed max-w-xl mx-auto mb-6" data-c="contact.call.text" data-c-multiline>
+          {c['contact.call.text']}
         </p>
         <a
-          href="https://calendly.com/lebventures"
+          href={c['contact.call.url']}
           target="_blank"
           rel="noopener noreferrer"
           class="btn-primary inline-flex items-center gap-2 px-8 py-4 text-base"
+          data-c-href="contact.call.url"
         >
-          📅 Schedule My Free Call
+          <span data-c="contact.call.button">{c['contact.call.button']}</span>
         </a>
-        <p class="text-xs text-gray-400 mt-3">Calendly · Pick any open slot that works for you</p>
+        <p class="text-xs text-gray-400 mt-3" data-c="contact.call.note">{c['contact.call.note']}</p>
       </div>
     </div>
 
@@ -55,22 +59,26 @@ import '../styles/global.css';
           <div class="flex justify-center mb-2 text-brand-primary">
             <Icon name="pin" class="w-10 h-10" />
           </div>
-          <h3 class="font-heading font-bold text-brand-primary mb-1">Based in Byblos</h3>
-          <p class="text-sm text-gray-600">El Tine Street, Amchit — operating across Lebanon's mountains, valleys, and coast.</p>
+          <h3 class="font-heading font-bold text-brand-primary mb-1" data-c="contact.info.location.title">{c['contact.info.location.title']}</h3>
+          <p class="text-sm text-gray-600" data-c="contact.info.location.text" data-c-multiline>{c['contact.info.location.text']}</p>
         </div>
         <div>
           <div class="flex justify-center mb-2 text-brand-primary">
             <Icon name="envelope" class="w-10 h-10" />
           </div>
-          <h3 class="font-heading font-bold text-brand-primary mb-1">Email Us</h3>
-          <a href="mailto:lebventures.lebanon@gmail.com" class="text-sm text-brand-primary hover:underline">lebventures.lebanon@gmail.com</a>
+          <h3 class="font-heading font-bold text-brand-primary mb-1" data-c="contact.info.email.title">{c['contact.info.email.title']}</h3>
+          <a href={`mailto:${c['global.contact.email']}`} class="text-sm text-brand-primary hover:underline" data-c-href="global.contact.email" data-c-prefix="mailto:">
+            <span data-c="global.contact.email">{c['global.contact.email']}</span>
+          </a>
         </div>
         <div>
           <div class="flex justify-center mb-2 text-brand-primary">
             <Icon name="clock" class="w-10 h-10" />
           </div>
-          <h3 class="font-heading font-bold text-brand-primary mb-1">Call / WhatsApp</h3>
-          <a href="tel:+96170050590" class="text-sm text-brand-primary hover:underline">+961 70-050590</a>
+          <h3 class="font-heading font-bold text-brand-primary mb-1" data-c="contact.info.phone.title">{c['contact.info.phone.title']}</h3>
+          <a href={`tel:${c['global.contact.phone_href']}`} class="text-sm text-brand-primary hover:underline" data-c-href="global.contact.phone_href" data-c-prefix="tel:">
+            <span data-c="global.contact.phone">{c['global.contact.phone']}</span>
+          </a>
         </div>
       </div>
     </div>

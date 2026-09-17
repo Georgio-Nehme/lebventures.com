@@ -1,70 +1,30 @@
 ---
 import Icon from './Icon.astro';
+import { getContent } from '../data/content';
 
-const adventures = [
-  {
-    icon: 'hiking',
-    title: 'Hiking & Trekking',
-    description: 'From the Cedar Reserve in Bcharre to the Qadisha Valley, our guided hikes span all difficulty levels across Lebanon\'s most stunning terrain.',
-    tag: 'All levels',
-  },
-  {
-    icon: 'climbing',
-    title: 'Rock Climbing & Caving',
-    description: 'Scale limestone cliffs with certified instructors, or explore Lebanon\'s underground world — from the caves of Afqa to vertical rock faces in Tannourine.',
-    tag: 'Intermediate+',
-  },
-  {
-    icon: 'camping',
-    title: 'Camping Expeditions',
-    description: 'Multi-day wild camping experiences under Lebanon\'s star-filled skies, deep in nature away from city noise — including our signature Billion Star Hotel experience.',
-    tag: 'Overnight',
-  },
-  {
-    icon: 'water',
-    title: 'Water Activities',
-    description: 'Kayak along Lebanon\'s scenic coast, snorkel in crystal-clear Mediterranean waters, or join a fishing adventure — perfect for all ages and comfort levels.',
-    tag: 'Seasonal',
-  },
-  {
-    icon: 'snow',
-    title: 'Winter Experiences',
-    description: 'Strap on snowshoes and trek through Lebanon\'s breathtaking snowy landscapes. End around a crackling bonfire with our Snow and Fire winter adventure.',
-    tag: 'Winter',
-  },
-  {
-    icon: 'leisure',
-    title: 'Leisure & Exploration',
-    description: 'Stargaze under a billion-star sky, master archery at a scenic picnic, or uncover Phoenician ruins and Roman temples woven into Lebanon\'s cultural landscape.',
-    tag: 'Relaxed',
-  },
-  {
-    icon: 'biking',
-    title: 'Mountain Biking',
-    description: 'Ride curated trails through pine forests and terraced villages, or cycle the historic Phoenician routes around Byblos for a journey through 5,000 years of history.',
-    tag: 'Active',
-  },
-  {
-    icon: 'kids',
-    title: 'Kids & Family',
-    description: 'Hands-on outdoor learning designed for children and families — from Little Explorers sensory hikes to rainy-day mud games and snail picking in the Muddy Trail.',
-    tag: 'Family',
-  },
-  {
-    icon: 'heritage',
-    title: 'Rural & Cultural Immersion',
-    description: 'Dive into authentic Lebanese village life in Zouwede, Bchalleh, and Al Zourou3, or hike into history through ancient villages on our Telten l Bled trail.',
-    tag: 'Cultural',
-  },
-];
+const c = await getContent();
+
+// Icons are not editable; only title/description/tag come from content.
+const ICONS = ['hiking', 'climbing', 'camping', 'water', 'snow', 'leisure', 'biking', 'kids', 'heritage'];
+
+const adventures = ICONS.map((icon, i) => {
+  const n = i + 1;
+  return {
+    icon,
+    title: c[`adventures.card${n}.title`],
+    description: c[`adventures.card${n}.desc`],
+    tag: c[`adventures.card${n}.tag`],
+    n,
+  };
+});
 ---
 
 <section id="adventures" class="py-20 bg-white">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-14">
-      <h2 class="section-heading">Adventures We Offer</h2>
-      <p class="section-subheading mx-auto">
-        Whether you're a first-timer or a seasoned explorer, we have an adventure crafted for you across Lebanon's diverse landscapes.
+      <h2 class="section-heading" data-c="adventures.section.heading">{c['adventures.section.heading']}</h2>
+      <p class="section-subheading mx-auto" data-c="adventures.section.subheading" data-c-multiline>
+        {c['adventures.section.subheading']}
       </p>
     </div>
 
@@ -74,19 +34,19 @@ const adventures = [
           <div class="mb-4 text-brand-primary">
             <Icon name={adv.icon} class="w-14 h-14" />
           </div>
-          <span class="inline-block text-xs font-bold bg-brand-sky text-brand-olive px-3 py-1 rounded-full mb-3 uppercase tracking-wider">
+          <span class="inline-block text-xs font-bold bg-brand-sky text-brand-olive px-3 py-1 rounded-full mb-3 uppercase tracking-wider" data-c={`adventures.card${adv.n}.tag`}>
             {adv.tag}
           </span>
-          <h3 class="text-xl font-heading font-bold text-brand-primary mb-2 group-hover:text-brand-olive transition-colors">
+          <h3 class="text-xl font-heading font-bold text-brand-primary mb-2 group-hover:text-brand-olive transition-colors" data-c={`adventures.card${adv.n}.title`}>
             {adv.title}
           </h3>
-          <p class="text-sm text-gray-600 leading-relaxed">{adv.description}</p>
+          <p class="text-sm text-gray-600 leading-relaxed" data-c={`adventures.card${adv.n}.desc`} data-c-multiline>{adv.description}</p>
         </div>
       ))}
     </div>
 
     <div class="text-center mt-12">
-      <a href="/contact" class="btn-primary">Plan Your Adventure</a>
+      <a href="/contact" class="btn-primary" data-c="adventures.section.cta">{c['adventures.section.cta']}</a>
     </div>
   </div>
 </section>

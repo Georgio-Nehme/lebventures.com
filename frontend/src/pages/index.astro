@@ -3,16 +3,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Navbar from '../components/Navbar.astro';
 import Hero from '../components/Hero.astro';
 import Community from '../components/Community.astro';
-import Events from '../components/Events.astro';
-import FeaturedReviews from '../components/FeaturedReviews.astro';
 import Footer from '../components/Footer.astro';
 import Icon from '../components/Icon.astro';
+import { getContent, lines } from '../data/content';
 import '../styles/global.css';
 
+const c = await getContent();
+
 const featuredAdventures = [
-  { icon: 'hiking', title: 'Hiking & Trekking', href: '/adventures', desc: 'From the Cedar Reserve to the Qadisha Valley — trails for every level across Lebanon.' },
-  { icon: 'water', title: 'Water Activities', href: '/adventures', desc: 'Kayaking, snorkeling, and fishing along Lebanon\'s stunning Mediterranean coast.' },
-  { icon: 'kids', title: 'Kids & Family', href: '/adventures', desc: 'Sensory hikes, mud games, and nature exploration designed for curious young adventurers.' },
+  { icon: 'hiking', key: 'card1', href: '/adventures' },
+  { icon: 'water', key: 'card2', href: '/adventures' },
+  { icon: 'kids', key: 'card3', href: '/adventures' },
 ];
 ---
 
@@ -27,14 +28,18 @@ const featuredAdventures = [
     <!-- Hero with banner image -->
     <Hero
       useBanner={true}
-      heading="For the Love<br />of Nature."
-      subheading="LebVentures connects adventurers with Lebanon's hidden trails, sacred cedars, ancient ruins, and breathtaking landscapes — guided by people who truly love this land."
-      primaryCta={{ label: 'Plan Adventure', href: '/adventures' }}
-      secondaryCta={{ label: 'Book Event', href: '/events' }}
+      prefix="home.hero"
+      tagline={c['home.hero.tagline']}
+      heading={lines(c['home.hero.heading'])}
+      subheading={c['home.hero.subheading']}
+      primaryCta={{ label: c['home.hero.cta_primary'], href: '/adventures' }}
+      secondaryCta={{ label: c['home.hero.cta_secondary'], href: '/contact' }}
+      ctaPrimaryKey="home.hero.cta_primary"
+      ctaSecondaryKey="home.hero.cta_secondary"
       stats={[
-        { value: '20+', label: 'Events' },
-        { value: '9', label: 'Adventure Types' },
-        { value: '100+', label: 'Adventurers' },
+        { value: c['home.hero.stat1.value'], label: c['home.hero.stat1.label'] },
+        { value: c['home.hero.stat2.value'], label: c['home.hero.stat2.label'] },
+        { value: c['home.hero.stat3.value'], label: c['home.hero.stat3.label'] },
       ]}
     />
 
@@ -42,8 +47,8 @@ const featuredAdventures = [
     <section class="py-20 bg-white" aria-labelledby="featured-heading">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-          <h2 id="featured-heading" class="section-heading">What We Offer</h2>
-          <p class="section-subheading mx-auto">Nine categories of adventure, one shared love for Lebanon's outdoors.</p>
+          <h2 id="featured-heading" class="section-heading" data-c="home.offer.heading">{c['home.offer.heading']}</h2>
+          <p class="section-subheading mx-auto" data-c="home.offer.subheading" data-c-multiline>{c['home.offer.subheading']}</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
           {featuredAdventures.map(adv => (
@@ -54,10 +59,10 @@ const featuredAdventures = [
               <div class="mb-4 text-brand-primary">
                 <Icon name={adv.icon} class="w-14 h-14" />
               </div>
-              <h3 class="text-xl font-heading font-bold text-brand-primary mb-2 group-hover:text-brand-olive transition-colors">
-                {adv.title}
+              <h3 class="text-xl font-heading font-bold text-brand-primary mb-2 group-hover:text-brand-olive transition-colors" data-c={`home.offer.${adv.key}.title`}>
+                {c[`home.offer.${adv.key}.title`]}
               </h3>
-              <p class="text-sm text-gray-600 leading-relaxed">{adv.desc}</p>
+              <p class="text-sm text-gray-600 leading-relaxed" data-c={`home.offer.${adv.key}.desc`} data-c-multiline>{c[`home.offer.${adv.key}.desc`]}</p>
               <span class="inline-block mt-4 text-brand-primary text-sm font-semibold group-hover:underline">
                 Learn more →
               </span>
@@ -65,7 +70,7 @@ const featuredAdventures = [
           ))}
         </div>
         <div class="text-center mt-10">
-          <a href="/adventures" class="btn-outline">View All Adventures</a>
+          <a href="/adventures" class="btn-outline" data-c="home.offer.cta">{c['home.offer.cta']}</a>
         </div>
       </div>
     </section>
@@ -76,23 +81,24 @@ const featuredAdventures = [
         <div class="grid lg:grid-cols-2 gap-16 items-center">
           <div>
             <span class="inline-block text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">Our Story</span>
-            <h2 id="about-snippet-heading" class="section-heading">Family-Founded,<br />Adventure-Driven</h2>
-            <p class="text-gray-600 leading-relaxed mb-6">
-              LebVentures is a family-founded tour operator specializing in adventure tourism. Founded in 2019 by <strong>Pierre Abboud</strong> and <strong>Gioia Wehbe</strong>, we organize diverse outdoor experiences — from hiking and camping to rock climbing, kayaking, and customized eco-tours — tailored for all adventure levels.
+            <h2 id="about-snippet-heading" class="section-heading" data-c-html="home.story.heading" set:html={lines(c['home.story.heading'])} />
+            <p class="text-gray-600 leading-relaxed mb-6" data-c="home.story.p1" data-c-multiline>
+              {c['home.story.p1']}
             </p>
-            <p class="text-gray-600 leading-relaxed mb-8">
-              Born out of a shared love for Lebanon's mountains, our mission is simple: connect people with Lebanon's extraordinary outdoors through inclusive, authentic, and sustainable adventures.
+            <p class="text-gray-600 leading-relaxed mb-8" data-c="home.story.p2" data-c-multiline>
+              {c['home.story.p2']}
             </p>
-            <a href="/about" class="btn-primary">Meet the Founders</a>
+            <a href="/about" class="btn-primary" data-c="home.story.cta">{c['home.story.cta']}</a>
           </div>
           <div class="relative rounded-3xl overflow-hidden bg-brand-primary shadow-2xl min-h-64">
             <!-- Team photo — drop /images/team.jpg to activate -->
             <img
-              src="/images/team.jpg"
+              src={c['home.story.image']}
               alt="Pierre Abboud and Gioia Wehbe — LebVentures founders on a mountain trail"
               class="absolute inset-0 w-full h-full object-cover object-center"
               loading="lazy"
               onerror="this.remove()"
+              data-c-src="home.story.image"
             />
             <!-- Overlay keeps text readable with or without a photo -->
             <div class="absolute inset-0 bg-gradient-to-br from-brand-dark/80 via-brand-dark/60 to-brand-primary/50"></div>
@@ -102,13 +108,13 @@ const featuredAdventures = [
                 <Icon name="scout" class="w-16 h-16 text-brand-gold" />
               </div>
               <blockquote class="text-lg font-heading italic leading-relaxed text-center mb-6">
-                "The mountains of Lebanon are not just scenery — they are living history, sacred ground, and a responsibility."
+                "<span data-c="home.story.quote" data-c-multiline>{c['home.story.quote']}</span>"
               </blockquote>
               <div class="flex items-center justify-center gap-3">
                 <div class="w-10 h-10 rounded-full bg-brand-gold flex items-center justify-center text-brand-dark font-bold text-sm">LV</div>
                 <div>
-                  <div class="font-bold text-sm">Pierre Abboud & Gioia Wehbe</div>
-                  <div class="text-brand-sky text-xs">Founders · Scout Alumni · Based in Byblos</div>
+                  <div class="font-bold text-sm" data-c="home.story.founders">{c['home.story.founders']}</div>
+                  <div class="text-brand-sky text-xs" data-c="home.story.founders_sub">{c['home.story.founders_sub']}</div>
                 </div>
               </div>
             </div>
@@ -121,32 +127,28 @@ const featuredAdventures = [
     <section class="py-20 bg-white" aria-labelledby="eco-snippet-heading">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <span class="inline-block text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">Sustainability</span>
-        <h2 id="eco-snippet-heading" class="section-heading">Sustainable Tourism at Our Core</h2>
-        <p class="section-subheading mx-auto mb-10">
-          Every decision we make is guided by respect for Lebanon's natural heritage — from route selection to supplier partnerships.
+        <h2 id="eco-snippet-heading" class="section-heading" data-c="home.eco.heading">{c['home.eco.heading']}</h2>
+        <p class="section-subheading mx-auto mb-10" data-c="home.eco.subheading" data-c-multiline>
+          {c['home.eco.subheading']}
         </p>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
           {[
-            { icon: 'leaf', label: 'Leave No Trace' },
-            { icon: 'house', label: 'Support Local' },
-            { icon: 'cedar', label: 'Protect Habitats' },
-            { icon: 'book', label: 'Education First' },
+            { icon: 'leaf', key: 'pillar1' },
+            { icon: 'house', key: 'pillar2' },
+            { icon: 'cedar', key: 'pillar3' },
+            { icon: 'book', key: 'pillar4' },
           ].map(p => (
             <div class="flex flex-col items-center gap-3 p-4 rounded-xl bg-brand-sky/40">
               <div class="text-brand-primary">
                 <Icon name={p.icon} class="w-10 h-10" />
               </div>
-              <span class="text-sm font-semibold text-brand-primary">{p.label}</span>
+              <span class="text-sm font-semibold text-brand-primary" data-c={`home.eco.${p.key}`}>{c[`home.eco.${p.key}`]}</span>
             </div>
           ))}
         </div>
-        <a href="/sustainable-tourism" class="btn-outline">Our Commitment</a>
+        <a href="/sustainable-tourism" class="btn-outline" data-c="home.eco.cta">{c['home.eco.cta']}</a>
       </div>
     </section>
-
-    <Events limit={3} showAll={true} />
-
-    <FeaturedReviews />
 
     <Community />
 

@@ -1,4 +1,4 @@
-from typing import Optional, List, Literal
+from typing import Optional, List, Literal, Dict
 from pydantic import BaseModel, Field
 from pydantic import ConfigDict
 import uuid
@@ -106,9 +106,31 @@ class ContactOut(ContactCreate):
 class UploadUrlRequest(BaseModel):
     filename: str
     contentType: str
+    folder: Optional[str] = "events"
 
 
 class UploadUrlResponse(BaseModel):
     uploadUrl: str
     publicUrl: str
+
+
+# ── Content ───────────────────────────────────────────────────────────────────
+
+class ContentFieldOut(BaseModel):
+    key: str
+    label: str
+    type: str
+    default: str
+    value: str
+    updatedAt: Optional[str] = None
+
+
+class ContentPageOut(BaseModel):
+    id: str
+    label: str
+    fields: List[ContentFieldOut]
+
+
+class ContentUpdate(BaseModel):
+    values: Dict[str, str]
 

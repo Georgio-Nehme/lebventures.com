@@ -1,28 +1,20 @@
 ---
 import Icon from './Icon.astro';
+import { getContent } from '../data/content';
 
-const pillars = [
-  {
-    icon: 'leaf',
-    title: 'Leave No Trace',
-    description: 'Every trip follows strict LNT principles. We pack out what we pack in and educate our community on responsible outdoor ethics.',
-  },
-  {
-    icon: 'house',
-    title: 'Support Local Communities',
-    description: 'We source food, guides, and accommodation from local villages, ensuring tourism income directly benefits the people of Lebanon.',
-  },
-  {
-    icon: 'cedar',
-    title: 'Protect Natural Habitats',
-    description: 'From the cedars of God to the Chouf Biosphere Reserve, we partner with conservation bodies to protect Lebanon\'s ecosystems.',
-  },
-  {
-    icon: 'book',
-    title: 'Education First',
-    description: 'Our guides are trained naturalists who share knowledge about local flora, fauna, geology, and the stories embedded in the land.',
-  },
-];
+const c = await getContent();
+
+// Icons are not editable; text comes from content by index.
+const PILLAR_ICONS = ['leaf', 'house', 'cedar', 'book'];
+const pillars = PILLAR_ICONS.map((icon, i) => {
+  const n = i + 1;
+  return {
+    icon,
+    n,
+    title: c[`sustainability.pillar${n}.title`],
+    description: c[`sustainability.pillar${n}.desc`],
+  };
+});
 ---
 
 <section id="sustainable-tourism" class="py-20 bg-brand-sky/30">
@@ -32,9 +24,9 @@ const pillars = [
       <!-- Text side -->
       <div>
         <span class="inline-block text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">Our Commitment</span>
-        <h2 class="section-heading">Sustainable Tourism at Our Core</h2>
-        <p class="text-gray-600 leading-relaxed mb-8">
-          LebVentures was built on the belief that adventure and environmental stewardship go hand in hand. Every decision we make — from route selection to supplier partnerships — is guided by sustainability and respect for Lebanon's natural heritage.
+        <h2 class="section-heading" data-c="sustainability.intro.heading">{c['sustainability.intro.heading']}</h2>
+        <p class="text-gray-600 leading-relaxed mb-8" data-c="sustainability.intro.text" data-c-multiline>
+          {c['sustainability.intro.text']}
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {pillars.map(p => (
@@ -43,8 +35,8 @@ const pillars = [
                 <Icon name={p.icon} class="w-10 h-10" />
               </div>
               <div>
-                <h4 class="font-heading font-bold text-brand-primary text-base mb-1">{p.title}</h4>
-                <p class="text-sm text-gray-600 leading-relaxed">{p.description}</p>
+                <h4 class="font-heading font-bold text-brand-primary text-base mb-1" data-c={`sustainability.pillar${p.n}.title`}>{p.title}</h4>
+                <p class="text-sm text-gray-600 leading-relaxed" data-c={`sustainability.pillar${p.n}.desc`} data-c-multiline>{p.description}</p>
               </div>
             </div>
           ))}
@@ -58,15 +50,15 @@ const pillars = [
             <Icon name="mountain" class="w-20 h-20 text-white" />
           </div>
           <blockquote class="text-xl font-heading italic leading-relaxed mb-6">
-            "The mountains of Lebanon are not just scenery — they are living history, sacred ground, and a responsibility."
+            "<span data-c="sustainability.quote.text" data-c-multiline>{c['sustainability.quote.text']}</span>"
           </blockquote>
           <div class="flex items-center justify-center gap-3">
             <div class="w-10 h-10 rounded-full bg-brand-gold flex items-center justify-center text-brand-dark font-bold text-sm">
               LV
             </div>
             <div class="text-left">
-              <div class="font-bold text-sm">LebVentures Founders</div>
-              <div class="text-brand-sky text-xs">Scout Alumni & Nature Advocates</div>
+              <div class="font-bold text-sm" data-c="sustainability.quote.author">{c['sustainability.quote.author']}</div>
+              <div class="text-brand-sky text-xs" data-c="sustainability.quote.role">{c['sustainability.quote.role']}</div>
             </div>
           </div>
         </div>

@@ -33,3 +33,10 @@
     @apply text-lg text-brand-olive max-w-2xl;
   }
 }
+
+/* Editable multi-line content (paragraphs/textareas) should render newlines
+   from the admin panel. Scoped to [data-c-multiline] rather than all
+   [data-c] so single-line bindings (button labels, tags, etc.) are unaffected. */
+[data-c-multiline] {
+  white-space: pre-line;
+}

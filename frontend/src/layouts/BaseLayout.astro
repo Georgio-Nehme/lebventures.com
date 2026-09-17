@@ -1,5 +1,6 @@
 ---
 import SEO from '../components/SEO.astro';
+import ContentSync from '../components/ContentSync.astro';
 
 interface Props {
   title: string;
@@ -98,5 +99,6 @@ const jsonLd = {
   </head>
   <body class="min-h-screen flex flex-col">
     <slot />
+    <ContentSync />
   </body>
 </html>

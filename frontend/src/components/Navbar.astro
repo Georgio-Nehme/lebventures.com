@@ -8,8 +8,6 @@ const pathname = new URL(Astro.request.url).pathname;
 
 const navLinks = [
   { href: '/adventures', label: 'Adventures' },
-  { href: '/activities', label: 'Activities' },
-  { href: '/events', label: 'Events' },
   { href: '/sustainable-tourism', label: 'Sustainability' },
   { href: '/about', label: 'Our Story' },
 ];
@@ -32,7 +30,7 @@ function isActive(href: string) {
         <img
           src="/logo-horizontal.png"
           alt="LebVentures — For the Love of Nature"
-          class="logo-img h-10 w-auto"
+          class="logo-img h-12 w-auto"
         />
       </a>
 
@@ -128,7 +126,7 @@ function isActive(href: string) {
   .site-header[data-transparent]:not(.scrolled) .logo-img {
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 0.5rem;
-    padding: 0.25rem 0.5rem;
+    padding: 0.125rem 0.5rem;
   }
 </style>
 

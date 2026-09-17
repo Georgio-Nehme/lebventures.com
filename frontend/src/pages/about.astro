@@ -4,15 +4,16 @@ import Navbar from '../components/Navbar.astro';
 import Hero from '../components/Hero.astro';
 import About from '../components/About.astro';
 import Footer from '../components/Footer.astro';
+import { getContent, lines } from '../data/content';
 import '../styles/global.css';
 
-const timeline = [
-  { year: 'The Beginning', event: 'Pierre Abboud and Gioia Wehbe meet through a shared love of Lebanon\'s outdoors. Their passion for nature, adventure, and community becomes the foundation of a lifelong partnership.' },
-  { year: 'Certifications', event: 'Both pursue formal certifications in Wilderness First Aid, navigation, rope safety, and sustainable tourism guiding — staying current with ongoing training each year.' },
-  { year: '2019', event: 'LebVentures launches from Byblos with its first guided adventures. A small community of nature lovers quickly grows into a movement for inclusive, authentic outdoor experiences across Lebanon.' },
-  { year: 'Expanding', event: 'LebVentures grows its offerings to 9+ adventure types — from land and water to winter excursions and kids educational experiences — while deepening partnerships with local communities and artisans.' },
-  { year: 'Today', event: 'With 20+ events delivered and 100+ adventurers guided, LebVentures continues to expand. Pierre and Gioia remain hands-on, certified, and out on the trail every week — for the love of nature.' },
-];
+const c = await getContent();
+
+const timeline = [1, 2, 3, 4, 5].map(n => ({
+  n,
+  year: c[`about.timeline.item${n}.year`],
+  event: c[`about.timeline.item${n}.text`],
+}));
 ---
 
 <BaseLayout
@@ -23,9 +24,10 @@ const timeline = [
   <Navbar />
   <main>
     <Hero
-      tagline="Our Story"
-      heading="Family-Founded,<br />Adventure-Driven"
-      subheading="A shared passion for Lebanon's mountains turned into a mission: connecting adventurers with the country's hidden trails, sacred cedars, and breathtaking landscapes."
+      prefix="about.hero"
+      tagline={c['about.hero.tagline']}
+      heading={lines(c['about.hero.heading'])}
+      subheading={c['about.hero.subheading']}
     />
 
     <About />
@@ -34,8 +36,8 @@ const timeline = [
     <section class="py-20 bg-brand-sky/30" aria-labelledby="timeline-heading">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-14">
-          <h2 id="timeline-heading" class="section-heading">Our Journey</h2>
-          <p class="section-subheading mx-auto">From scout meetings to mountain guides — the story behind LebVentures.</p>
+          <h2 id="timeline-heading" class="section-heading" data-c="about.timeline.heading">{c['about.timeline.heading']}</h2>
+          <p class="section-subheading mx-auto" data-c="about.timeline.subheading" data-c-multiline>{c['about.timeline.subheading']}</p>
         </div>
         <ol class="relative border-l-2 border-brand-primary space-y-10 ml-4">
           {timeline.map((item, i) => (
@@ -44,8 +46,8 @@ const timeline = [
                 {i + 1}
               </span>
               <div class="flex flex-col gap-1">
-                <span class="inline-block bg-brand-gold text-brand-dark text-xs font-bold px-2 py-0.5 rounded w-fit">{item.year}</span>
-                <p class="text-gray-700 text-sm leading-relaxed mt-1">{item.event}</p>
+                <span class="inline-block bg-brand-gold text-brand-dark text-xs font-bold px-2 py-0.5 rounded w-fit" data-c={`about.timeline.item${item.n}.year`}>{item.year}</span>
+                <p class="text-gray-700 text-sm leading-relaxed mt-1" data-c={`about.timeline.item${item.n}.text`} data-c-multiline>{item.event}</p>
               </div>
             </li>
           ))}
@@ -56,9 +58,9 @@ const timeline = [
     <!-- CTA -->
     <section class="py-16 bg-white text-center">
       <div class="max-w-xl mx-auto px-4">
-        <h2 class="section-heading">Ready to Join Us?</h2>
-        <p class="section-subheading mx-auto mb-8">Every adventure with LebVentures is guided by the same values that shaped our founders — respect, community, and love for the wild.</p>
-        <a href="/contact" class="btn-primary px-10 py-4 text-base">Book an Experience</a>
+        <h2 class="section-heading" data-c="about.cta.heading">{c['about.cta.heading']}</h2>
+        <p class="section-subheading mx-auto mb-8" data-c="about.cta.text" data-c-multiline>{c['about.cta.text']}</p>
+        <a href="/contact" class="btn-primary px-10 py-4 text-base" data-c="about.cta.button">{c['about.cta.button']}</a>
       </div>
     </section>
 

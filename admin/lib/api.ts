@@ -31,8 +31,8 @@ export const api = {
   unpublishEvent:  (id: string)      => apiFetch(`/events/${id}/unpublish`, { method: 'PATCH' }),
 
   // Upload
-  getUploadUrl: (filename: string, contentType: string) =>
-    apiFetch('/upload-url', { method: 'POST', body: JSON.stringify({ filename, contentType }) }),
+  getUploadUrl: (filename: string, contentType: string, folder: 'events' | 'content' = 'events') =>
+    apiFetch('/upload-url', { method: 'POST', body: JSON.stringify({ filename, contentType, folder }) }),
 
   // Subscriptions
   getSubscriptions:    (eventId: string) => apiFetch(`/events/${eventId}/subscriptions`),
@@ -48,4 +48,9 @@ export const api = {
   getContacts:       () => apiFetch('/contacts'),
   markContactRead:   (id: string) => apiFetch(`/contacts/${id}/read`, { method: 'PATCH' }),
   deleteContact:     (id: string) => apiFetch(`/contacts/${id}`, { method: 'DELETE' }),
+
+  // Website content
+  getContentSchema:  () => apiFetch('/content/schema'),
+  updateContent:     (values: Record<string, string>) => apiFetch('/content', { method: 'PUT', body: JSON.stringify({ values }) }),
+  resetContentKey:   (key: string) => apiFetch(`/content/${encodeURIComponent(key)}`, { method: 'DELETE' }),
 };

@@ -1,7 +1,10 @@
 import os
 import boto3
 from decimal import Decimal
+from datetime import datetime, timezone
 from dotenv import load_dotenv
+
+import content_schema
 
 load_dotenv()
 
@@ -10,6 +13,7 @@ EVENTS_TABLE   = os.getenv("EVENTS_TABLE",   "lebventures-events")
 SUBS_TABLE     = os.getenv("SUBS_TABLE",     "lebventures-subscriptions")
 REVIEWS_TABLE  = os.getenv("REVIEWS_TABLE",  "lebventures-reviews")
 CONTACTS_TABLE = os.getenv("CONTACTS_TABLE", "lebventures-contacts")
+CONTENT_TABLE  = os.getenv("CONTENT_TABLE",  "lebventures-content")
 IMAGES_BUCKET  = os.getenv("IMAGES_BUCKET")
 
 _dynamodb = boto3.resource("dynamodb", region_name=REGION)
@@ -20,6 +24,7 @@ events_table   = _dynamodb.Table(EVENTS_TABLE)
 subs_table     = _dynamodb.Table(SUBS_TABLE)
 reviews_table  = _dynamodb.Table(REVIEWS_TABLE)
 contacts_table = _dynamodb.Table(CONTACTS_TABLE)
+content_table  = _dynamodb.Table(CONTENT_TABLE)
 s3_client      = _s3
 
 
@@ -32,6 +37,16 @@ def floats_to_decimal(obj):
     if isinstance(obj, list):
         return [floats_to_decimal(i) for i in obj]
     return obj
+
+
+def seed_content():
+    """Insert a row for every schema key that doesn't have one yet, set to its default."""
+    resp = content_table.scan(ProjectionExpression="#k", ExpressionAttributeNames={"#k": "key"})
+    existing_keys = {item["key"] for item in resp.get("Items", [])}
+    now = datetime.now(timezone.utc).isoformat()
+    for key, default in content_schema.DEFAULTS.items():
+        if key not in existing_keys:
+            content_table.put_item(Item={"key": key, "value": default, "updatedAt": now})
 
 
 def ensure_tables():
@@ -90,6 +105,26 @@ def ensure_tables():
             KeySchema=[{"AttributeName": "id", "KeyType": "HASH"}],
         )
         print(f"✅  Created table {CONTACTS_TABLE}")
+
+    if CONTENT_TABLE not in existing:
+        _ddb_client.create_table(
+            TableName=CONTENT_TABLE,
+            BillingMode="PAY_PER_REQUEST",
+            AttributeDefinitions=[
+                {"AttributeName": "key", "AttributeType": "S"},
+            ],
+            KeySchema=[{"AttributeName": "key", "KeyType": "HASH"}],
+        )
+        print(f"✅  Created table {CONTENT_TABLE}")
+        try:
+            _ddb_client.get_waiter("table_exists").wait(TableName=CONTENT_TABLE)
+        except Exception as e:
+            print(f"⚠️  Waiter for {CONTENT_TABLE} failed: {e}")
+
+    try:
+        seed_content()
+    except Exception as e:
+        print(f"⚠️  Failed to seed content table: {e}")
 
     if IMAGES_BUCKET:
         cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]

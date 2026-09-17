@@ -4,7 +4,10 @@ import Navbar from '../components/Navbar.astro';
 import Hero from '../components/Hero.astro';
 import Adventures from '../components/Adventures.astro';
 import Footer from '../components/Footer.astro';
+import { getContent, lines } from '../data/content';
 import '../styles/global.css';
+
+const c = await getContent();
 ---
 
 <BaseLayout
@@ -15,10 +18,12 @@ import '../styles/global.css';
   <Navbar />
   <main>
     <Hero
-      tagline="Choose Your Adventure"
-      heading="Adventures for<br />Every Explorer"
-      subheading="Nine categories of guided outdoor experiences spanning Lebanon's most spectacular terrain — from beginner-friendly family hikes to multi-day wilderness expeditions and winter snowshoeing."
-      primaryCta={{ label: 'Book an Adventure', href: '/contact' }}
+      prefix="adventures.hero"
+      tagline={c['adventures.hero.tagline']}
+      heading={lines(c['adventures.hero.heading'])}
+      subheading={c['adventures.hero.subheading']}
+      primaryCta={{ label: c['adventures.hero.cta'], href: '/contact' }}
+      ctaPrimaryKey="adventures.hero.cta"
     />
     <Adventures />
   </main>
