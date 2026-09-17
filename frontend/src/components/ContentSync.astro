@@ -77,7 +77,32 @@ const apiUrl = import.meta.env.PUBLIC_API_URL as string | undefined;
         });
       }
 
+      // Browser-side cache: reuse the last fetched content for CACHE_MS so a
+      // refresh or navigating between pages doesn't re-request /content.
+      const CACHE_KEY = 'lv_content_cache';
+      const CACHE_MS = 5 * 60 * 1000;
+
+      function readCache() {
+        try {
+          const raw = localStorage.getItem(CACHE_KEY);
+          if (!raw) return null;
+          const parsed = JSON.parse(raw);
+          if (!parsed || typeof parsed.ts !== 'number' || !parsed.data) return null;
+          if (Date.now() - parsed.ts > CACHE_MS) return null;
+          return parsed.data;
+        } catch { return null; }
+      }
+
+      function writeCache(data) {
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify({ ts: Date.now(), data })); } catch {}
+      }
+
       try {
+        const cached = readCache();
+        if (cached) {
+          apply(cached);
+          return;
+        }
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 5000);
         fetch(apiUrl + '/content', { signal: controller.signal })
@@ -86,7 +111,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL as string | undefined;
             if (!res.ok) throw new Error('HTTP ' + res.status);
             return res.json();
           })
-          .then((json) => apply(json || {}))
+          .then((json) => { writeCache(json || {}); apply(json || {}); })
           .catch((err) => console.warn('[content-sync] skipped:', err));
       } catch (err) {
         console.warn('[content-sync] skipped:', err);

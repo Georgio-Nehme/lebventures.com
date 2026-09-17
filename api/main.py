@@ -1,4 +1,5 @@
 import os
+import time
 import uuid
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
@@ -324,17 +325,37 @@ def get_upload_url(body: UploadUrlRequest, _=Depends(verify_token)):
 #  CONTENT
 # ═══════════════════════════════════════════════════════════════
 
-def _stored_content_values():
-    """Scan the content table and return {key: {value, updatedAt}}."""
+CONTENT_CACHE_TTL = int(os.getenv("CONTENT_CACHE_TTL", "300"))  # seconds
+_content_cache: Dict[str, object] = {"data": None, "ts": 0.0}
+
+
+def _stored_content_values(fresh: bool = False):
+    """Return {key: {value, updatedAt}} from the content table.
+
+    Results are cached in memory for CONTENT_CACHE_TTL seconds so public page
+    loads don't hit DynamoDB on every request. Writes call _invalidate_content()
+    so admin edits show up immediately. Pass fresh=True to bypass the cache.
+    """
+    now = time.monotonic()
+    if not fresh and _content_cache["data"] is not None and now - _content_cache["ts"] < CONTENT_CACHE_TTL:
+        return _content_cache["data"]
     resp = content_table.scan()
-    return {i["key"]: i for i in resp.get("Items", [])}
+    data = {i["key"]: i for i in resp.get("Items", [])}
+    _content_cache["data"] = data
+    _content_cache["ts"] = now
+    return data
+
+
+def _invalidate_content():
+    _content_cache["data"] = None
+    _content_cache["ts"] = 0.0
 
 
 @app.get("/content", response_model=Dict[str, str])
 def get_content(response: Response):
     """Public: flat key → current value map for every schema key (stored value, or default)."""
     stored = _stored_content_values()
-    response.headers["Cache-Control"] = "public, max-age=60"
+    response.headers["Cache-Control"] = f"public, max-age={CONTENT_CACHE_TTL}"
     return {
         key: stored[key]["value"] if key in stored else default
         for key, default in content_schema.DEFAULTS.items()
@@ -344,7 +365,7 @@ def get_content(response: Response):
 @app.get("/content/schema", response_model=List[ContentPageOut])
 def get_content_schema(_=Depends(verify_token)):
     """Admin: pages/fields from the schema, each field enriched with its current value + updatedAt."""
-    stored = _stored_content_values()
+    stored = _stored_content_values(fresh=True)
     pages = []
     for page in content_schema.PAGES:
         fields = []
@@ -392,6 +413,7 @@ def update_content(body: ContentUpdate, _=Depends(verify_token)):
         if value == "":
             value = content_schema.DEFAULTS[key]
         content_table.put_item(Item={"key": key, "value": value, "updatedAt": now})
+    _invalidate_content()
     stored = _stored_content_values()
     return {
         key: stored[key]["value"] if key in stored else default
@@ -406,6 +428,7 @@ def reset_content(key: str, _=Depends(verify_token)):
         raise HTTPException(status_code=404, detail="Unknown content key")
     default = content_schema.DEFAULTS[key]
     content_table.put_item(Item={"key": key, "value": default, "updatedAt": now_iso()})
+    _invalidate_content()
     stored = _stored_content_values()
     return {
         k: stored[k]["value"] if k in stored else d
