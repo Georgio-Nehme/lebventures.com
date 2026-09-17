@@ -106,25 +106,15 @@ def ensure_tables():
         )
         print(f"✅  Created table {CONTACTS_TABLE}")
 
-    if CONTENT_TABLE not in existing:
-        _ddb_client.create_table(
-            TableName=CONTENT_TABLE,
-            BillingMode="PAY_PER_REQUEST",
-            AttributeDefinitions=[
-                {"AttributeName": "key", "AttributeType": "S"},
-            ],
-            KeySchema=[{"AttributeName": "key", "KeyType": "HASH"}],
-        )
-        print(f"✅  Created table {CONTENT_TABLE}")
+    # The content table is created manually (hash key: "key", string).
+    # We only seed missing defaults into it here.
+    if CONTENT_TABLE in existing:
         try:
-            _ddb_client.get_waiter("table_exists").wait(TableName=CONTENT_TABLE)
+            seed_content()
         except Exception as e:
-            print(f"⚠️  Waiter for {CONTENT_TABLE} failed: {e}")
-
-    try:
-        seed_content()
-    except Exception as e:
-        print(f"⚠️  Failed to seed content table: {e}")
+            print(f"⚠️  Failed to seed content table: {e}")
+    else:
+        print(f"⚠️  Content table {CONTENT_TABLE} not found — create it manually (hash key 'key')")
 
     if IMAGES_BUCKET:
         cors_origins = [o.strip() for o in os.getenv("CORS_ORIGINS", "").split(",") if o.strip()]
