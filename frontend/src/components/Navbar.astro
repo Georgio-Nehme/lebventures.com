@@ -122,11 +122,14 @@ function isActive(href: string) {
     color: #1C3818;
   }
 
-  /* Wrap the logo in a light background pill when navbar is transparent */
+  /* White single-colour logo while the navbar is transparent over the hero;
+     switches back to the full-colour logo once the bar turns white on scroll */
+  .logo-img {
+    transition: filter 0.3s ease;
+  }
+
   .site-header[data-transparent]:not(.scrolled) .logo-img {
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 0.5rem;
-    padding: 0.125rem 0.5rem;
+    filter: brightness(0) invert(1);
   }
 </style>
 
