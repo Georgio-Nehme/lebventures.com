@@ -14,14 +14,25 @@ Types:
   toggle    – "true" / "false"; controls whether a button or section is shown
   link      – button target: a site route like /contact or a full https:// URL
   list      – one item per line; admin can add / remove / reorder items
+  select    – one of the field's "options"
+  cards     – JSON array of {icon, title, tag, desc}; admin can add / remove / reorder
 
 Keys are dot-separated: <page>.<section>.<field>. Never rename a key once
 shipped; the frontend and stored values depend on it.
 """
 
+import json
 from typing import List, Dict, Any
 
 Field = Dict[str, Any]
+
+# Icon names available in frontend/src/components/Icon.astro
+ICONS: List[str] = [
+    "hiking", "climbing", "camping", "heritage", "canyoning", "biking", "water", "snow",
+    "leisure", "kids", "leaf", "house", "cedar", "book", "recycle", "eagle", "people",
+    "camera", "compass", "pin", "envelope", "clock", "mountain", "scout", "peak",
+    "calendar", "workshop",
+]
 
 
 def f(key: str, label: str, default: str, type_: str = "text") -> Field:
@@ -43,6 +54,20 @@ def lst(key: str, label: str, items: List[str]) -> Field:
     return f(key, label, "\n".join(items), "list")
 
 
+def sel(key: str, label: str, default: str, options: List[str]) -> Field:
+    """One value out of a fixed set of options."""
+    fld = f(key, label, default, "select")
+    fld["options"] = options
+    return fld
+
+
+def cards(key: str, label: str, items: List[Dict[str, str]]) -> Field:
+    """Repeatable cards (icon, title, tag, desc); stored as a JSON array."""
+    fld = f(key, label, json.dumps(items, ensure_ascii=False), "cards")
+    fld["icons"] = ICONS
+    return fld
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # GLOBAL
 # ─────────────────────────────────────────────────────────────────────────────
@@ -56,6 +81,7 @@ GLOBAL: List[Field] = [
     f("global.contact.address", "Address (short)", "Byblos (Amchit), Lebanon"),
     f("global.social.instagram", "Instagram URL", "https://www.instagram.com/lebventures", "url"),
     f("global.social.facebook", "Facebook URL", "https://www.facebook.com/lebventures", "url"),
+    f("global.footer.copyright", "Copyright line (after the year)", "LebVentures. All rights reserved. Made with love for Lebanon."),
 ]
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -134,6 +160,7 @@ HOME: List[Field] = [
 # ─────────────────────────────────────────────────────────────────────────────
 # ADVENTURES
 # ─────────────────────────────────────────────────────────────────────────────
+_ADVENTURE_ICONS = ["hiking", "climbing", "camping", "water", "snow", "leisure", "biking", "kids", "heritage"]
 _ADVENTURE_CARDS = [
     ("Hiking & Trekking", "From the Cedar Reserve in Bcharre to the Qadisha Valley, our guided hikes span all difficulty levels across Lebanon's most stunning terrain.", "All levels"),
     ("Rock Climbing & Caving", "Scale limestone cliffs with certified instructors, or explore Lebanon's underground world — from the caves of Afqa to vertical rock faces in Tannourine.", "Intermediate+"),
@@ -159,13 +186,12 @@ ADVENTURES: List[Field] = [
       "Whether you're a first-timer or a seasoned explorer, we have an adventure crafted for you across Lebanon's diverse landscapes.",
       "textarea"),
     f("adventures.section.cta", "Section button label", "Plan Your Adventure"),
+    sel("adventures.cards.columns", "Cards per line (desktop)", "3", ["2", "3", "4"]),
+    cards("adventures.cards", "Adventure cards", [
+        {"icon": _icon, "title": _t, "tag": _tag, "desc": _d}
+        for _icon, (_t, _d, _tag) in zip(_ADVENTURE_ICONS, _ADVENTURE_CARDS)
+    ]),
 ]
-for _i, (_t, _d, _tag) in enumerate(_ADVENTURE_CARDS, start=1):
-    ADVENTURES += [
-        f(f"adventures.card{_i}.title", f"Card {_i} title", _t),
-        f(f"adventures.card{_i}.desc", f"Card {_i} description", _d, "textarea"),
-        f(f"adventures.card{_i}.tag", f"Card {_i} tag", _tag),
-    ]
 
 # ─────────────────────────────────────────────────────────────────────────────
 # SUSTAINABILITY
@@ -199,6 +225,7 @@ SUSTAINABILITY: List[Field] = [
     f("sustainability.quote.text", "Quote",
       "The mountains of Lebanon are not just scenery — they are living history, sacred ground, and a responsibility.",
       "textarea"),
+    f("sustainability.quote.image", "Photo replacing the green quote card (leave empty to keep the card)", "", "image"),
     f("sustainability.quote.author", "Quote author", "LebVentures Founders"),
     f("sustainability.quote.role", "Quote author role", "Scout Alumni & Nature Advocates"),
     f("sustainability.commitments.heading", "Commitments heading", "How We Operate"),
@@ -415,5 +442,7 @@ PAGES: List[Dict[str, Any]] = [
 ALL_FIELDS: List[Field] = [fld for page in PAGES for fld in page["fields"]]
 DEFAULTS: Dict[str, str] = {fld["key"]: fld["default"] for fld in ALL_FIELDS}
 FIELD_TYPES: Dict[str, str] = {fld["key"]: fld["type"] for fld in ALL_FIELDS}
+FIELD_OPTIONS: Dict[str, List[str]] = {fld["key"]: fld["options"] for fld in ALL_FIELDS if "options" in fld}
+CARD_KEYS = ("icon", "title", "tag", "desc")
 
 assert len(DEFAULTS) == len(ALL_FIELDS), "duplicate content keys in schema"

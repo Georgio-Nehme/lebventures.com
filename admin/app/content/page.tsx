@@ -2,8 +2,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '@/lib/api';
 
-type FieldType = 'text' | 'textarea' | 'image' | 'url' | 'toggle' | 'link' | 'list';
-type Field = { key: string; label: string; type: FieldType; default: string; value: string; updatedAt?: string };
+type FieldType = 'text' | 'textarea' | 'image' | 'url' | 'toggle' | 'link' | 'list' | 'select' | 'cards';
+type Field = { key: string; label: string; type: FieldType; default: string; value: string; updatedAt?: string; options?: string[]; icons?: string[] };
 type ContentPage = { id: string; label: string; fields: Field[] };
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://lebventures.com';
@@ -69,6 +69,56 @@ function ListEditor({ value, onChange }: { value: string; onChange: (v: string) 
         onClick={() => commit([...items, ''])}
         className="text-xs font-medium text-amber-700 hover:text-amber-800 px-2 py-1 rounded-md hover:bg-amber-50">
         + Add item
+      </button>
+    </div>
+  );
+}
+
+type Card = { icon: string; title: string; tag: string; desc: string };
+
+function parseCards(value: string): Card[] {
+  try {
+    const arr = JSON.parse(value || '[]');
+    return Array.isArray(arr) ? arr.map(c => ({ icon: c.icon ?? '', title: c.title ?? '', tag: c.tag ?? '', desc: c.desc ?? '' })) : [];
+  } catch { return []; }
+}
+
+function CardsEditor({ value, icons, onChange }: { value: string; icons: string[]; onChange: (v: string) => void }) {
+  const cards = parseCards(value);
+  const commit = (next: Card[]) => onChange(JSON.stringify(next));
+  const update = (i: number, patch: Partial<Card>) => commit(cards.map((c, j) => (j === i ? { ...c, ...patch } : c)));
+  const btn = 'px-2 py-1 rounded-md text-xs text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent';
+
+  return (
+    <div className="space-y-3">
+      {cards.map((card, i) => (
+        <div key={i} className="rounded-lg border border-gray-200 bg-gray-50 p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-slate-500">Card {i + 1}</span>
+            <div className="flex gap-1">
+              <button type="button" title="Move up" disabled={i === 0} className={btn}
+                onClick={() => { const n = [...cards]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; commit(n); }}>&uarr;</button>
+              <button type="button" title="Move down" disabled={i === cards.length - 1} className={btn}
+                onClick={() => { const n = [...cards]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; commit(n); }}>&darr;</button>
+              <button type="button" title="Remove" className={`${btn} text-red-500 hover:bg-red-50`}
+                onClick={() => commit(cards.filter((_, j) => j !== i))}>&times;</button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+            <select value={card.icon} onChange={e => update(i, { icon: e.target.value })} className={inputCls}>
+              <option value="">(no icon)</option>
+              {icons.map(ic => <option key={ic} value={ic}>{ic}</option>)}
+            </select>
+            <input type="text" placeholder="Title" value={card.title} onChange={e => update(i, { title: e.target.value })} className={inputCls} />
+            <input type="text" placeholder="Tag" value={card.tag} onChange={e => update(i, { tag: e.target.value })} className={inputCls} />
+          </div>
+          <AutoTextarea value={card.desc} onChange={v => update(i, { desc: v })} />
+        </div>
+      ))}
+      <button type="button"
+        onClick={() => commit([...cards, { icon: icons[0] ?? '', title: '', tag: '', desc: '' }])}
+        className="text-xs font-medium text-amber-700 hover:text-amber-800 px-2 py-1 rounded-md hover:bg-amber-50">
+        + Add card
       </button>
     </div>
   );
@@ -231,6 +281,16 @@ export default function ContentPage() {
           <ListEditor value={value} onChange={v => setDraftValue(f.key, v)} />
         )}
 
+        {f.type === 'cards' && (
+          <CardsEditor value={value} icons={f.icons ?? []} onChange={v => setDraftValue(f.key, v)} />
+        )}
+
+        {f.type === 'select' && (
+          <select value={value} onChange={e => setDraftValue(f.key, e.target.value)} className={inputCls}>
+            {(f.options ?? []).map(o => <option key={o} value={o}>{o}</option>)}
+          </select>
+        )}
+
         {f.type === 'textarea' && (
           <AutoTextarea value={value} onChange={v => setDraftValue(f.key, v)} />
         )}
@@ -338,7 +398,7 @@ export default function ContentPage() {
                   <h2 className="font-bold text-slate-800">{group.title}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {group.fields.map(f => (
-                      <div key={f.key} className={f.type === 'textarea' || f.type === 'image' || f.type === 'list' ? 'md:col-span-2' : ''}>
+                      <div key={f.key} className={f.type === 'textarea' || f.type === 'image' || f.type === 'list' || f.type === 'cards' ? 'md:col-span-2' : ''}>
                         {renderField(f)}
                       </div>
                     ))}

@@ -19,6 +19,7 @@ const GLOBAL: Content = {
   'global.contact.address': 'Byblos (Amchit), Lebanon',
   'global.social.instagram': 'https://www.instagram.com/lebventures',
   'global.social.facebook': 'https://www.facebook.com/lebventures',
+  'global.footer.copyright': 'LebVentures. All rights reserved. Made with love for Lebanon.',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -145,6 +146,10 @@ const ADVENTURE_CARDS: [string, string, string][] = [
   ],
 ];
 
+const ADVENTURE_ICONS: string[] = [
+  'hiking', 'climbing', 'camping', 'water', 'snow', 'leisure', 'biking', 'kids', 'heritage',
+];
+
 const ADVENTURES: Content = {
   'adventures.hero.image': '/header_lebventures.png',
   'adventures.hero.tagline': 'Choose Your Adventure',
@@ -156,13 +161,16 @@ const ADVENTURES: Content = {
   'adventures.section.subheading':
     "Whether you're a first-timer or a seasoned explorer, we have an adventure crafted for you across Lebanon's diverse landscapes.",
   'adventures.section.cta': 'Plan Your Adventure',
+  'adventures.cards.columns': '3',
+  'adventures.cards': JSON.stringify(
+    ADVENTURE_CARDS.map(([title, desc, tag], i) => ({
+      icon: ADVENTURE_ICONS[i],
+      title,
+      tag,
+      desc,
+    }))
+  ),
 };
-ADVENTURE_CARDS.forEach(([title, desc, tag], i) => {
-  const n = i + 1;
-  ADVENTURES[`adventures.card${n}.title`] = title;
-  ADVENTURES[`adventures.card${n}.desc`] = desc;
-  ADVENTURES[`adventures.card${n}.tag`] = tag;
-});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SUSTAINABILITY
@@ -223,6 +231,7 @@ const SUSTAINABILITY: Content = {
     "LebVentures was built on the belief that adventure and environmental stewardship go hand in hand. Every decision we make — from route selection to supplier partnerships — is guided by sustainability and respect for Lebanon's natural heritage.",
   'sustainability.quote.text':
     'The mountains of Lebanon are not just scenery — they are living history, sacred ground, and a responsibility.',
+  'sustainability.quote.image': '',
   'sustainability.quote.author': 'LebVentures Founders',
   'sustainability.quote.role': 'Scout Alumni & Nature Advocates',
   'sustainability.commitments.heading': 'How We Operate',
@@ -450,7 +459,6 @@ export const MULTILINE_KEYS = new Set<string>([
   'adventures.hero.heading',
   'adventures.hero.subheading',
   'adventures.section.subheading',
-  ...ADVENTURE_CARDS.map((_c, i) => `adventures.card${i + 1}.desc`),
   'sustainability.hero.heading',
   'sustainability.hero.subheading',
   'sustainability.intro.text',
@@ -524,6 +532,26 @@ export function list(c: Content, key: string): string[] {
     .split('\n')
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+// Parse a "cards" field (admin-editable JSON array of {icon, title, tag,
+// desc}) — returns [] on any parse failure or shape mismatch.
+export function cardsOf(
+  c: Content,
+  key: string
+): { icon: string; title: string; tag: string; desc: string }[] {
+  try {
+    const parsed = JSON.parse(c[key] || '[]');
+    if (!Array.isArray(parsed)) return [];
+    return parsed.map((item) => ({
+      icon: typeof item?.icon === 'string' ? item.icon : '',
+      title: typeof item?.title === 'string' ? item.title : '',
+      tag: typeof item?.tag === 'string' ? item.tag : '',
+      desc: typeof item?.desc === 'string' ? item.desc : '',
+    }));
+  } catch {
+    return [];
+  }
 }
 
 // HTML-escape a value, then turn newlines into <br /> — for headings that

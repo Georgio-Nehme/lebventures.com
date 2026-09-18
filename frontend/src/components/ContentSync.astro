@@ -99,6 +99,108 @@ const apiUrl = import.meta.env.PUBLIC_API_URL as string | undefined;
           }
         });
 
+        // Grid column count (select field, values '2'/'3'/'4') — swap the
+        // matching lg:grid-cols-N class.
+        document.querySelectorAll('[data-c-cols]').forEach((el) => {
+          const key = el.getAttribute('data-c-cols');
+          if (!key || !Object.prototype.hasOwnProperty.call(content, key)) return;
+          const value = content[key];
+          el.classList.remove('lg:grid-cols-2', 'lg:grid-cols-3', 'lg:grid-cols-4');
+          if (value) el.classList.add('lg:grid-cols-' + value);
+        });
+
+        // Repeatable cards (icon, title, tag, desc), stored as a JSON array.
+        document.querySelectorAll('[data-c-cards]').forEach((container) => {
+          const key = container.getAttribute('data-c-cards');
+          if (!key || !Object.prototype.hasOwnProperty.call(content, key)) return;
+
+          let items;
+          try {
+            items = JSON.parse(content[key] || '[]');
+          } catch {
+            return;
+          }
+          if (!Array.isArray(items)) return;
+
+          const normalized = items.map((item) => ({
+            icon: typeof (item && item.icon) === 'string' ? item.icon : '',
+            title: typeof (item && item.title) === 'string' ? item.title : '',
+            tag: typeof (item && item.tag) === 'string' ? item.tag : '',
+            desc: typeof (item && item.desc) === 'string' ? item.desc : '',
+          }));
+
+          function cardIcon(card) {
+            const wrapper = card.querySelector('[data-icon]');
+            return wrapper ? wrapper.getAttribute('data-icon') || '' : '';
+          }
+          function cardText(card, attr) {
+            const el = card.matches('[' + attr + ']') ? card : card.querySelector('[' + attr + ']');
+            return el ? el.textContent.trim() : '';
+          }
+
+          const cardEls = Array.from(container.querySelectorAll('[data-card]'));
+          const current = cardEls.map((card) => ({
+            icon: cardIcon(card),
+            title: cardText(card, 'data-card-title'),
+            tag: cardText(card, 'data-card-tag'),
+            desc: cardText(card, 'data-card-desc'),
+          }));
+
+          const same =
+            current.length === normalized.length &&
+            current.every((cur, i) =>
+              cur.icon === normalized[i].icon &&
+              cur.title === normalized[i].title &&
+              cur.tag === normalized[i].tag &&
+              cur.desc === normalized[i].desc
+            );
+          if (same) return;
+
+          const template = cardEls[0];
+          if (!template) return;
+          const templateClone = template.cloneNode(true);
+
+          // Preserve rendered icon markup so a rebuild doesn't lose inline
+          // SVGs for icons that are still present.
+          const iconMap = {};
+          cardEls.forEach((card) => {
+            const wrapper = card.querySelector('[data-icon]');
+            if (!wrapper) return;
+            const name = wrapper.getAttribute('data-icon') || '';
+            if (name && !Object.prototype.hasOwnProperty.call(iconMap, name)) {
+              iconMap[name] = wrapper.innerHTML;
+            }
+          });
+
+          container.innerHTML = '';
+          normalized.forEach((item) => {
+            const clone = templateClone.cloneNode(true);
+            const titleEl = clone.querySelector('[data-card-title]');
+            if (titleEl) titleEl.textContent = item.title;
+            const tagEl = clone.querySelector('[data-card-tag]');
+            if (tagEl) tagEl.textContent = item.tag;
+            const descEl = clone.querySelector('[data-card-desc]');
+            if (descEl) descEl.textContent = item.desc;
+            const iconEl = clone.querySelector('[data-icon]');
+            if (iconEl) {
+              iconEl.setAttribute('data-icon', item.icon);
+              iconEl.innerHTML = Object.prototype.hasOwnProperty.call(iconMap, item.icon)
+                ? iconMap[item.icon]
+                : '';
+            }
+            container.appendChild(clone);
+          });
+        });
+
+        // Elements that should hide once a paired key (e.g. a replacement
+        // image) has a value.
+        document.querySelectorAll('[data-c-hide-when-set]').forEach((el) => {
+          const key = el.getAttribute('data-c-hide-when-set');
+          if (key && Object.prototype.hasOwnProperty.call(content, key)) {
+            el.hidden = !!content[key];
+          }
+        });
+
         document.querySelectorAll('[data-c-show]').forEach((el) => {
           const key = el.getAttribute('data-c-show');
           if (key && Object.prototype.hasOwnProperty.call(content, key)) {

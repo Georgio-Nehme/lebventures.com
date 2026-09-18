@@ -123,6 +123,8 @@ class ContentFieldOut(BaseModel):
     default: str
     value: str
     updatedAt: Optional[str] = None
+    options: Optional[List[str]] = None   # for type "select"
+    icons: Optional[List[str]] = None     # for type "cards"
 
 
 class ContentPageOut(BaseModel):

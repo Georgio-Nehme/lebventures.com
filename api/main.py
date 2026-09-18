@@ -1,3 +1,4 @@
+import json
 import os
 import time
 import uuid
@@ -346,6 +347,27 @@ def _stored_content_values(fresh: bool = False):
     return data
 
 
+def _normalise_cards(key: str, raw: str) -> str:
+    """Validate a cards JSON payload and re-serialise it compactly."""
+    if not raw.strip():
+        return ""
+    try:
+        data = json.loads(raw)
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f"{key} must be a JSON array")
+    if not isinstance(data, list):
+        raise HTTPException(status_code=400, detail=f"{key} must be a JSON array")
+    cleaned = []
+    for item in data:
+        if not isinstance(item, dict):
+            raise HTTPException(status_code=400, detail=f"{key}: every card must be an object")
+        card = {k: str(item.get(k, "")).strip() for k in content_schema.CARD_KEYS}
+        if card["icon"] and card["icon"] not in content_schema.ICONS:
+            raise HTTPException(status_code=400, detail=f"{key}: unknown icon '{card['icon']}'")
+        cleaned.append(card)
+    return json.dumps(cleaned, ensure_ascii=False)
+
+
 def _invalidate_content():
     _content_cache["data"] = None
     _content_cache["ts"] = 0.0
@@ -378,6 +400,8 @@ def get_content_schema(_=Depends(verify_token)):
                 default=fld["default"],
                 value=row["value"] if row else fld["default"],
                 updatedAt=row.get("updatedAt") if row else None,
+                options=fld.get("options"),
+                icons=fld.get("icons"),
             ))
         pages.append(ContentPageOut(id=page["id"], label=page["label"], fields=fields))
     return pages
@@ -413,6 +437,12 @@ def update_content(body: ContentUpdate, _=Depends(verify_token)):
         ftype = content_schema.FIELD_TYPES.get(key)
         if ftype == "list":
             value = "\n".join(line.strip() for line in value.splitlines() if line.strip())
+        elif ftype == "cards":
+            value = _normalise_cards(key, value)
+        elif ftype == "select":
+            value = value.strip()
+            if value and value not in content_schema.FIELD_OPTIONS.get(key, []):
+                raise HTTPException(status_code=400, detail=f"{key} must be one of {content_schema.FIELD_OPTIONS.get(key)}")
         else:
             value = value.strip()
         # Empty resets to the default, except images where empty means "no image"

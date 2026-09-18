@@ -30,14 +30,9 @@ const pillars = PILLAR_ICONS.map((icon, i) => {
         </p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           {pillars.map(p => (
-            <div class="flex gap-4">
-              <div class="text-brand-primary shrink-0 mt-0.5">
-                <Icon name={p.icon} class="w-10 h-10" />
-              </div>
-              <div>
-                <h4 class="font-heading font-bold text-brand-primary text-base mb-1" data-c={`sustainability.pillar${p.n}.title`}>{p.title}</h4>
-                <p class="text-sm text-gray-600 leading-relaxed" data-c={`sustainability.pillar${p.n}.desc`} data-c-multiline>{p.description}</p>
-              </div>
+            <div>
+              <h4 class="font-heading font-bold text-brand-primary text-base mb-1" data-c={`sustainability.pillar${p.n}.title`}>{p.title}</h4>
+              <p class="text-sm text-gray-600 leading-relaxed" data-c={`sustainability.pillar${p.n}.desc`} data-c-multiline>{p.description}</p>
             </div>
           ))}
         </div>
@@ -45,7 +40,19 @@ const pillars = PILLAR_ICONS.map((icon, i) => {
 
       <!-- Visual side -->
       <div class="relative">
-        <div class="bg-brand-primary rounded-3xl p-10 text-white text-center shadow-2xl">
+        <img
+          src={c['sustainability.quote.image'] || undefined}
+          alt=""
+          class="w-full rounded-3xl shadow-2xl object-cover"
+          data-c-src="sustainability.quote.image"
+          hidden={!c['sustainability.quote.image']}
+          loading="lazy"
+        />
+        <div
+          class="bg-brand-primary rounded-3xl p-10 text-white text-center shadow-2xl"
+          data-c-hide-when-set="sustainability.quote.image"
+          hidden={!!c['sustainability.quote.image']}
+        >
           <div class="flex justify-center mb-6 opacity-80">
             <Icon name="mountain" class="w-20 h-20 text-white" />
           </div>

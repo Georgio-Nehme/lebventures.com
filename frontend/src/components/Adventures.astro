@@ -1,22 +1,19 @@
 ---
 import Icon from './Icon.astro';
-import { getContent, show, isExternalHref } from '../data/content';
+import { getContent, show, isExternalHref, cardsOf } from '../data/content';
 
 const c = await getContent();
 
-// Icons are not editable; only title/description/tag come from content.
-const ICONS = ['hiking', 'climbing', 'camping', 'water', 'snow', 'leisure', 'biking', 'kids', 'heritage'];
+const adventures = cardsOf(c, 'adventures.cards');
 
-const adventures = ICONS.map((icon, i) => {
-  const n = i + 1;
-  return {
-    icon,
-    title: c[`adventures.card${n}.title`],
-    description: c[`adventures.card${n}.desc`],
-    tag: c[`adventures.card${n}.tag`],
-    n,
-  };
-});
+// Desktop column count is admin-editable; all three classes must appear
+// literally in source so Tailwind generates them.
+const COLS_CLASS: Record<string, string> = {
+  '2': 'lg:grid-cols-2',
+  '3': 'lg:grid-cols-3',
+  '4': 'lg:grid-cols-4',
+};
+const colsClass = COLS_CLASS[c['adventures.cards.columns']] || COLS_CLASS['3'];
 ---
 
 <section id="adventures" class="py-20 bg-white">
@@ -28,19 +25,19 @@ const adventures = ICONS.map((icon, i) => {
       </p>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class={`grid grid-cols-1 sm:grid-cols-2 ${colsClass} gap-8`} data-c-cards="adventures.cards" data-c-cols="adventures.cards.columns">
       {adventures.map(adv => (
-        <div class="group p-6 rounded-2xl border border-brand-sky bg-white hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-          <div class="mb-4 text-brand-primary">
-            <Icon name={adv.icon} class="w-14 h-14" />
+        <div class="p-6 rounded-2xl border border-brand-sky bg-white" data-card>
+          <div class="mb-4 text-brand-primary" data-icon={adv.icon}>
+            {adv.icon && <Icon name={adv.icon} class="w-14 h-14" />}
           </div>
-          <span class="inline-block text-xs font-bold bg-brand-sky text-brand-olive px-3 py-1 rounded-full mb-3 uppercase tracking-wider" data-c={`adventures.card${adv.n}.tag`}>
+          <span class="inline-block text-xs font-bold bg-brand-sky text-brand-olive px-3 py-1 rounded-full mb-3 uppercase tracking-wider" data-card-tag>
             {adv.tag}
           </span>
-          <h3 class="text-xl font-heading font-bold text-brand-primary mb-2 group-hover:text-brand-olive transition-colors" data-c={`adventures.card${adv.n}.title`}>
+          <h3 class="text-xl font-heading font-bold text-brand-primary mb-2" data-card-title>
             {adv.title}
           </h3>
-          <p class="text-sm text-gray-600 leading-relaxed" data-c={`adventures.card${adv.n}.desc`} data-c-multiline>{adv.description}</p>
+          <p class="text-sm text-gray-600 leading-relaxed" data-card-desc data-c-multiline>{adv.desc}</p>
         </div>
       ))}
     </div>
