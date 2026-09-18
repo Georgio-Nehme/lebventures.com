@@ -43,6 +43,17 @@ const apiUrl = import.meta.env.PUBLIC_API_URL as string | undefined;
           if (key && Object.prototype.hasOwnProperty.call(content, key)) {
             const value = content[key];
             if (el.getAttribute('src') !== value) el.setAttribute('src', value);
+            el.hidden = !value;
+          }
+        });
+
+        // Overlays that pair with a [data-c-src] image (e.g. a darkening
+        // scrim) but aren't an <img> themselves — shown only when the image
+        // key has a value.
+        document.querySelectorAll('[data-c-src-overlay]').forEach((el) => {
+          const key = el.getAttribute('data-c-src-overlay');
+          if (key && Object.prototype.hasOwnProperty.call(content, key)) {
+            el.hidden = !content[key];
           }
         });
 
@@ -94,6 +105,58 @@ const apiUrl = import.meta.env.PUBLIC_API_URL as string | undefined;
             const shouldHide = content[key] === 'false';
             if (el.hidden !== shouldHide) el.hidden = shouldHide;
           }
+        });
+
+        // Editable lists (newline-separated): rebuild the container's
+        // children from its first child as a template, one clone per item.
+        document.querySelectorAll('[data-c-list]').forEach((container) => {
+          const key = container.getAttribute('data-c-list');
+          if (!key || !Object.prototype.hasOwnProperty.call(content, key)) return;
+
+          const items = String(content[key] || '')
+            .split('\n')
+            .map((s) => s.trim())
+            .filter(Boolean);
+
+          const template = container.firstElementChild;
+          if (!template) return;
+
+          function markers(el, attr) {
+            const found = [];
+            if (el.matches && el.matches('[' + attr + ']')) found.push(el);
+            found.push(...el.querySelectorAll('[' + attr + ']'));
+            return found;
+          }
+
+          function currentItems() {
+            return Array.from(container.children).map((child) => {
+              const textEls = markers(child, 'data-c-list-text');
+              if (textEls.length) return textEls.map((t) => t.textContent.trim()).join('');
+              return child.textContent.trim();
+            });
+          }
+
+          const current = currentItems();
+          const same =
+            current.length === items.length && current.every((t, i) => t === items[i]);
+          if (same) return;
+
+          const templateClone = template.cloneNode(true);
+          container.innerHTML = '';
+          items.forEach((item) => {
+            const clone = templateClone.cloneNode(true);
+            const textEls = markers(clone, 'data-c-list-text');
+            if (textEls.length) {
+              textEls.forEach((t) => { t.textContent = item; });
+            } else {
+              clone.textContent = item;
+            }
+            markers(clone, 'data-c-list-value').forEach((v) => {
+              v.value = item;
+              if ('checked' in v) v.checked = false;
+            });
+            container.appendChild(clone);
+          });
         });
       }
 

@@ -13,6 +13,7 @@ Types:
   url       – external link
   toggle    – "true" / "false"; controls whether a button or section is shown
   link      – button target: a site route like /contact or a full https:// URL
+  list      – one item per line; admin can add / remove / reorder items
 
 Keys are dot-separated: <page>.<section>.<field>. Never rename a key once
 shipped; the frontend and stored values depend on it.
@@ -35,6 +36,11 @@ def t(key: str, label: str, default: bool = True) -> Field:
 def l(key: str, label: str, default: str) -> Field:
     """Button link target (site route or full URL)."""
     return f(key, label, default, "link")
+
+
+def lst(key: str, label: str, items: List[str]) -> Field:
+    """Editable list; stored newline-separated."""
+    return f(key, label, "\n".join(items), "list")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -141,6 +147,7 @@ _ADVENTURE_CARDS = [
 ]
 
 ADVENTURES: List[Field] = [
+    f("adventures.hero.image", "Hero photo", "/header_lebventures.png", "image"),
     f("adventures.hero.tagline", "Hero tagline", "Choose Your Adventure"),
     f("adventures.hero.heading", "Hero heading", "Adventures for\nEvery Explorer", "textarea"),
     f("adventures.hero.subheading", "Hero subheading",
@@ -179,6 +186,7 @@ _COMMITMENTS = [
 ]
 
 SUSTAINABILITY: List[Field] = [
+    f("sustainability.hero.image", "Hero photo", "/header_lebventures.png", "image"),
     f("sustainability.hero.tagline", "Hero tagline", "Our Commitment"),
     f("sustainability.hero.heading", "Hero heading", "Sustainable Tourism\nat Our Core", "textarea"),
     f("sustainability.hero.subheading", "Hero subheading",
@@ -222,6 +230,7 @@ _TIMELINE = [
 ]
 
 ABOUT: List[Field] = [
+    f("about.hero.image", "Hero photo", "/header_lebventures.png", "image"),
     f("about.hero.tagline", "Hero tagline", "Our Story"),
     f("about.hero.heading", "Hero heading", "Family-Founded,\nAdventure-Driven", "textarea"),
     f("about.hero.subheading", "Hero subheading",
@@ -249,6 +258,9 @@ ABOUT: List[Field] = [
     f("about.story.p3", "Story paragraph 3",
       "Both founders remain active and continuously certified in wilderness skills, first aid, and sustainable tourism best practices. Every adventure is backed by deep local knowledge and a genuine love for Lebanon's mountains, coastlines, and valleys.",
       "textarea"),
+    lst("about.story.tags", "Certification tags", [
+        "Wilderness First Aid", "Leave No Trace", "Rope & Rappel", "Navigation", "Flora & Fauna ID",
+    ]),
     f("about.timeline.heading", "Timeline heading", "Our Journey"),
     f("about.timeline.subheading", "Timeline subheading", "From scout meetings to mountain guides — the story behind LebVentures."),
     f("about.cta.heading", "Closing heading", "Ready to Join Us?"),
@@ -267,6 +279,7 @@ for _i, (_y, _t) in enumerate(_TIMELINE, start=1):
 # CONTACT
 # ─────────────────────────────────────────────────────────────────────────────
 CONTACT: List[Field] = [
+    f("contact.header.image", "Header photo (leave empty for plain green)", "", "image"),
     f("contact.header.tagline", "Header tagline", "Get in Touch"),
     f("contact.header.heading", "Header heading", "Ready to Venture Out?"),
     f("contact.header.subheading", "Header subheading",
@@ -276,6 +289,14 @@ CONTACT: List[Field] = [
     f("contact.form.subheading", "Form subheading",
       "Tell us about the adventure you're dreaming of and we'll craft the perfect experience for you.",
       "textarea"),
+    f("contact.form.options_label", "Adventure types field label", "What are you interested in?"),
+    lst("contact.form.options", "Adventure types (visitor can pick several)", [
+        "Hiking & Trekking", "Rock Climbing", "Camping Expedition", "Mountain Biking", "Caving",
+        "Kayaking", "Snorkeling", "Fishing", "Snowshoeing",
+        "Stargazing & Camping", "Archery & Picnicking", "Heritage & Sightseeing",
+        "Kids Educational & Sensory Adventure", "Family Hike",
+        "Corporate Team Building", "Custom / Not Sure Yet",
+    ]),
     f("contact.form.button", "Form submit label", "Send My Request"),
     f("contact.form.success_title", "Success title", "Message Received!"),
     f("contact.form.success_text", "Success text", "Thanks for reaching out! One of our guides will be in touch within 24 hours.", "textarea"),
@@ -331,6 +352,7 @@ SUSTAINABILITY += [
 ]
 
 ABOUT += [
+    t("about.card.stats.show", "Show the three stat boxes on the founders photo"),
     t("about.story.show", "Show story section"),
     t("about.timeline.show", "Show timeline section"),
     t("about.cta.show", "Show closing section"),

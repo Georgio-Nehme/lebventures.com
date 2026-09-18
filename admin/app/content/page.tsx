@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { api } from '@/lib/api';
 
-type FieldType = 'text' | 'textarea' | 'image' | 'url' | 'toggle' | 'link';
+type FieldType = 'text' | 'textarea' | 'image' | 'url' | 'toggle' | 'link' | 'list';
 type Field = { key: string; label: string; type: FieldType; default: string; value: string; updatedAt?: string };
 type ContentPage = { id: string; label: string; fields: Field[] };
 
@@ -39,6 +39,38 @@ function AutoTextarea({ value, onChange }: { value: string; onChange: (v: string
       onChange={e => onChange(e.target.value)}
       className={`${inputCls} resize-none overflow-hidden`}
     />
+  );
+}
+
+function ListEditor({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const items = value === '' ? [] : value.split('\n');
+  const commit = (next: string[]) => onChange(next.join('\n'));
+  const btn = 'px-2 py-1 rounded-md text-xs text-slate-500 hover:bg-slate-100 disabled:opacity-30 disabled:hover:bg-transparent';
+
+  return (
+    <div className="space-y-2">
+      {items.map((item, i) => (
+        <div key={i} className="flex items-center gap-2">
+          <input
+            type="text"
+            value={item}
+            onChange={e => commit(items.map((it, j) => (j === i ? e.target.value : it)))}
+            className={inputCls}
+          />
+          <button type="button" title="Move up" disabled={i === 0} className={btn}
+            onClick={() => { const n = [...items]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; commit(n); }}>&uarr;</button>
+          <button type="button" title="Move down" disabled={i === items.length - 1} className={btn}
+            onClick={() => { const n = [...items]; [n[i + 1], n[i]] = [n[i], n[i + 1]]; commit(n); }}>&darr;</button>
+          <button type="button" title="Remove" className={`${btn} text-red-500 hover:bg-red-50`}
+            onClick={() => commit(items.filter((_, j) => j !== i))}>&times;</button>
+        </div>
+      ))}
+      <button type="button"
+        onClick={() => commit([...items, ''])}
+        className="text-xs font-medium text-amber-700 hover:text-amber-800 px-2 py-1 rounded-md hover:bg-amber-50">
+        + Add item
+      </button>
+    </div>
   );
 }
 
@@ -195,6 +227,10 @@ export default function ContentPage() {
           </label>
         )}
 
+        {f.type === 'list' && (
+          <ListEditor value={value} onChange={v => setDraftValue(f.key, v)} />
+        )}
+
         {f.type === 'textarea' && (
           <AutoTextarea value={value} onChange={v => setDraftValue(f.key, v)} />
         )}
@@ -207,6 +243,9 @@ export default function ContentPage() {
             placeholder={f.type === 'link' ? '/contact or https://…' : undefined}
             className={inputCls}
           />
+        )}
+        {f.type === 'image' && (
+          <p className="text-xs text-slate-400">Clear the URL to show no image.</p>
         )}
         {f.type === 'link' && (
           <p className="text-xs text-slate-400">A site route like <code>/adventures</code> or a full URL like <code>https://example.com</code>.</p>
@@ -299,7 +338,7 @@ export default function ContentPage() {
                   <h2 className="font-bold text-slate-800">{group.title}</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     {group.fields.map(f => (
-                      <div key={f.key} className={f.type === 'textarea' || f.type === 'image' ? 'md:col-span-2' : ''}>
+                      <div key={f.key} className={f.type === 'textarea' || f.type === 'image' || f.type === 'list' ? 'md:col-span-2' : ''}>
                         {renderField(f)}
                       </div>
                     ))}

@@ -50,6 +50,13 @@ const c = await getContent();
 
 const primaryHref = ctaPrimaryHrefKey ? c[ctaPrimaryHrefKey] : primaryCta?.href;
 const secondaryHref = ctaSecondaryHrefKey ? c[ctaSecondaryHrefKey] : secondaryCta?.href;
+
+// Banner image: when a content prefix is set, the image is fully
+// admin-controlled (including being cleared to hide the banner). Without a
+// prefix, fall back to the static default when useBanner is requested, to
+// stay backwards compatible with callers that don't wire content keys.
+const bannerSrc = prefix ? c[`${prefix}.image`] : (useBanner ? '/header_lebventures.png' : undefined);
+const showBannerWrapper = !videoSrc && (Boolean(prefix) || useBanner);
 ---
 
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-brand-dark pt-16">
@@ -71,15 +78,16 @@ const secondaryHref = ctaSecondaryHrefKey ? c[ctaSecondaryHrefKey] : secondaryCt
   )}
 
   <!-- Banner image (fallback when no video) -->
-  {!videoSrc && useBanner && (
+  {showBannerWrapper && (
     <div class="absolute inset-0 z-0">
       <img
-        src="/header_lebventures.png"
+        src={bannerSrc || undefined}
         alt="LebVentures — For the Love of Nature"
         class="w-full h-full object-cover object-center opacity-90"
         loading="eager"
         fetchpriority="high"
         data-c-src={prefix ? `${prefix}.image` : undefined}
+        hidden={!bannerSrc}
       />
     </div>
   )}

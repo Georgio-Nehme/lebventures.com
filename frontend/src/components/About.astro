@@ -1,6 +1,6 @@
 ---
 import Icon from './Icon.astro';
-import { getContent, show } from '../data/content';
+import { getContent, show, list } from '../data/content';
 
 const c = await getContent();
 ---
@@ -38,7 +38,7 @@ const c = await getContent();
               <p class="text-gray-300 text-sm leading-relaxed mb-5">
                 "<span data-c="about.card.quote" data-c-multiline>{c['about.card.quote']}</span>"
               </p>
-              <div class="flex gap-3">
+              <div class="flex gap-3" data-c-show="about.card.stats.show" hidden={!show(c, 'about.card.stats.show')}>
                 <div class="flex-1 bg-white/10 rounded-xl p-3 text-center">
                   <div class="text-brand-gold font-bold text-lg" data-c="about.card.stat1.value">{c['about.card.stat1.value']}</div>
                   <div class="text-xs text-gray-400" data-c="about.card.stat1.label">{c['about.card.stat1.label']}</div>
@@ -74,9 +74,9 @@ const c = await getContent();
           </p>
         </div>
 
-        <div class="mt-8 flex flex-wrap gap-3">
-          {['Wilderness First Aid', 'Leave No Trace', 'Rope & Rappel', 'Navigation', 'Flora & Fauna ID'].map(tag => (
-            <span class="text-xs font-semibold bg-brand-sky text-brand-primary px-3 py-1.5 rounded-full border border-brand-primary/20">
+        <div class="mt-8 flex flex-wrap gap-3" data-c-list="about.story.tags">
+          {list(c, 'about.story.tags').map(tag => (
+            <span class="text-xs font-semibold bg-brand-sky text-brand-primary px-3 py-1.5 rounded-full border border-brand-primary/20" data-c-list-text>
               {tag}
             </span>
           ))}

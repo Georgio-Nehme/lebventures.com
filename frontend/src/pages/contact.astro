@@ -19,8 +19,17 @@ const c = await getContent();
   <main class="pt-16">
 
     <!-- Page header -->
-    <div class="bg-brand-primary text-white py-16 text-center">
-      <div class="max-w-2xl mx-auto px-4">
+    <div class="bg-brand-primary text-white py-16 text-center relative overflow-hidden">
+      <img
+        src={c['contact.header.image'] || undefined}
+        alt=""
+        class="absolute inset-0 w-full h-full object-cover"
+        data-c-src="contact.header.image"
+        hidden={!c['contact.header.image']}
+        loading="lazy"
+      />
+      <div class="absolute inset-0 bg-brand-dark/70" data-c-src-overlay="contact.header.image" hidden={!c['contact.header.image']}></div>
+      <div class="max-w-2xl mx-auto px-4 relative z-10">
         <span class="inline-block text-xs font-bold text-brand-gold uppercase tracking-widest mb-3" data-c="contact.header.tagline">{c['contact.header.tagline']}</span>
         <h1 class="text-4xl md:text-5xl font-heading font-bold mb-4" data-c="contact.header.heading">{c['contact.header.heading']}</h1>
         <p class="text-white/80 text-lg leading-relaxed" data-c="contact.header.subheading" data-c-multiline>

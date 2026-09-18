@@ -146,6 +146,7 @@ const ADVENTURE_CARDS: [string, string, string][] = [
 ];
 
 const ADVENTURES: Content = {
+  'adventures.hero.image': '/header_lebventures.png',
   'adventures.hero.tagline': 'Choose Your Adventure',
   'adventures.hero.heading': 'Adventures for\nEvery Explorer',
   'adventures.hero.subheading':
@@ -212,6 +213,7 @@ const COMMITMENTS: [string, string][] = [
 ];
 
 const SUSTAINABILITY: Content = {
+  'sustainability.hero.image': '/header_lebventures.png',
   'sustainability.hero.tagline': 'Our Commitment',
   'sustainability.hero.heading': 'Sustainable Tourism\nat Our Core',
   'sustainability.hero.subheading':
@@ -266,7 +268,12 @@ const TIMELINE: [string, string][] = [
   ],
 ];
 
+const ABOUT_TAGS: string[] = [
+  'Wilderness First Aid', 'Leave No Trace', 'Rope & Rappel', 'Navigation', 'Flora & Fauna ID',
+];
+
 const ABOUT: Content = {
+  'about.hero.image': '/header_lebventures.png',
   'about.hero.tagline': 'Our Story',
   'about.hero.heading': 'Family-Founded,\nAdventure-Driven',
   'about.hero.subheading':
@@ -289,6 +296,7 @@ const ABOUT: Content = {
     'What sets us apart is our commitment to inclusive, accessible adventures for everyone: families, solo travelers, corporate teams, and niche groups. We collaborate with local communities, artisans, and guides to deliver authentic, off-the-beaten-path experiences that support and celebrate Lebanon\'s local heritage.',
   'about.story.p3':
     'Both founders remain active and continuously certified in wilderness skills, first aid, and sustainable tourism best practices. Every adventure is backed by deep local knowledge and a genuine love for Lebanon\'s mountains, coastlines, and valleys.',
+  'about.story.tags': ABOUT_TAGS.join('\n'),
   'about.timeline.heading': 'Our Journey',
   'about.timeline.subheading': 'From scout meetings to mountain guides — the story behind LebVentures.',
   'about.cta.heading': 'Ready to Join Us?',
@@ -305,7 +313,16 @@ TIMELINE.forEach(([year, text], i) => {
 // ─────────────────────────────────────────────────────────────────────────────
 // CONTACT
 // ─────────────────────────────────────────────────────────────────────────────
+const CONTACT_OPTIONS: string[] = [
+  'Hiking & Trekking', 'Rock Climbing', 'Camping Expedition', 'Mountain Biking', 'Caving',
+  'Kayaking', 'Snorkeling', 'Fishing', 'Snowshoeing',
+  'Stargazing & Camping', 'Archery & Picnicking', 'Heritage & Sightseeing',
+  'Kids Educational & Sensory Adventure', 'Family Hike',
+  'Corporate Team Building', 'Custom / Not Sure Yet',
+];
+
 const CONTACT: Content = {
+  'contact.header.image': '',
   'contact.header.tagline': 'Get in Touch',
   'contact.header.heading': 'Ready to Venture Out?',
   'contact.header.subheading':
@@ -313,6 +330,8 @@ const CONTACT: Content = {
   'contact.form.heading': 'Ready to Venture Out?',
   'contact.form.subheading':
     "Tell us about the adventure you're dreaming of and we'll craft the perfect experience for you.",
+  'contact.form.options_label': 'What are you interested in?',
+  'contact.form.options': CONTACT_OPTIONS.join('\n'),
   'contact.form.button': 'Send My Request',
   'contact.form.success_title': 'Message Received!',
   'contact.form.success_text': 'Thanks for reaching out! One of our guides will be in touch within 24 hours.',
@@ -359,6 +378,7 @@ const TOGGLES: Content = {
   'sustainability.cta.show': 'true',
   'sustainability.cta.button.show': 'true',
 
+  'about.card.stats.show': 'true',
   'about.story.show': 'true',
   'about.timeline.show': 'true',
   'about.cta.show': 'true',
@@ -495,6 +515,15 @@ export function show(c: Content, key: string): boolean {
 // route) — such links open in a new tab so visitors don't leave the site.
 export function isExternalHref(href: string | undefined): boolean {
   return !!href && href.startsWith('http');
+}
+
+// Split a "list" field (newline-separated items, admin-editable) into a
+// trimmed, non-empty array of items.
+export function list(c: Content, key: string): string[] {
+  return (c[key] || '')
+    .split('\n')
+    .map((item) => item.trim())
+    .filter(Boolean);
 }
 
 // HTML-escape a value, then turn newlines into <br /> — for headings that

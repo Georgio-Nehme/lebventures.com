@@ -388,7 +388,8 @@ def update_content(body: ContentUpdate, _=Depends(verify_token)):
     """Admin: bulk-update content values by key.
 
     An empty string value resets the key back to its schema default (stored as
-    the default) rather than being saved as an empty value.
+    the default) rather than being saved as an empty value — except for image
+    fields, where empty is stored and means "no image".
     """
     unknown = [k for k in body.values if k not in content_schema.DEFAULTS]
     if unknown:
@@ -409,8 +410,13 @@ def update_content(body: ContentUpdate, _=Depends(verify_token)):
         raise HTTPException(status_code=400, detail=f"Links must start with / or http(s):// : {', '.join(bad_links)}")
     now = now_iso()
     for key, value in body.values.items():
-        value = value.strip()
-        if value == "":
+        ftype = content_schema.FIELD_TYPES.get(key)
+        if ftype == "list":
+            value = "\n".join(line.strip() for line in value.splitlines() if line.strip())
+        else:
+            value = value.strip()
+        # Empty resets to the default, except images where empty means "no image"
+        if value == "" and ftype != "image":
             value = content_schema.DEFAULTS[key]
         content_table.put_item(Item={"key": key, "value": value, "updatedAt": now})
     _invalidate_content()

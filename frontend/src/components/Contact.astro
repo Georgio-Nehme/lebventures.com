@@ -1,5 +1,5 @@
 ---
-import { getContent, show } from '../data/content';
+import { getContent, show, list } from '../data/content';
 
 const apiUrl = import.meta.env.PUBLIC_API_URL || 'http://localhost:8000';
 const c = await getContent();
@@ -8,7 +8,6 @@ const c = await getContent();
 <section id="contact" class="py-20 bg-white" data-c-show="contact.form.show" hidden={!show(c, 'contact.form.show')}>
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center mb-12">
-      <span class="inline-block text-xs font-bold text-brand-primary uppercase tracking-widest mb-3">Get in Touch</span>
       <h2 class="section-heading" data-c="contact.form.heading">{c['contact.form.heading']}</h2>
       <p class="section-subheading mx-auto" data-c="contact.form.subheading" data-c-multiline>
         {c['contact.form.subheading']}
@@ -46,40 +45,15 @@ const c = await getContent();
       </div>
 
       <div>
-        <label for="adventure" class="block text-sm font-semibold text-brand-dark mb-1.5">Adventure Type</label>
-        <select
-          id="adventure"
-          name="adventure"
-          class="w-full rounded-xl border border-brand-primary/30 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-brand-primary bg-white"
-        >
-          <option value="">Select an experience...</option>
-          <optgroup label="Land Adventures">
-            <option>Hiking &amp; Trekking</option>
-            <option>Rock Climbing</option>
-            <option>Camping Expedition</option>
-            <option>Mountain Biking</option>
-            <option>Caving</option>
-          </optgroup>
-          <optgroup label="Water Activities">
-            <option>Kayaking</option>
-            <option>Snorkeling</option>
-            <option>Fishing</option>
-          </optgroup>
-          <optgroup label="Winter Experiences">
-            <option>Snowshoeing</option>
-          </optgroup>
-          <optgroup label="Leisure &amp; Exploration">
-            <option>Stargazing &amp; Camping</option>
-            <option>Archery &amp; Picnicking</option>
-            <option>Heritage &amp; Sightseeing</option>
-          </optgroup>
-          <optgroup label="Kids &amp; Family">
-            <option>Kids Educational &amp; Sensory Adventure</option>
-            <option>Family Hike</option>
-          </optgroup>
-          <option value="corporate">Corporate Team Building</option>
-          <option value="custom">Custom / Not Sure Yet</option>
-        </select>
+        <label class="block text-sm font-semibold text-brand-dark mb-1.5" data-c="contact.form.options_label">{c['contact.form.options_label']}</label>
+        <div id="adventure-options" class="flex flex-wrap gap-2" data-c-list="contact.form.options">
+          {list(c, 'contact.form.options').map((item) => (
+            <label class="cursor-pointer">
+              <input type="checkbox" name="adventure" value={item} class="peer sr-only" data-c-list-value />
+              <span class="inline-block px-3.5 py-1.5 rounded-full border border-brand-primary/30 bg-white text-sm text-brand-dark peer-checked:bg-brand-primary peer-checked:text-white peer-checked:border-brand-primary transition-colors" data-c-list-text>{item}</span>
+            </label>
+          ))}
+        </div>
       </div>
 
       <div>
@@ -147,7 +121,7 @@ const c = await getContent();
     const body = {
       name:      fd.get('name'),
       email:     fd.get('email'),
-      adventure: fd.get('adventure') || undefined,
+      adventure: fd.getAll('adventure').join(', ') || undefined,
       message:   fd.get('message')   || undefined,
     };
 
