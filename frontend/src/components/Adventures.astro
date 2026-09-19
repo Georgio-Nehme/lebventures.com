@@ -31,7 +31,7 @@ const colsClass = COLS_CLASS[c['adventures.cards.columns']] || COLS_CLASS['3'];
           <div class="mb-4 text-brand-primary" data-icon={adv.icon}>
             {adv.icon && <Icon name={adv.icon} class="w-14 h-14" />}
           </div>
-          <span class="inline-block text-xs font-bold bg-brand-sky text-brand-olive px-3 py-1 rounded-full mb-3 uppercase tracking-wider" data-card-tag>
+          <span class="inline-block text-xs font-bold bg-brand-sky text-brand-olive px-3 py-1 rounded-full mb-3 uppercase tracking-wider" data-card-tag hidden={!adv.tag}>
             {adv.tag}
           </span>
           <h3 class="text-xl font-heading font-bold text-brand-primary mb-2" data-card-title>

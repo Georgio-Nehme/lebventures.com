@@ -28,9 +28,9 @@ const pillars = PILLAR_ICONS.map((icon, i) => {
         <p class="text-gray-600 leading-relaxed mb-8" data-c="sustainability.intro.text" data-c-multiline>
           {c['sustainability.intro.text']}
         </p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6" data-c-show="sustainability.pillars.show" hidden={!show(c, 'sustainability.pillars.show')}>
           {pillars.map(p => (
-            <div>
+            <div data-c-show={`sustainability.pillar${p.n}.show`} hidden={!show(c, `sustainability.pillar${p.n}.show`)}>
               <h4 class="font-heading font-bold text-brand-primary text-base mb-1" data-c={`sustainability.pillar${p.n}.title`}>{p.title}</h4>
               <p class="text-sm text-gray-600 leading-relaxed" data-c={`sustainability.pillar${p.n}.desc`} data-c-multiline>{p.description}</p>
             </div>

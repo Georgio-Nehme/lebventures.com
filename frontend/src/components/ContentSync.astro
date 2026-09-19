@@ -178,7 +178,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL as string | undefined;
             const titleEl = clone.querySelector('[data-card-title]');
             if (titleEl) titleEl.textContent = item.title;
             const tagEl = clone.querySelector('[data-card-tag]');
-            if (tagEl) tagEl.textContent = item.tag;
+            if (tagEl) { tagEl.textContent = item.tag; tagEl.hidden = !item.tag; }
             const descEl = clone.querySelector('[data-card-desc]');
             if (descEl) descEl.textContent = item.desc;
             const iconEl = clone.querySelector('[data-icon]');

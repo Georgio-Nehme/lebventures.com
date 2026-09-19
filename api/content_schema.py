@@ -373,6 +373,11 @@ ADVENTURES += [
 
 SUSTAINABILITY += [
     t("sustainability.intro.show", "Show intro section (pillars + quote)"),
+    t("sustainability.pillars.show", "Show the four pillars under the intro text"),
+    t("sustainability.pillar1.show", "Show pillar 1"),
+    t("sustainability.pillar2.show", "Show pillar 2"),
+    t("sustainability.pillar3.show", "Show pillar 3"),
+    t("sustainability.pillar4.show", "Show pillar 4"),
     t("sustainability.commitments.show", "Show \"How We Operate\" section"),
     t("sustainability.cta.show", "Show closing section"),
     t("sustainability.cta.button.show", "Show closing button"),

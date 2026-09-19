@@ -383,6 +383,11 @@ const TOGGLES: Content = {
   'adventures.section.cta.show': 'true',
 
   'sustainability.intro.show': 'true',
+  'sustainability.pillars.show': 'true',
+  'sustainability.pillar1.show': 'true',
+  'sustainability.pillar2.show': 'true',
+  'sustainability.pillar3.show': 'true',
+  'sustainability.pillar4.show': 'true',
   'sustainability.commitments.show': 'true',
   'sustainability.cta.show': 'true',
   'sustainability.cta.button.show': 'true',

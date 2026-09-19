@@ -52,3 +52,8 @@ a[data-c-link][aria-disabled="true"] {
   pointer-events: none;
   cursor: default;
 }
+
+/* Empty adventure-card tag chips stay hidden */
+[data-card-tag][hidden] {
+  display: none !important;
+}
